@@ -1,0 +1,60 @@
+.home {
+    min-height: 100vh;
+}
+
+.nav {
+    background-color: var(--primary);
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6em;
+}
+
+.nav a {
+    text-decoration: none;
+    color: var(--text);
+}
+
+.stores {
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    gap: 1em;
+}
+
+.logo > a {
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+/*buttons*/
+.buttons {
+    display: flex;
+    gap: 1em;
+}
+
+.button_cart,
+.button_signup {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.button_cart:hover,
+.button_signup:hover {
+    box-shadow: 0 0 5px 5px var(--secondary);
+}
+
+.button_cart svg {
+    color: var(--secondary);
+    fill: none;
+}
+
+.button_signup svg {
+    color: var(--secondary);
+    padding: 4px;
+}

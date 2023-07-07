@@ -1,0 +1,10 @@
+:root {
+    --primary: black;
+    --secondary: white;
+    --text: white;
+}
+
+body,
+body * {
+    margin: 0;
+}
