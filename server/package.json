@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "npx tsc",
 		"start": "node build/index.js",
-		"dev": "nodemon ./index.ts"
+		"dev": "nodemon ./index.ts",
+		"commit": "cz"
 	},
 	"author": "",
 	"license": "ISC",
