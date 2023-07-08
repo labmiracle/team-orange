@@ -6,9 +6,9 @@ type Prop = {
 };
 
 export default function CategoriesNav({ categories, changeCategory }: Prop) {
-    const categoriesElements = categories.map(category => {
+    const categoriesElements = categories.map((category, i) => {
         return (
-            <li>
+            <li key={i}>
                 <button className={styles.button} onClick={() => changeCategory(category)}>
                     {category}
                 </button>

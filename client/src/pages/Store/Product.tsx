@@ -2,9 +2,9 @@ import { ProductType } from "../types";
 import styles from "./product.module.css";
 
 export default function Product({ arrayP }: { arrayP: ProductType[] }) {
-    const html = arrayP.map(item => {
+    const html = arrayP.map((item, i) => {
         return (
-            <div className={styles.product_container}>
+            <div className={styles.product_container} key={i}>
                 <div key={item.id} className={styles.product_card}>
                     <img className={styles.product_img} src={item.url_img} width="200" height="200" />
                     <h2 className={styles.product_name}>{item.name}</h2>
