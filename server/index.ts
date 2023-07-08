@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use("/", express.static(path.join(__dirname, "../client/dist")));
 
 //routes
 app.get("/camperas", (req, res) => {
@@ -21,7 +23,8 @@ app.get("/camperas", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-    res.send("<h1>Hello, World!</h1>").status(200);
+    const clientPath = path.join(__dirname, "../client/dist/index.html");
+    res.sendFile(clientPath);
 });
 
 app.listen(port, () => {
