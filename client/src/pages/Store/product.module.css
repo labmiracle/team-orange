@@ -1,0 +1,28 @@
+.product_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.product_card {
+    display: block;
+    break-inside: avoid-column;
+    width: fit-content;
+    margin: auto;
+}
+
+.product_price {
+    font-size: larger;
+    color: orange;
+}
+
+.product_discount {
+    color: red;
+}
+
+.product_buyBtn {
+    cursor: pointer;
+    width: fit-content;
+    padding: 0.5em;
+}

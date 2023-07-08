@@ -3,29 +3,53 @@
 }
 
 .nav {
-    background-color: var(--primary);
-    color: var(--text);
+    background-color: var(--white);
+    color: var(--black);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.6em;
+    height: 75px;
 }
 
 .nav a {
     text-decoration: none;
-    color: var(--text);
+}
+
+.nav > * {
+    padding: 0.5em;
+}
+
+.logo {
+    color: var(--black);
+    font-size: xx-large;
+    font-weight: bold;
 }
 
 .stores {
     padding: 0;
     list-style-type: none;
     display: flex;
+    justify-content: space-between;
     gap: 1em;
+    height: 100%;
 }
 
-.logo > a {
-    font-size: xx-large;
-    font-weight: bold;
+.inactive,
+.active {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.6em;
+}
+
+.inactive {
+    background-color: var(--white);
+    color: var(--black);
+}
+
+.active {
+    background-color: var(--black);
+    color: var(--white);
 }
 
 /*buttons*/
@@ -46,15 +70,15 @@
 
 .button_cart:hover,
 .button_signup:hover {
-    box-shadow: 0 0 5px 5px var(--secondary);
+    box-shadow: 0 0 5px 5px var(--black);
 }
 
 .button_cart svg {
-    color: var(--secondary);
+    color: var(--black);
     fill: none;
 }
 
 .button_signup svg {
-    color: var(--secondary);
+    color: var(--black);
     padding: 4px;
 }

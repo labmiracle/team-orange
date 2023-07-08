@@ -1,24 +1,30 @@
 import SignUpIconSVG from "../../assets/SignUpIconSVG";
 import CartIconSVG from "../../assets/CartIconSVG";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, NavLink } from "react-router-dom";
 import styles from "./styles.module.css";
 
 export default function Home() {
     return (
         <main className={styles.home}>
             <nav className={styles.nav}>
-                <div className={styles.logo}>
-                    <Link to="/">Shoppy</Link>
-                </div>
+                <Link to="/" className={styles.logo}>
+                    Shoppy
+                </Link>
                 <ul className={styles.stores}>
                     <li>
-                        <Link to="/stores/1">Store1</Link>
+                        <NavLink to="/stores/1" className={({ isActive }) => (isActive ? styles.active : styles.inactive)}>
+                            <p>Store1</p>
+                        </NavLink>
                     </li>
                     <li>
-                        <Link to="/stores/2">Store2</Link>
+                        <NavLink to="/stores/2" className={({ isActive }) => (isActive ? styles.active : styles.inactive)}>
+                            <p>Store1</p>
+                        </NavLink>
                     </li>
                     <li>
-                        <Link to="/stores/3">Store3</Link>
+                        <NavLink to="/stores/3" className={({ isActive }) => (isActive ? styles.active : styles.inactive)}>
+                            <p>Store1</p>
+                        </NavLink>
                     </li>
                 </ul>
                 <div className={styles.buttons}>

@@ -1,6 +1,6 @@
 :root {
-    --primary: black;
-    --secondary: white;
+    --black: rgb(12, 12, 12);
+    --white: white;
     --text: white;
 }
 
