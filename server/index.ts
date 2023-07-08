@@ -20,6 +20,10 @@ app.get("/camperas", (req, res) => {
     ]);
 });
 
+app.get("/", (req, res) => {
+    res.send("<h1>Hello, World!</h1>").status(200);
+});
+
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });
