@@ -22,7 +22,7 @@
 
         /* Paths */
         "rootDir": "./src",
-        "outDir": "./build"
+        "outDir": "./dist"
     },
     "references": [{ "path": "./tsconfig.node.json" }]
 }
