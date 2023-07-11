@@ -5,9 +5,8 @@ import ErrorPage from "./pages/Error/index.tsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Welcome from "./pages/Welcome/index.tsx";
-import Store1 from "./pages/Store1/index.tsx";
-import Store2 from "./pages/Store2/index.tsx";
-import Store3 from "./pages/Store3/index.tsx";
+import Store from "./pages/Store/index.tsx";
+import storeLoader from "./pages/Hooks/storeLoader.tsx";
 
 const router = createBrowserRouter([
     {
@@ -20,16 +19,11 @@ const router = createBrowserRouter([
                 element: <Welcome />,
             },
             {
-                path: "/stores/1",
-                element: <Store1 />,
-            },
-            {
-                path: "/stores/2",
-                element: <Store2 />,
-            },
-            {
-                path: "/stores/3",
-                element: <Store3 />,
+                path: "/stores/:id",
+                loader: async ({ params }) => {
+                    return params.id ? await storeLoader(params.id) : null;
+                },
+                element: <Store />,
             },
         ],
     },

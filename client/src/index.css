@@ -1,10 +1,16 @@
 :root {
+    --black: rgb(12, 12, 12);
+    --white: rgb(240, 240, 240);
     --primary: black;
     --secondary: white;
-    --text: white;
+    --tertiary: white;
+    --text-primary: black;
+    --text-secondary: black;
+    background-color: var(--white);
 }
 
 body,
 body * {
     margin: 0;
+    box-sizing: border-box;
 }
