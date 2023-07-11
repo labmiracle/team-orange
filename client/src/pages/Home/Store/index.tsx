@@ -3,7 +3,7 @@ import { StoreType } from "../../types";
 import Product from "./Product";
 import CategoriesNav from "./CategoriesNav";
 import SizeNav from "./SizeNav";
-import styles from "./index.module.css";
+import styles from "./css/index.module.css";
 import { useState, useEffect, useRef } from "react";
 
 function setTextColor(light: number) {

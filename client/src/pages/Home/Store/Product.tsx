@@ -1,5 +1,5 @@
 import { ProductType } from "../../types";
-import styles from "./product.module.css";
+import styles from "./css/product.module.css";
 
 export default function Product({ arrayP }: { arrayP: ProductType[] }) {
     const html = arrayP.map((item, i) => {

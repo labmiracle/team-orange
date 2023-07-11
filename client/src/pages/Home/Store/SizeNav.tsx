@@ -1,4 +1,4 @@
-import styles from "./size.module.css";
+import styles from "./css/size.module.css";
 
 type Prop = {
     sizes: string[];

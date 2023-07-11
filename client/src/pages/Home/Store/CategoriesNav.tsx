@@ -1,4 +1,4 @@
-import styles from "./categories.module.css";
+import styles from "./css/categories.module.css";
 
 type Prop = {
     categories: string[];
