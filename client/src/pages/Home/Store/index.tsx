@@ -2,10 +2,14 @@ import { useLoaderData } from "react-router-dom";
 import { StoreType } from "../../types";
 import Product from "./Product";
 import CategoriesNav from "./CategoriesNav";
-import SizeNav from "./SizeNav";
 import styles from "./css/index.module.css";
 import { useState, useEffect, useRef } from "react";
 
+/**
+ * Set the text color depending on the brightness of the background color
+ * @param light lightness of color
+ * @returns
+ */
 function setTextColor(light: number) {
     if (light >= 50) {
         return "black";
@@ -18,18 +22,18 @@ export default function Store() {
     const data = useLoaderData() as StoreType;
     const [products, setProducts] = useState(data.products);
     const filter = useRef({
-        category: "",
+        type: "",
         size: "",
     });
 
     const sizes = data.products.map(product => product.size).filter((value, index, array) => array.indexOf(value) === index);
 
-    const categories = data.products.map(product => product.category).filter((value, index, array) => array.indexOf(value) === index);
+    const types = data.products.map(product => product.category).filter((value, index, array) => array.indexOf(value) === index);
 
     function filterProducts() {
         let newProducts = data.products;
-        if (filter.current.category) {
-            newProducts = newProducts.filter(product => product.category === filter.current.category);
+        if (filter.current.type) {
+            newProducts = newProducts.filter(product => product.category === filter.current.type);
         }
         if (filter.current.size) {
             newProducts = newProducts.filter(product => product.size === filter.current.size);
@@ -37,8 +41,8 @@ export default function Store() {
         setProducts(newProducts);
     }
 
-    function changeCategory(category: string) {
-        filter.current.category = category;
+    function changeType(type: string) {
+        filter.current.type = type;
         filterProducts();
     }
 
@@ -46,17 +50,6 @@ export default function Store() {
         filter.current.size = size;
         filterProducts();
     }
-
-    //Set Colors
-    /* useEffect(() => {
-        const root = document.getElementById("root");
-        const colors = data.colors;
-        root?.style.setProperty("--text-primary", setTextColor(colors.primary.light));
-        root?.style.setProperty("--text-secondary", setTextColor(colors.secondary.light));
-        root?.style.setProperty("--primary", `hsl(${colors.primary.hue} ${colors.primary.sat}% ${colors.primary.light}%)`);
-        root?.style.setProperty("--secondary", `hsl(${colors.secondary.hue} ${colors.secondary.sat}% ${colors.secondary.light}%)`);
-        root?.style.setProperty("--tertiary", `hsl(${colors.primary.hue} ${colors.primary.sat - 7}% ${colors.primary.light + 10}%)`);
-    }, [data.colors]); */
 
     useEffect(() => {
         setProducts(data.products);
@@ -73,9 +66,9 @@ export default function Store() {
 
     return (
         <div className={styles.store_container}>
-            <SizeNav {...{ sizes, changeSize }} />
+            <CategoriesNav {...{ categories: sizes, changeCategory: changeSize, current: filter.current.size, direction: "horizontal" }} />
             <div className={styles.products_with_category}>
-                <CategoriesNav {...{ categories, changeCategory }} />
+                <CategoriesNav {...{ categories: types, changeCategory: changeType, current: filter.current.type, direction: "vertical" }} />
                 <div className={styles.grid}>
                     <Product {...{ arrayP: products }} />
                 </div>

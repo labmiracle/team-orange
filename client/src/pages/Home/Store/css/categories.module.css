@@ -1,17 +1,21 @@
 .nav_container {
     background-color: var(--primary);
     padding: 1em;
-    min-height: calc(100vh - 110px - 120px);
 }
 
-.button {
+.category {
     background-color: transparent;
     border: none;
     color: var(--text-primary);
     cursor: pointer;
 }
 
-.nav_list {
+.active {
+    text-decoration: underline;
+}
+
+.nav_list_horizontal,
+.nav_list_vertical {
     list-style: none;
     padding-left: 0;
     display: flex;
@@ -21,7 +25,7 @@
 }
 
 @media (min-width: 785px) {
-    .nav_list {
+    .nav_list_vertical {
         flex-direction: column;
         justify-content: center;
     }
