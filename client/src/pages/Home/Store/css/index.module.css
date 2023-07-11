@@ -17,6 +17,7 @@
 .products_with_category {
     display: flex;
     flex-direction: column;
+    min-height: calc(100vh - 110px - 120px);
 }
 
 @media (min-width: 660px) {
