@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router-dom";
-import { StoreType } from "../types";
+import { StoreType } from "../../types";
 import Product from "./Product";
 import CategoriesNav from "./CategoriesNav";
 import SizeNav from "./SizeNav";

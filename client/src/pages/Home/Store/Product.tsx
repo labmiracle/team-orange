@@ -1,4 +1,4 @@
-import { ProductType } from "../types";
+import { ProductType } from "../../types";
 import styles from "./product.module.css";
 
 export default function Product({ arrayP }: { arrayP: ProductType[] }) {
