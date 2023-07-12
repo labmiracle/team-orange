@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { pool } from "../db";
+import bcrypt from "bcrypt";
 
 const handleUnknownError = (res: Response, error: unknown) => {
     if (error instanceof Error) {
@@ -49,7 +50,9 @@ const getUsers = async (req: Request, res: Response) => {
 
 const createUser = async (req: Request, res: Response) => {
     try {
-        const { name, lastName, email, password, idDocumentType, idDocumentNumber, rol } = req.body;
+        const { name, lastName, email, idDocumentType, idDocumentNumber, rol } = req.body;
+        let { password } = req.body;
+        password = await bcrypt.hash(password, 10);
         const [result] = await pool.query(`INSERT INTO User (name, lastName, email, password, idDocumentType, idDocumentNumber, rol) VALUES (?, ?, ?, ?, ?, ?, ?)`, [
             name,
             lastName,
@@ -59,6 +62,7 @@ const createUser = async (req: Request, res: Response) => {
             idDocumentNumber,
             rol,
         ]);
+        password = undefined;
         const newUser = JSON.parse(JSON.stringify(result));
         return res.status(201).json({
             message: "User created",
