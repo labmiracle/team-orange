@@ -1,13 +1,10 @@
 import { useEffect } from "react";
+import { setColors } from "../../utilities/setColors";
 
 export default function Welcome() {
     useEffect(() => {
-        const root = document.getElementById("root");
-        root?.style.setProperty("--text-primary", "white");
-        root?.style.setProperty("--text-secondary", "white");
-        root?.style.setProperty("--primary", "black");
-        root?.style.setProperty("--secondary", "black");
-        root?.style.setProperty("--tertiary", "black");
+        const colors = { primary: { hue: 0, sat: 0, light: 0 }, secondary: { hue: 0, sat: 0, light: 0 } };
+        setColors(colors);
     }, []);
 
     return (
