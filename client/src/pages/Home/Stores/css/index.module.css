@@ -1,7 +1,5 @@
 .grid {
-    margin: auto;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin: 40px auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: max-content;
@@ -14,7 +12,7 @@
     flex-direction: column;
 }
 
-.products_with_category {
+.inner_container {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 110px - 120px);
@@ -27,7 +25,7 @@
 }
 
 @media (min-width: 785px) {
-    .products_with_category {
+    .inner_container {
         flex-direction: row;
         justify-content: center;
     }
