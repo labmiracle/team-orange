@@ -1,4 +1,26 @@
-import { StoreType } from "./types";
+import { StoreType } from "../types";
+
+/* new Array(10000).fill({
+    id: 1,
+    name: "Campera1",
+    brand: "Nike",
+    category: "campera",
+    color: "black",
+    stock: 34,
+    price: 10000,
+    discount: 0.5,
+    description: "Campera 1",
+    url_img: "../campera01.jpg",
+    size: "Hombre",
+}) */
+
+/* const randomStringArr = [...Array(50)].map(() => {
+    const randomStr = "abcdefghijklmnopqrstuvwxyz"
+        .split("")
+        .sort(() => 0.5 - Math.random())
+        .join("");
+    return randomStr.slice(0, Math.random() * 26 + 2);
+}); */
 
 export const store1: StoreType = {
     name: "Tienda 1",

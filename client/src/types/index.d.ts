@@ -1,3 +1,5 @@
+export as namespace Types;
+
 export type ProductType = {
     id: number;
     name: string;
@@ -12,9 +14,11 @@ export type ProductType = {
     size: "Hombre" | "Mujer" | "Niños";
 };
 
-type ColorsType = {
-    primary: { hue: number; sat: number; light: number };
-    secondary: { hue: number; sat: number; light: number };
+export type Color = { hue: number; sat: number; light: number };
+
+export type ColorsType = {
+    primary: Color;
+    secondary: Color;
 };
 
 export type StoreType = {
@@ -22,3 +26,5 @@ export type StoreType = {
     colors: ColorsType;
     products: ProductType[];
 };
+
+export type setFilterType = ({ type, size }: { type?: string; size?: string }) => void;
