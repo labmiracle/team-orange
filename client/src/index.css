@@ -6,7 +6,7 @@
     --tertiary: white;
     --text-primary: black;
     --text-secondary: black;
-    --logo-color-filter: invert(0);
+    --logo-color-filter: invert(1);
     background-color: var(--white);
 }
 

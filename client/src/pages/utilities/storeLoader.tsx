@@ -8,15 +8,14 @@ import { Params } from "react-router-dom";
  */
 export default async function storesLoader({ params }: { params: Params<string> }): Promise<StoreType> {
     const id = params.id;
-    /* async function getProducts(storeNum: number) {
-        try {
+    /* try {
             const response = await fetch(`http://localhost:4000/stores/${storeNum}`);
             const products = await response.json();
             return products;
         } catch (e) {
             return console.error((e as Error).message);
         }
-    } */
+    */
     const promise = new Promise<StoreType>((resolve, reject) => {
         if (!id) reject();
 

@@ -20,8 +20,8 @@ export default function Footer() {
     return (
         <footer className={styles.footer}>
             <div className={styles.logos}>
-                {imgArr.map(brand => {
-                    return <img className={styles.img} src={brand} />;
+                {imgArr.map((brand, i) => {
+                    return <img className={styles.img} src={brand} key={i} />;
                 })}
             </div>
         </footer>

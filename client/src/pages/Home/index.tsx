@@ -28,7 +28,7 @@ export default function Home() {
                 <Link to="/" className={styles.logo}>
                     Shoppy
                 </Link>
-                <div className={styles.buttons}>
+                <div className={styles.buttons_container}>
                     <button className={styles.button_cart}>
                         <CartIconSVG />
                     </button>
