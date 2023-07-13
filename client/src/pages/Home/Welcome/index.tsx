@@ -3,7 +3,7 @@ import { setColors } from "../../utilities/setColors";
 
 export default function Welcome() {
     useEffect(() => {
-        const colors = { primary: { hue: 0, sat: 0, light: 0 }, secondary: { hue: 0, sat: 0, light: 0 } };
+        const colors = { primary: { hue: 0, sat: 0, light: 255 }, secondary: { hue: 0, sat: 0, light: 0 } };
         setColors(colors);
     }, []);
 

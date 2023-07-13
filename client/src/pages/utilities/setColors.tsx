@@ -12,6 +12,14 @@ function setTextColor(light: number) {
     }
 }
 
+function setLogoColor(light: number) {
+    if (light >= 50) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 /**
  * Set global primary, secondary colors and use {@link setTextColor} to set the text
  * @param colors {@link Types.ColorsType}
@@ -24,5 +32,6 @@ export function setColors(colors: ColorsType) {
         root.style.setProperty("--primary", `hsl(${colors.primary.hue} ${colors.primary.sat}% ${colors.primary.light}%)`);
         root.style.setProperty("--secondary", `hsl(${colors.secondary.hue} ${colors.secondary.sat}% ${colors.secondary.light}%)`);
         root.style.setProperty("--tertiary", `hsl(${colors.primary.hue} ${colors.primary.sat - 7}% ${colors.primary.light + 10}%)`);
+        root.style.setProperty("--logo-color-filter", `invert(${setLogoColor(colors.primary.light)})`);
     }
 }
