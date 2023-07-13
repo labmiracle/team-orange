@@ -4,19 +4,20 @@
 
 .nav {
     background-color: var(--tertiary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 60px;
-    padding-right: 35px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 120px;
 }
 
 .nav a {
     text-decoration: none;
 }
 
-.nav > * {
-    padding: 0.5em;
+.stores,
+.logo,
+.buttons_container {
+    padding: 0;
 }
 
 .logo {
@@ -24,23 +25,29 @@
     font-family: "Jockey One", sans-serif;
     font-size: 48px;
     font-weight: bold;
-    padding: 0;
+    grid-column: 1;
+    grid-row: 1;
+    padding-left: 10px;
 }
 
 .stores {
-    padding: 0;
     list-style-type: none;
     display: flex;
-    justify-content: space-between;
-    margin-right: auto;
+    justify-content: space-evenly;
     gap: 1em;
-    height: 100%;
+    grid-column: 1 / 3;
+    grid-row: 2;
+}
+
+.stores > li {
+    flex-basis: 100%;
 }
 
 .inactive,
 .active {
     display: flex;
     align-items: center;
+    justify-content: center;
     height: 100%;
     padding: 0 0.6em;
 }
@@ -55,11 +62,15 @@
     color: var(--text-secondary);
 }
 
-/*buttons*/
-.buttons {
+/*user buttons*/
+.buttons_container {
     display: flex;
     gap: 1em;
-    margin-left: auto;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+    padding-right: 35px;
 }
 
 .button_cart,
@@ -85,4 +96,27 @@
 .button_signup svg {
     color: var(--text-primary);
     padding: 4px;
+}
+
+@media (min-width: 500px) {
+    .nav {
+        height: 68px;
+        grid-template-columns: min-content auto min-content;
+        place-items: center;
+    }
+    .stores {
+        height: 100%;
+        justify-content: space-between;
+        grid-column: 1;
+        grid-row: 1;
+    }
+    .logo {
+        padding-left: 0;
+        grid-column: 2;
+    }
+    .buttons_container {
+        justify-self: end;
+        grid-column: 3;
+        grid-row: 1;
+    }
 }
