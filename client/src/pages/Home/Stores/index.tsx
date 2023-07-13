@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useLoaderData } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProducts } from "../../utilities/useProducts";
 import { StoreType } from "../../../types";
 import { setColors } from "../../utilities/setColors";
@@ -14,19 +15,15 @@ import { useNavigation } from "react-router-dom";
 export default function Store() {
     const navigation = useNavigation();
     const data = useLoaderData() as StoreType;
-
-    //tarda 4.5ms/4.4ms con 10000 productos sin useMemo y hace en paralelo con otras tareas mucho mas pesadas, en refresh consecutivos el useCategory le ganaba al useMemo
-    //const { sizes, types } = getCategories(data.products); //tarda 4.5ms/4.4ms con 10000 productos sin useMemo y hace en paralelo con otras tareas mucho mas pesadas
     const [products, setProducts, filter, setFilter] = useProducts(data.products);
+
+    const [sequencer, setSequencer] = useState<number[]>([]);
 
     useEffect(() => {
         setProducts(data.products);
-
-        //SetColors
+        setSequencer(() => data.products.map(product => +product.id));
         const colors = data.colors;
         setColors(colors);
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     if (navigation.state === "loading") {
@@ -34,22 +31,20 @@ export default function Store() {
     }
 
     return (
-        <>
-            <div className={styles.store_container}>
-                <Nav direction={"horizontal"}>
-                    <Sizes isCurrentFilter={filter.current.size} setFilter={setFilter} />
+        <div className={styles.store_container}>
+            <Nav direction={"horizontal"}>
+                <Sizes isCurrentFilter={filter.current.size} setFilter={setFilter} />
+            </Nav>
+            <div className={styles.inner_container}>
+                <Nav direction={"vertical"}>
+                    <Types isCurrentFilter={filter.current.type} setFilter={setFilter} />
                 </Nav>
-                <div className={styles.inner_container}>
-                    <Nav direction={"vertical"}>
-                        <Types isCurrentFilter={filter.current.type} setFilter={setFilter} />
-                    </Nav>
-                    <div className={styles.grid}>
-                        {products.map((product, i) => (
-                            <Product product={product} key={i} />
-                        ))}
-                    </div>
+                <div className={styles.grid}>
+                    {products.map((product, i) => {
+                        return <Product product={product} key={i} sequencer={sequencer} setSequencer={setSequencer} />;
+                    })}
                 </div>
             </div>
-        </>
+        </div>
     );
 }
