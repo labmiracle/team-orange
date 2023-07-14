@@ -1,32 +1,55 @@
 import { Request, Response } from "express";
-import { getUserService, createUserService, deleteUserService, updateUserService } from "../services/userService";
+import { getUserService, createUserService, deleteUserService, updateUserService, getUsersService } from "../services/userService";
 import { User } from "../models/userModel";
 
-const getUsers = async (req: Request, res: Response) => {
+const getUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const user = await getUserService(id);
-        if (!id) {
-            return res.status(200).json({
-                message: "Users found",
-                data: user,
-                error: false,
-            });
-        }
-        if (user) {
-            return res.status(200).json({
-                message: "User found",
-                data: user,
-                error: false,
-            });
-        } else {
-            return res.status(404).json({
-                message: "User not found",
+        if (isNaN(Number(id))) {
+            return res.status(400).json({
+                message: "ID must be a numeric value.",
                 data: undefined,
                 error: true,
             });
         }
-    } catch (error) {
+        const user = await getUserService(id);
+        return res.status(200).json({
+            message: "User found",
+            data: user,
+            error: true,
+        });
+    } catch (error: any) {
+        if (error.message === "User not found") {
+            return res.status(404).json({
+                message: error.message,
+                data: undefined,
+                error: true,
+            });
+        }
+        return res.status(500).json({
+            message: error.message,
+            data: undefined,
+            error: true,
+        });
+    }
+};
+
+const getUsers = async (req: Request, res: Response) => {
+    try {
+        const users = await getUsersService();
+        if (users.length > 0) {
+            res.status(200).json({
+                message: "Users found",
+                data: users,
+                error: false,
+            });
+        }
+        res.status(200).json({
+            message: "No users found",
+            data: users,
+            error: false,
+        });
+    } catch (error: any) {
         return res.status(500).json({
             message: "Internal server error",
             data: undefined,
@@ -114,24 +137,23 @@ const updateUser = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        if (!Number.isNaN(Number(id))) {
-            const userDeleted = await deleteUserService(Number(id));
-            if (userDeleted) {
-                return res.status(200).json({
-                    message: "User deleted seccessfully",
-                    data: undefined,
-                    error: false,
-                });
-            } else {
-                return res.status(404).json({
-                    message: "User not found",
-                    data: undefined,
-                    error: true,
-                });
-            }
-        } else {
+        if (isNaN(Number(id))) {
             return res.status(400).json({
-                message: "Invalid request",
+                message: "ID must be a numeric value.",
+                data: undefined,
+                error: true,
+            });
+        }
+        const userDeleted = await deleteUserService(Number(id));
+        if (userDeleted) {
+            return res.status(200).json({
+                message: "User deleted seccessfully",
+                data: undefined,
+                error: false,
+            });
+        } else {
+            return res.status(404).json({
+                message: "User not found",
                 data: undefined,
                 error: true,
             });
@@ -146,6 +168,7 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 export default {
+    getUser,
     getUsers,
     createUser,
     updateUser,

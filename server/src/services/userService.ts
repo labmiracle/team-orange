@@ -1,9 +1,18 @@
 import bcrypt from "bcrypt";
 import { User } from "../models/userModel";
-import { getUser, createUser, deleteUser, updateUser } from "../repositories/userRepository";
+import { getUser, getUsers, createUser, deleteUser, updateUser } from "../repositories/userRepository";
 
-export const getUserService = async (id: string | undefined): Promise<User | User[] | undefined> => {
-    return await getUser(id);
+export const getUserService = async (id: string | undefined): Promise<User | undefined> => {
+    const user = await getUser(id);
+    if (user) {
+        return user;
+    } else {
+        throw new Error("User not found");
+    }
+};
+
+export const getUsersService = async (): Promise<User[]> => {
+    return await getUsers();
 };
 
 export const createUserService = async (user: User): Promise<User> => {

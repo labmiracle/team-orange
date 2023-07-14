@@ -5,21 +5,26 @@ import { dbconfig } from "../config/db";
 
 const pool = createPool(dbconfig);
 
-export const getUser = async (id: string | undefined): Promise<User | User[] | undefined> => {
+export const getUser = async (id: string | undefined): Promise<User | undefined> => {
     const connection = await pool.getConnection();
     try {
-        if (id) {
-            const [rows] = await connection.execute<RowDataPacket[] & User[]>("SELECT id, name, lastName, email, idDocumentType, idDocumentNumber, rol FROM User WHERE id = ?", [
-                id,
-            ]);
-            if (rows.length) {
-                const user = rows[0];
-                return user;
-            }
-        } else {
-            const [users] = await connection.execute<RowDataPacket[] & User[]>("SELECT id, name, lastName, email, idDocumentType, idDocumentNumber, rol FROM User");
-            return users;
+        const [rows] = await connection.execute<RowDataPacket[] & User[]>("SELECT id, name, lastName, email, idDocumentType, idDocumentNumber, rol FROM User WHERE id = ?", [id]);
+        if (rows.length) {
+            const user = rows[0];
+            return user;
         }
+    } catch (error) {
+        throw new Error("Internal Server Error");
+    } finally {
+        connection.release();
+    }
+};
+
+export const getUsers = async (): Promise<User[]> => {
+    const connection = await pool.getConnection();
+    try {
+        const [users] = await connection.execute<RowDataPacket[] & User[]>("SELECT id, name, lastName, email, idDocumentType, idDocumentNumber, rol FROM User");
+        return users;
     } catch (error) {
         throw new Error("Internal Server Error");
     } finally {
