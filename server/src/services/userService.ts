@@ -29,25 +29,10 @@ export const deleteUserService = async (id: number) => {
 };
 
 export const updateUserService = async (id: string, userData: User) => {
-    const existingUser = await getUser(id);
-    if (!existingUser) {
-        throw new Error("User not found");
-    }
-
-    const hasChanges = (userData: User, existingUser: User | User[]) => {
-        if (Array.isArray(existingUser)) {
-            return false;
-        }
-        return Object.keys(userData).some(key => {
-            return userData[key as keyof User] !== existingUser[key as keyof User];
-        });
-    };
-
-    if (hasChanges(userData, existingUser)) {
-        const updatedUser = { ...existingUser, ...userData };
-        const result = await updateUser(id, updatedUser);
-        return result;
+    const userUpdated = await updateUser(id, userData);
+    if (userUpdated === "No change was made") {
+        return undefined;
     } else {
-        return;
+        return userUpdated;
     }
 };

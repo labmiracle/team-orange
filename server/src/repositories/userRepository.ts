@@ -75,20 +75,30 @@ export const deleteUser = async (id: number) => {
     }
 };
 
-export const updateUser = async (id: string, userData: User) => {
+export const updateUser = async (id: string, userData: User): Promise<User | string > => {
     const connection = await pool.getConnection();
     try {
-        const updateUserQuery = "UPDATE User SET ? WHERE id = ?";
-        const [result] = await connection.query(updateUserQuery, [userData, id]);
-        const resultParsed = JSON.parse(JSON.stringify(result));
-
-        if (resultParsed.affectedRows === 0) {
-            return null;
+        const updateUserQuery = "UPDATE User SET name = ?, lastName = ?, email = ?, idDocumentType = ?, idDocumentNumber = ?, rol = ? WHERE id = ?";
+        const [result] = await connection.execute<ResultSetHeader>(updateUserQuery, [
+            userData.name,
+            userData.lastName,
+            userData.email,
+            userData.idDocumentType,
+            userData.idDocumentNumber,
+            userData.rol,
+            id,
+        ]);
+        if (result.affectedRows > 0) {
+            if(result.changedRows > 0) {
+                return userData
+            } else {
+                return "No change was made";
+            }
+        } else {
+            throw new Error("User not found")
         }
-
-        return getUser(id);
     } catch (error) {
-        throw new Error("Failed to update user");
+        throw new Error("Internal Server Error");
     } finally {
         connection.release();
     }
