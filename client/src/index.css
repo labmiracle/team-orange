@@ -1,0 +1,22 @@
+:root {
+    --black: rgb(12, 12, 12);
+    --white: rgb(240, 240, 240);
+    --primary: black;
+    --secondary: white;
+    --tertiary: white;
+    --text-primary: black;
+    --text-secondary: black;
+    --logo-color-filter: invert(1);
+    background-color: var(--white);
+}
+
+html {
+    overflow-x: hidden;
+    margin-right: calc(-1 * (100vw - 100%));
+}
+
+body,
+body * {
+    margin: 0;
+    box-sizing: border-box;
+}

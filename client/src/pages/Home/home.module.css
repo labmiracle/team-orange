@@ -1,0 +1,122 @@
+.home {
+    min-height: 100%;
+}
+
+.nav {
+    background-color: var(--tertiary);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 120px;
+}
+
+.nav a {
+    text-decoration: none;
+}
+
+.stores,
+.logo,
+.buttons_container {
+    padding: 0;
+}
+
+.logo {
+    color: var(--text-primary);
+    font-family: "Jockey One", sans-serif;
+    font-size: 48px;
+    font-weight: bold;
+    grid-column: 1;
+    grid-row: 1;
+    padding-left: 10px;
+}
+
+.stores {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 1em;
+    grid-column: 1 / 3;
+    grid-row: 2;
+}
+
+.stores > li {
+    flex-basis: 100%;
+}
+
+.inactive,
+.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 0.6em;
+}
+
+.inactive {
+    background-color: inherit;
+    color: var(--text-primary);
+}
+
+.active {
+    background-color: var(--secondary);
+    color: var(--text-secondary);
+}
+
+/*user buttons*/
+.buttons_container {
+    display: flex;
+    gap: 1em;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+    padding-right: 35px;
+}
+
+.button_cart,
+.button_signup {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.button_cart:hover,
+.button_signup:hover {
+    box-shadow: 0 0 5px 5px var(--black);
+}
+
+.button_cart svg {
+    color: var(--text-primary);
+    fill: none;
+}
+
+.button_signup svg {
+    color: var(--text-primary);
+    padding: 4px;
+}
+
+@media (min-width: 500px) {
+    .nav {
+        height: 68px;
+        grid-template-columns: min-content auto min-content;
+        place-items: center;
+    }
+    .stores {
+        height: 100%;
+        justify-content: space-between;
+        grid-column: 1;
+        grid-row: 1;
+    }
+    .logo {
+        padding-left: 0;
+        grid-column: 2;
+    }
+    .buttons_container {
+        justify-self: end;
+        grid-column: 3;
+        grid-row: 1;
+    }
+}
