@@ -18,6 +18,7 @@ export default function CategoriesSmallMenu({ isCurrentFilter, setFilter }: Prop
 
     return (
         <div className={styles.menu_container}>
+            <div onClick={() => setVisibility(last => !last)} className={visible ? styles.menu_background : styles.hidden}></div>
             <button className={styles.menu_button} onClick={() => setVisibility(last => !last)}>
                 <MenuSVG />
             </button>
