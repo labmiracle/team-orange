@@ -6,6 +6,7 @@ import { useState } from "react";
 type Props = {
     isCurrentFilter: string;
     setFilter: setFilterType;
+    viewWindow: string;
 };
 
 /**
@@ -13,7 +14,7 @@ type Props = {
  * @isCurrentFilter current set type filter
  * @setFilter takes a type:string or size:string and set the filters for the product grid
  */
-export default function Sizes({ isCurrentFilter, setFilter }: Props) {
+export default function Sizes({ isCurrentFilter, setFilter, viewWindow }: Props) {
     const { products } = useLoaderData() as StoreType;
     const [sizes] = useState(() =>
         products
@@ -23,11 +24,11 @@ export default function Sizes({ isCurrentFilter, setFilter }: Props) {
     );
 
     function isActive(cat: string) {
-        return isCurrentFilter === cat ? [styles.category, styles.active].join(" ") : styles.category;
+        return isCurrentFilter === cat ? [styles.category_item, styles.active].join(" ") : styles.category_item;
     }
 
     return (
-        <>
+        <ul className={[styles.sizes_category, styles[viewWindow]].join(" ")}>
             <li>
                 <button className={isActive("")} onClick={() => setFilter({ size: "" })}>
                     All
@@ -42,6 +43,6 @@ export default function Sizes({ isCurrentFilter, setFilter }: Props) {
                     </li>
                 );
             })}
-        </>
+        </ul>
     );
 }

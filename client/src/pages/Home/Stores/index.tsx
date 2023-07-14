@@ -5,9 +5,9 @@ import { useProducts } from "../../utilities/useProducts";
 import { StoreType } from "../../../types";
 import { setColors } from "../../utilities/setColors";
 import Product from "./Product";
-import Nav from "./Nav";
 import Types from "./Types";
 import Sizes from "./Sizes";
+import CategoriesSmallMenu from "./Categories.small_menu";
 import styles from "./css/index.module.css";
 import Loader from "../../Loader";
 import { useNavigation } from "react-router-dom";
@@ -32,18 +32,13 @@ export default function Store() {
 
     return (
         <div className={styles.store_container}>
-            <Nav direction={"horizontal"}>
-                <Sizes isCurrentFilter={filter.current.size} setFilter={setFilter} />
-            </Nav>
-            <div className={styles.inner_container}>
-                <Nav direction={"vertical"}>
-                    <Types isCurrentFilter={filter.current.type} setFilter={setFilter} />
-                </Nav>
-                <div className={styles.grid}>
-                    {products.map((product, i) => {
-                        return <Product product={product} key={i} sequencer={sequencer} setSequencer={setSequencer} />;
-                    })}
-                </div>
+            <CategoriesSmallMenu isCurrentFilter={filter} setFilter={setFilter} />
+            <Sizes isCurrentFilter={filter.current.size} setFilter={setFilter} viewWindow={"big"} />
+            <Types isCurrentFilter={filter.current.type} setFilter={setFilter} viewWindow={"big"} />
+            <div className={styles.grid}>
+                {products.map((product, i) => {
+                    return <Product product={product} key={i} sequencer={sequencer} setSequencer={setSequencer} />;
+                })}
             </div>
         </div>
     );
