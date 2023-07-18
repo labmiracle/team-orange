@@ -68,14 +68,13 @@ export const deleteUser = async (id: number) => {
         const [result] = await connection.execute<ResultSetHeader>("DELETE FROM User WHERE id = ?", [id]);
         return result.affectedRows === 1;
     } catch (error) {
-        console.log(error);
         throw new Error("Internal Server Error");
     } finally {
         connection.release();
     }
 };
 
-export const updateUser = async (id: string, userData: User): Promise<User | string > => {
+export const updateUser = async (id: string, userData: User): Promise<User | string> => {
     const connection = await pool.getConnection();
     try {
         const updateUserQuery = "UPDATE User SET name = ?, lastName = ?, email = ?, idDocumentType = ?, idDocumentNumber = ?, rol = ? WHERE id = ?";
@@ -88,15 +87,8 @@ export const updateUser = async (id: string, userData: User): Promise<User | str
             userData.rol,
             id,
         ]);
-        if (result.affectedRows > 0) {
-            if(result.changedRows > 0) {
-                return userData
-            } else {
-                return "No change was made";
-            }
-        } else {
-            throw new Error("User not found")
-        }
+        if (!result.affectedRows) throw new Error("User not found");
+        return userData;
     } catch (error) {
         throw new Error("Internal Server Error");
     } finally {
