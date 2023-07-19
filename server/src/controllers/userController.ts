@@ -60,7 +60,7 @@ const getUsers = async (req: Request, res: Response) => {
 
 const createUser = async (req: Request, res: Response) => {
     try {
-        const { name, lastName, email, password, idDocumentType, idDocumentNumber, rol } = req.body;
+        const { name, lastName, email, password, idDocumentType, idDocumentNumber, rol = "client" } = req.body;
         const user: User = {
             name,
             lastName,
@@ -84,6 +84,7 @@ const createUser = async (req: Request, res: Response) => {
                 error: true,
             });
         }
+        console.log(error.message);
         return res.status(500).json({
             error: "Internal server error",
         });
