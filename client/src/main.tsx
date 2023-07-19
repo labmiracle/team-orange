@@ -7,6 +7,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Welcome from "./pages/Home/Welcome/index.tsx";
 import Store from "./pages/Home/Stores/index.tsx";
 import storeLoader from "./pages/utilities/storeLoader.tsx";
+import { Login } from "./pages/Login/index.tsx";
+import { AuthProvider } from "./Context/authContext.tsx";
 
 const router = createBrowserRouter([
     {
@@ -25,10 +27,16 @@ const router = createBrowserRouter([
             },
         ],
     },
+    {
+        path: "/login",
+        element: <Login />,
+    },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <RouterProvider router={router} />
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
     </React.StrictMode>
 );
