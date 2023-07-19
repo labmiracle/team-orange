@@ -5,6 +5,6 @@ import productRoutes from "./products";
 const router = express.Router();
 
 router.use("/api/users", userRoutes);
-router.use("/api/shop/:shopId/product", productRoutes);
+router.use("/api/shop/:storeId/product", productRoutes);
 
 export default router;

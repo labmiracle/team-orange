@@ -18,16 +18,17 @@ const getProduct = async (req: Request, res: Response) => {
             data: product,
             error: false,
         });
-    } catch (error: any) {
-        if (error.message === "Product not found") {
+    } catch (error) {
+        const { message } = error as Error;
+        if (message === "Product not found") {
             return res.status(404).json({
-                message: error.message,
+                message: message,
                 data: undefined,
                 error: true,
             });
         }
         return res.status(500).json({
-            message: error.message,
+            message: message,
             data: undefined,
             error: true,
         });
@@ -36,7 +37,8 @@ const getProduct = async (req: Request, res: Response) => {
 
 const getProducts = async (req: Request, res: Response) => {
     try {
-        const products = await getProductsService();
+        const { storeId } = req.params;
+        const products = await getProductsService(Number(storeId));
         if (products.length > 0) {
             return res.status(200).json({
                 message: "Products found",
@@ -49,9 +51,10 @@ const getProducts = async (req: Request, res: Response) => {
             data: products,
             error: false,
         });
-    } catch (error: any) {
+    } catch (error) {
+        const { message } = error as Error;
         return res.status(500).json({
-            message: error.message,
+            message: message,
             data: undefined,
             error: true,
         });
@@ -60,7 +63,8 @@ const getProducts = async (req: Request, res: Response) => {
 
 const createProduct = async (req: Request, res: Response) => {
     try {
-        const { name, description, price, discountPercentage, currentStock, reorderPoint, minimum, brandId, url_img, sizes, categories, storeId, brandName } = req.body;
+        const { storeId } = req.params;
+        const { name, description, price, discountPercentage = 1, currentStock, reorderPoint, minimum, brandName, sizes, categories } = req.body;
         const product: ResponseProduct = {
             name,
             description,
@@ -69,12 +73,10 @@ const createProduct = async (req: Request, res: Response) => {
             currentStock,
             reorderPoint,
             minimum,
-            brandId,
-            url_img,
-            storeId,
+            brandName,
+            storeId: Number(storeId),
             categories,
             sizes,
-            brandName,
         };
         const createdProduct = await createProductService(product);
         return res.status(201).json({
@@ -82,9 +84,10 @@ const createProduct = async (req: Request, res: Response) => {
             data: createdProduct,
             error: false,
         });
-    } catch (error: any) {
+    } catch (error) {
+        const { message } = error as Error;
         return res.status(500).json({
-            message: error.message,
+            message: message,
             data: undefined,
             error: true,
         });
@@ -115,10 +118,11 @@ const updateProduct = async (req: Request, res: Response) => {
             data: productUpdated,
             error: false,
         });
-    } catch (error: any) {
-        if (error.message === "Product not found") {
+    } catch (error) {
+        const { message } = error as Error;
+        if (message === "Product not found") {
             return res.status(404).json({
-                message: error.message,
+                message: message,
                 data: undefined,
                 error: true,
             });
@@ -142,22 +146,17 @@ const deleteProduct = async (req: Request, res: Response) => {
             });
         }
         const productDeleted = await deleteProductService(Number(id));
-        if (productDeleted) {
-            return res.status(200).json({
-                message: "Product deleted successfully",
-                data: undefined,
-                error: false,
-            });
-        } else {
-            return res.status(404).json({
-                message: "Product not found",
-                data: undefined,
-                error: true,
-            });
-        }
-    } catch (error: any) {
+        if (!productDeleted) throw new Error("Product not found");
+
+        return res.status(200).json({
+            message: "Product deleted successfully",
+            data: undefined,
+            error: false,
+        });
+    } catch (error) {
+        const { message } = error as Error;
         return res.status(500).json({
-            message: "Internal server error",
+            message: message,
             data: undefined,
             error: true,
         });

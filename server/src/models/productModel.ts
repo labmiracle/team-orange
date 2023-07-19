@@ -7,11 +7,10 @@ export interface Product {
     reorderPoint: number;
     minimum: number;
     brandId: string;
-    url_img: string;
     storeId: number;
 }
 
-export interface ResponseProduct extends Product {
+export interface ResponseProduct extends Omit<Product, "brandId"> {
     categories: string[];
     sizes: string[];
     brandName: string;

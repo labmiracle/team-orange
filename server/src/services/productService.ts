@@ -4,15 +4,12 @@ import { getProduct, getProducts, deleteProduct, createProduct, updateProduct } 
 
 export const getProductService = async (id: string | undefined): Promise<Product | undefined> => {
     const product = await getProduct(id);
-    if (product) {
-        return product;
-    } else {
-        throw new Error("Product not found");
-    }
+    if (!product) throw new Error("Product not found");
+    return product;
 };
 
-export const getProductsService = async (): Promise<Product[]> => {
-    return await getProducts();
+export const getProductsService = async (storeId: number): Promise<Product[]> => {
+    return await getProducts(storeId);
 };
 
 export const createProductService = async (product: ResponseProduct): Promise<boolean | undefined | ResultSetHeader> => {
