@@ -1,32 +1,28 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../Context/authContext";
+import { useLogin } from "../../services/useLogin";
 
 export function Login() {
-    const { user, setUser } = useAuth();
+    const { setUser } = useAuth();
+    const { isAuth, data } = useLogin();
 
     function login(event: React.FormEvent) {
-        // const { user, password } = event.target as HTMLFormElement;
-        // if (user && password) {
-        //     fetch("http://localhost:4000/auth", {
-        //         method: "GET",
-        //         headers: {
-        //             Authorization: btoa(`${user}:${password}`),
-        //         },
-        //     }).then(());
-        // }
-        setUser(true);
-    }
-    console.log(user);
-    if (user) {
-        return <Navigate to={"/"} />;
+        event.preventDefault();
+        const { user, password } = event.target as HTMLFormElement;
+        isAuth(user.value, password.value);
+        if (data) {
+            setUser(data);
+        }
     }
 
-    return (
+    return data ? (
+        <Navigate to={"/"} />
+    ) : (
         <main>
             <form onSubmit={login}>
                 <div>
                     <label htmlFor="user">Usuario</label>
-                    <input type="email" id="user" required />
+                    <input type="text" id="user" required />
                 </div>
                 <div>
                     <label htmlFor="password">Clave</label>
