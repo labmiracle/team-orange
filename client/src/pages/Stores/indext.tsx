@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useProducts } from "../../utilities/useProducts";
-import { StoreType } from "../../../types";
-import { setColors } from "../../utilities/setColors";
+import { useProducts } from "../utilities/useProducts";
+import { StoreType } from "../../types";
+import { setColors } from "../utilities/setColors";
 import Product from "./Product";
 import Types from "./Types";
 import Sizes from "./Sizes";
 import CategoriesSmallMenu from "./Categories.small_menu";
 import styles from "./css/index.module.css";
-import Loader from "../../Loader";
+import Loader from "../Loader";
 import { useNavigation } from "react-router-dom";
 
 export default function Store() {

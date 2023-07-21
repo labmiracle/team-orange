@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { ProductType } from "../../../types";
+import { ProductType } from "../../types";
 import styles from "./css/product.module.css";
 
 type ProductProps = {
