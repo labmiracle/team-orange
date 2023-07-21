@@ -1,0 +1,30 @@
+.button {
+	border-radius: 4px;
+	border: 1px solid #828282;
+	height: 35px;
+}
+
+.solid {
+	background: black;
+	color: white;
+	cursor: pointer;
+	transition: all 200ms;
+}
+
+.solid:hover {
+	background-color: #161616
+}
+
+.bordered {}
+
+.ghost {
+	background-color: transparent;
+	color: black;
+	transition: all 200ms ease-in-out;
+	cursor: pointer;
+	border: 0px;
+}
+
+.ghost:hover {
+	background-color: #C8C8C8;
+}

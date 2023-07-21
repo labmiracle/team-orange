@@ -12,7 +12,11 @@ export function useLogin() {
                 password,
             }),
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+            })
             .then(data => setData(data));
     };
 

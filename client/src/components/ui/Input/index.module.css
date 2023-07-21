@@ -1,0 +1,13 @@
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.input {
+	border: 1px solid #828282;
+	border-radius: 4px;
+	background-color: transparent;
+	height: 30px;
+	padding-inline: 8px;
+}
