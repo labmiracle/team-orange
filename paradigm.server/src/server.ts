@@ -31,7 +31,7 @@ export class Server extends ApiServer {
             .use(cors({ exposedHeaders: "x-auth" }))
             .use(express.urlencoded({ extended: false }))
             .use(express.json())
-            .use("/", express.static(path.join(__dirname, "/assets")))
+            .use("/images", express.static("./public"))
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
 
         this.registerControllers([HealthController, ProductController, UserController, StoreController]);
