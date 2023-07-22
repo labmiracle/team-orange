@@ -4,13 +4,19 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
         "target": "es6",
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
-        "baseUrl": ".",
+        "outDir": "../dist",
+        "baseUrl": "./src/",
         "paths": {
-            "*": ["node_modules/*"]
-        }
-    }
+            "*": ["../node_modules/*"]
+        },
+        "types": ["node"],
+        "typeRoots": ["node_modules/@types"]
+    },
+    "include": ["./**/*.ts"],
+    "exclude": ["./**/*.test.ts"]
 }

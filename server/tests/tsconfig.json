@@ -8,9 +8,11 @@
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
+        "outDir": "./out-tsc/tests/",
         "baseUrl": ".",
         "paths": {
-            "*": ["node_modules/*"]
+            "*": ["../node_modules/*"]
         }
-    }
+    },
+    "include": ["./**/*.test.ts"]
 }
