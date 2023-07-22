@@ -13,11 +13,13 @@ export class Product {
     storeId = 0;
     categories: string[] = [];
     sizes: string[] = [];
-    brandName = "";
+    brand = "";
+    url_img = "";
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
 export class ProductDB {
+    id? = 0;
     name = "";
     description = "";
     price = 0;
@@ -27,4 +29,5 @@ export class ProductDB {
     minimum = 0;
     storeId = 0;
     brandId = 0;
+    url_img = "";
 }

@@ -6,6 +6,7 @@ import { BatchDbCommand } from "./commands/batch.command";
 import { ReplaceDbCommand } from "./commands/replace.command";
 import { InsertDbCommand } from "./commands/insert.command";
 import { ReadonlyRepositoryBase, RowType } from "./readonly.repository";
+import { ResultSetHeader } from "mysql2";
 
 export abstract class EditRepositoryBase<TEntity, TId = number> extends ReadonlyRepositoryBase<TEntity, TId> {
     constructor(dependencyContainer: DependencyContainer, connection: MySqlConnection, entityType: ObjectType<TEntity>, tableName: string, idColumn = "id") {
@@ -38,12 +39,17 @@ export abstract class EditRepositoryBase<TEntity, TId = number> extends Readonly
     }
 
     async update(entity: TEntity): Promise<TEntity> {
-        await this.connection.connection.query(`UPDATE \`${this.tableName}\` SET ? WHERE \`${this.idColumn}\`=?`, [entity, (entity as any)[this.idColumn]]);
+        const [result] = await this.connection.connection.query<ResultSetHeader>(`UPDATE \`${this.tableName}\` SET ? WHERE \`${this.idColumn}\`=?`, [
+            entity,
+            (entity as any)[this.idColumn],
+        ]);
+        if (!result.affectedRows) throw new Error("not found");
         return entity;
     }
 
     async delete(id: TId): Promise<void> {
-        await this.connection.connection.query(`DELETE FROM \`${this.tableName}\` WHERE \`${this.idColumn}\`=?`, [id]);
+        const [result] = await this.connection.connection.query<ResultSetHeader>(`DELETE FROM \`${this.tableName}\` WHERE \`${this.idColumn}\`=?`, [id]);
+        if (!result.affectedRows) throw new Error("not found");
     }
 
     async truncate(): Promise<void> {

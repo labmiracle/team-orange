@@ -11,8 +11,6 @@
         "baseUrl": ".",
         "paths": {
             "*": ["node_modules/*"]
-        },
-        "files": [],
-        "references": [{ "path": "./src" }]
+        }
     }
 }

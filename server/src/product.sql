@@ -33,6 +33,16 @@ CREATE TABLE Store (
     FOREIGN KEY (managerId) REFERENCES User(id)
 );
 
+CREATE TABLE StoreColor (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    type ENUM('PRIMARY','SECONDARY'),
+    hue INT NOT NULL,
+    sat INT NOT NULL,
+    light INT NOT NULL,
+    storeId INT NOT NULL,
+    FOREIGN KEY (storeId) REFERENCES Store(id)
+);
+
 CREATE TABLE Purchase (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     date DATE NOT NULL,
@@ -88,7 +98,7 @@ CREATE TABLE Cart (
     id INT PRIMARY KEY AUTO_INCREMENT,
     userId INT NOT NULL,
     FOREIGN KEY (userId) REFERENCES User(id)
-)
+);
 
 CREATE TABLE CartItem (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -96,7 +106,7 @@ CREATE TABLE CartItem (
     productId INT NOT NULL,
     FOREIGN KEY (cartId) REFERENCES Cart(id),
     FOREIGN KEY (productId) REFERENCES Product(id)
-)
+);
 
 CREATE OR REPLACE VIEW product_view AS
     SELECT
@@ -109,6 +119,7 @@ CREATE OR REPLACE VIEW product_view AS
         P.reorderPoint,
         P.minimum,
         P.storeId,
+        P.url_img,
         B.name AS brand,
         (
             SELECT JSON_ARRAYAGG(CategoryName)
@@ -137,7 +148,8 @@ CREATE OR REPLACE VIEW product_view AS
         P.currentStock,
         P.reorderPoint,
         P.minimum,
-        P.storeId;
+        P.storeId,
+        P.url_img;
 
 ******************
 
@@ -169,71 +181,80 @@ VALUES
 ('Tienda 2', 2, 'https://api.example.com'),
 ('Tienda 3', 3, 'https://api.example.com');
 
+INSERT INTO StoreColor (type, hue, sat, light, storeId)
+VALUES
+	('PRIMARY', 233, 29, 12, 1),
+	('SECONDARY',187, 56, 38, 1),
+	('PRIMARY', 331, 96, 43, 2),
+	('SECONDARY',51, 100, 50, 2),
+	('PRIMARY', 11, 96, 40, 3),
+	('SECONDARY',32, 100, 73, 3);
+
 INSERT INTO Product (name, description, price, discountPercentage, currentStock, reorderPoint, minimum, brandId, url_img, storeId)
 VALUES
-    ('Chaqueta de invierno', 'Chaqueta abrigada para el invierno', 129.99, 1, 50, 10, 5, 1, 'https://ejemplo.com/imagen11.jpg', 1),
-    ('Sudadera con capucha', 'Sudadera con capucha para uso casual', 59.99, 1, 80, 20, 10, 2, 'https://ejemplo.com/imagen12.jpg', 1),
-    ('Zapatillas de running', 'Zapatillas ligeras para correr', 89.99, 0.1, 100, 30, 15, 3, 'https://ejemplo.com/imagen13.jpg', 2),
-    ('Vestido floral', 'Vestido de estilo floral para ocasiones especiales', 69.99, 1, 30, 5, 3, 4, 'https://ejemplo.com/imagen14.jpg', 2),
-    ('Pantalón de mezclilla', 'Pantalón de mezclilla clásico para hombres', 49.99, 0.05, 60, 15, 5, 1, 'https://ejemplo.com/imagen15.jpg', 1),
-    ('Shorts de playa', 'Shorts de playa para hombres', 24.99, 1, 90, 20, 10, 1, 'https://ejemplo.com/imagen16.jpg', 1),
-    ('Blusa de encaje', 'Blusa de encaje elegante para mujeres', 39.99, 0.1, 50, 10, 5, 2, 'https://ejemplo.com/imagen17.jpg', 1),
-    ('Zapatos de vestir', 'Zapatos de vestir clásicos para hombres', 79.99, 1, 40, 10, 5, 1, 'https://ejemplo.com/imagen18.jpg', 1),
-    ('Blusa estampada', 'Blusa estampada de manga larga', 29.99, 0.05, 70, 15, 5, 2, 'https://ejemplo.com/imagen19.jpg', 2),
-    ('Gorra de béisbol', 'Gorra de béisbol con diseño moderno', 19.99, 1, 100, 20, 10, 6, 'https://ejemplo.com/imagen20.jpg', 2),
-    ('Traje de baño', 'Traje de baño de dos piezas para mujeres', 49.99, 0.1, 60, 10, 5, 5, 'https://ejemplo.com/imagen21.jpg', 3),
-    ('Polo clásico', 'Camisa polo de manga corta para hombres', 34.99, 1, 80, 20, 10, 1, 'https://ejemplo.com/imagen22.jpg', 3),
-    ('Pantalones cortos deportivos', 'Pantalones cortos deportivos para hombres', 24.99, 1, 90, 20, 10, 7, 'https://ejemplo.com/imagen23.jpg', 3),
-    ('Vestido de cóctel', 'Vestido elegante para eventos de cóctel', 79.99, 1, 30, 5, 3, 8, 'https://ejemplo.com/imagen24.jpg', 3),
-    ('Jersey de punto', 'Jersey de punto cálido y suave', 59.99, 0.15, 50, 10, 5, 5, 'https://ejemplo.com/imagen25.jpg', 1),
-    ('Camisa de manga larga', 'Camisa de manga larga para hombres', 39.99, 1, 70, 15, 5, 13, 'https://ejemplo.com/imagen26.jpg', 1),
-    ('Sandalias de playa', 'Sandalias cómodas para uso en la playa', 29.99, 0.05, 80, 20, 10, 10, 'https://ejemplo.com/imagen27.jpg', 2),
-    ('Vestido de verano', 'Vestido de verano ligero y fresco', 49.99, 1, 40, 5, 3, 4, 'https://ejemplo.com/imagen28.jpg', 2),
-    ('Pantalones de vestir', 'Pantalones de vestir elegantes para hombres', 69.99, 0.1, 60, 15, 5, 3, 'https://ejemplo.com/imagen29.jpg', 1),
-    ('Sudadera con cierre', 'Sudadera con cierre para uso casual', 44.99, 1, 90, 20, 10, 2, 'https://ejemplo.com/imagen30.jpg', 1),
-    ('Zapatos casuales', 'Zapatos casuales cómodos para hombres', 69.99, 0.05, 50, 10, 5, 6, 'https://ejemplo.com/imagen31.jpg', 1),
-    ('Vestido de encaje', 'Vestido de encaje elegante para ocasiones especiales', 89.99, 1, 30, 5, 3, 4, 'https://ejemplo.com/imagen32.jpg', 2),
-    ('Jeans desgastados', 'Jeans desgastados de estilo moderno', 59.99, 0.1, 70, 15, 5, 5, 'https://ejemplo.com/imagen33.jpg', 2),
-    ('Blusa de seda', 'Blusa de seda suave y elegante', 49.99, 1, 80, 20, 10, 2, 'https://ejemplo.com/imagen34.jpg', 3),
-    ('Chaqueta deportiva', 'Chaqueta deportiva ligera para hombres', 79.99, 0.15, 100, 30, 15, 3, 'https://ejemplo.com/imagen35.jpg', 3),
-    ('Vestido de noche', 'Vestido de noche elegante para ocasiones especiales', 129.99, 1, 30, 5, 3, 4, 'https://ejemplo.com/imagen36.jpg', 1),
-    ('Polo clásico', 'Camisa polo de manga corta para hombres', 34.99, 1, 70, 15, 5, 1, 'https://ejemplo.com/imagen37.jpg', 1),
-    ('Sudadera estampada', 'Sudadera estampada con diseño único', 54.99, 0.05, 90, 20, 10, 2, 'https://ejemplo.com/imagen38.jpg', 2),
-    ('Zapatos deportivos', 'Zapatos deportivos cómodos para hombres', 79.99, 1, 40, 10, 5, 10, 'https://ejemplo.com/imagen39.jpg', 2),
-    ('Blusa a rayas', 'Blusa de manga corta a rayas', 29.99, 1, 80, 20, 10, 2, 'https://ejemplo.com/imagen40.jpg', 3),
-    ('Chaqueta de mezclilla', 'Chaqueta de mezclilla clásica para hombres', 69.99, 1, 50, 10, 5, 10, 'https://ejemplo.com/imagen41.jpg', 1),
-    ('Vestido de verano floral', 'Vestido de verano con estampado floral', 59.99, 1, 80, 20, 10, 12, 'https://ejemplo.com/imagen42.jpg', 1),
-    ('Sneakers deportivos', 'Sneakers deportivos para entrenamiento', 89.99, 0.1, 100, 30, 15, 13, 'https://ejemplo.com/imagen43.jpg', 2),
-    ('Blazer formal', 'Blazer formal de alta calidad', 129.99, 1, 30, 5, 3, 4, 'https://ejemplo.com/imagen44.jpg', 2),
-    ('Pantalones cortos de playa', 'Pantalones cortos de playa para hombres', 39.99, 0.05, 60, 15, 5, 1, 'https://ejemplo.com/imagen45.jpg', 1),
-    ('Falda plisada', 'Falda plisada de estilo retro', 34.99, 1, 90, 20, 10, 1, 'https://ejemplo.com/imagen46.jpg', 1),
-    ('Camiseta estampada', 'Camiseta estampada de manga corta para mujeres', 24.99, 1, 100, 20, 10, 2, 'https://ejemplo.com/imagen47.jpg', 1),
-    ('Botas de cuero', 'Botas de cuero duraderas para hombres', 89.99, 0.2, 40, 10, 5, 1, 'https://ejemplo.com/imagen48.jpg', 1),
-    ('Blusa de lunares', 'Blusa de manga larga con estampado de lunares', 29.99, 0.05, 70, 15, 5, 2, 'https://ejemplo.com/imagen49.jpg', 2),
-    ('Gorra de moda', 'Gorra de moda con diseño moderno', 19.99, 1, 100, 20, 10, 3, 'https://ejemplo.com/imagen50.jpg', 2),
-    ('Traje de baño de una pieza', 'Traje de baño de una pieza para mujeres', 49.99, 0.1, 60, 10, 5, 4, 'https://ejemplo.com/imagen51.jpg', 3),
-    ('Pantalones de vestir clásicos', 'Pantalones de vestir clásicos para hombres', 39.99, 1, 70, 15, 5, 1, 'https://ejemplo.com/imagen52.jpg', 3),
-    ('Shorts deportivos', 'Shorts deportivos para hombres', 29.99, 1, 90, 20, 10, 3, 'https://ejemplo.com/imagen53.jpg', 3),
-    ('Vestido elegante de noche', 'Vestido elegante de noche para ocasiones especiales', 149.99, 1, 30, 5, 3, 4, 'https://ejemplo.com/imagen54.jpg', 3),
-    ('Jersey de cuello alto', 'Jersey de cuello alto para hombres', 59.99, 0.15, 50, 10, 5, 5, 'https://ejemplo.com/imagen55.jpg', 1),
-    ('Camisa de lino', 'Camisa de lino de manga corta para hombres', 49.99, 1, 70, 15, 5, 6, 'https://ejemplo.com/imagen56.jpg', 1),
-    ('Sandalias cómodas', 'Sandalias cómodas para uso diario', 29.99, 1, 80, 20, 10, 3, 'https://ejemplo.com/imagen57.jpg', 2),
-    ('Vestido de noche con encaje', 'Vestido de noche con detalles de encaje', 69.99, 1, 40, 10, 5, 7, 'https://ejemplo.com/imagen58.jpg', 2),
-    ('Pantalones de vestir ajustados', 'Pantalones de vestir ajustados para hombres', 79.99, 0.1, 60, 15, 5, 7, 'https://ejemplo.com/imagen59.jpg', 1),
-    ('Sudadera ligera', 'Sudadera ligera para uso casual', 44.99, 1, 90, 20, 10, 2, 'https://ejemplo.com/imagen60.jpg', 1),
-    ('Zapatos casuales de cuero', 'Zapatos casuales de cuero para hombres', 69.99, 0.05, 50, 10, 5, 9, 'https://ejemplo.com/imagen61.jpg', 1),
-    ('Vestido de encaje elegante', 'Vestido de encaje elegante para ocasiones especiales', 89.99, 1, 30, 5, 3, 13, 'https://ejemplo.com/imagen62.jpg', 2),
-    ('Jeans de estilo vintage', 'Jeans de estilo vintage para hombres', 59.99, 0.1, 70, 15, 5, 11, 'https://ejemplo.com/imagen63.jpg', 2),
-    ('Blusa de seda con estampado', 'Blusa de seda con estampado floral', 49.99, 1, 80, 20, 10, 12, 'https://ejemplo.com/imagen64.jpg', 3),
-    ('Chaqueta deportiva transpirable', 'Chaqueta deportiva transpirable para hombres', 79.99, 0.15, 100, 30, 15, 3, 'https://ejemplo.com/imagen65.jpg', 3),
-    ('Vestido de noche elegante', 'Vestido de noche elegante para ocasiones especiales', 129.99, 1, 30, 5, 3, 9, 'https://ejemplo.com/imagen66.jpg', 1),
-    ('Camiseta de manga larga', 'Camiseta de manga larga para hombres', 34.99, 1, 70, 15, 5, 8, 'https://ejemplo.com/imagen67.jpg', 1),
-    ('Sneakers de moda', 'Sneakers de moda para uso diario', 59.99, 0.05, 80, 20, 10, 3, 'https://ejemplo.com/imagen68.jpg', 2),
-    ('Vestido de cóctel con brillos', 'Vestido de cóctel con detalles brillantes', 149.99, 1, 40, 5, 3, 8, 'https://ejemplo.com/imagen69.jpg', 2),
-    ('Chaqueta de punto', 'Chaqueta de punto cálida y suave', 69.99, 0.1, 60, 15, 5, 5, 'https://ejemplo.com/imagen70.jpg', 1),
-    ('Blusa de manga corta', 'Blusa de manga corta para mujeres', 39.99, 1, 70, 15, 5, 7, 'https://ejemplo.com/imagen71.jpg', 1),
-    ('Sandalias de playa', 'Sandalias de playa cómodas y ligeras', 29.99, 1, 80, 20, 10, 13, 'https://ejemplo.com/imagen72.jpg', 2),
-    ('Vestido estampado de verano', 'Vestido estampado de verano para ocasiones informales', 49.99, 0.1, 60, 10, 5, 4, 'https://ejemplo.com/imagen73.jpg', 3);
+    ('Chaqueta de invierno', 'Chaqueta abrigada para el invierno', 129.99, 1, 50, 10, 5, 1, 'assets/chaqueta_de_invierno.webp', 1),
+    ('Sudadera con capucha', 'Sudadera con capucha para uso casual', 59.99, 1, 80, 20, 10, 2, 'assets/sudadera_con_capucha.webp', 2),
+    ('Zapatillas de running', 'Zapatillas ligeras para correr', 89.99, 0.1, 100, 30, 15, 3, 'assets/zapatillas_adidas.webp', 3),
+    ('Vestido floral', 'Vestido de estilo floral para ocasiones especiales', 69.99, 1, 30, 5, 3, 4, 'assets/vestido_floral.webp', 1),
+    ('Pantalón de mezclilla', 'Pantalón de mezclilla clásico para hombres', 49.99, 0.05, 60, 15, 5, 1, 'assets/pantalon_de_mezclilla.webp', 2),
+    ('Shorts de playa', 'Shorts de playa para hombres', 24.99, 1, 90, 20, 10, 1, 'assets/shorts_de_playa.webp', 3),
+    ('Blusa de encaje', 'Blusa de encaje elegante para mujeres', 39.99, 0.1, 50, 10, 5, 2, 'assets/blusa_de_encaje.webp', 1),
+    ('Zapatos de vestir', 'Zapatos de vestir clásicos para hombres', 79.99, 1, 40, 10, 5, 1, 'assets/zapatos_de_vestir.webp', 2),
+    ('Blusa estampada', 'Blusa estampada de manga larga', 29.99, 0.05, 70, 15, 5, 2, 'assets/blusa_estampada.webp', 3),
+    ('Gorra de béisbol', 'Gorra de béisbol con diseño moderno', 19.99, 1, 100, 20, 10, 6, 'assets/gorra_de_beisbol.webp', 1),
+    ('Traje de baño', 'Traje de baño de dos piezas para mujeres', 49.99, 0.1, 60, 10, 5, 5, 'assets/traje_de_baño.webp', 2),
+    ('Polo clásico', 'Camisa polo de manga corta para hombres', 34.99, 1, 80, 20, 10, 1, 'assets/polo_clásico.webp', 3),
+    ('Pantalones cortos deportivos', 'Pantalones cortos deportivos para hombres', 24.99, 1, 90, 20, 10, 7, 'assets/pantalones_cortos_deportivos.webp', 1),
+    ('Vestido de cóctel', 'Vestido elegante para eventos de cóctel', 79.99, 1, 30, 5, 3, 8, 'assets/vestido_de_cóctel.webp', 2),
+    ('Jersey de punto', 'Jersey de punto cálido y suave', 59.99, 0.15, 50, 10, 5, 5, 'assets/jersey_de_punto.webp', 3),
+    ('Camisa de manga larga', 'Camisa de manga larga para hombres', 39.99, 1, 70, 15, 5, 13, 'assets/camisa_de_manga_larga.webp', 1),
+    ('Sandalias de playa', 'Sandalias cómodas para uso en la playa', 29.99, 0.05, 80, 20, 10, 10, 'assets/sandalias_de_playa.webp', 2),
+    ('Vestido de verano', 'Vestido de verano ligero y fresco', 49.99, 1, 40, 5, 3, 4, 'assets/vestido_de_verano.webp', 3),
+    ('Pantalones de vestir', 'Pantalones de vestir elegantes para hombres', 69.99, 0.1, 60, 15, 5, 3, 'assets/pantalones_de_vestir.webp', 1),
+    ('Sudadera con cierre', 'Sudadera con cierre para uso casual', 44.99, 1, 90, 20, 10, 2, 'assets/sudadera_con_cierre.webp', 2),
+    ('Zapatos casuales', 'Zapatos casuales cómodos para hombres', 69.99, 0.05, 50, 10, 5, 6, 'assets/zapatos_casuales.webp', 3),
+    ('Vestido de encaje', 'Vestido de encaje elegante para ocasiones especiales', 89.99, 1, 30, 5, 3, 4, 'assets/vestido_de_encaje.webp', 1),
+    ('Jeans desgastados', 'Jeans desgastados de estilo moderno', 59.99, 0.1, 70, 15, 5, 5, 'assets/jeans_desgastados.webp', 2),
+    ('Blusa de seda', 'Blusa de seda suave y elegante', 49.99, 1, 80, 20, 10, 2, 'assets/blusa_de_seda.webp', 3),
+    ('Chaqueta deportiva', 'Chaqueta deportiva ligera para hombres', 79.99, 0.15, 100, 30, 15, 3, 'assets/chaqueta_deportiva.webp', 1),
+    ('Vestido de noche', 'Vestido de noche elegante para ocasiones especiales', 129.99, 1, 30, 5, 3, 4, 'assets/vestido_de_noche.webp', 2),
+    ('Polo clásico', 'Camisa polo de manga corta para hombres', 34.99, 1, 70, 15, 5, 1, 'assets/polo_clásico.webp', 3),
+    ('Sudadera estampada', 'Sudadera estampada con diseño único', 54.99, 0.05, 90, 20, 10, 2, 'assets/sudadera_estampada.webp', 1),
+    ('Zapatos deportivos', 'Zapatos deportivos cómodos para hombres', 79.99, 1, 40, 10, 5, 10, 'assets/zapatos_deportivos.webp', 2),
+    ('Blusa a rayas', 'Blusa de manga corta a rayas', 29.99, 1, 80, 20, 10, 2, 'assets/blusa_a_rayas.webp', 3),
+    ('Chaqueta de mezclilla', 'Chaqueta de mezclilla clásica para hombres', 69.99, 1, 50, 10, 5, 10, 'assets/chaqueta_de_mezclilla.webp', 1),
+    ('Vestido de verano floral', 'Vestido de verano con estampado floral', 59.99, 1, 80, 20, 10, 12, 'assets/vestido_de_verano_floral.webp', 2),
+    ('Sneakers deportivos', 'Sneakers deportivos para entrenamiento', 89.99, 0.1, 100, 30, 15, 13, 'assets/sneakers_deportivos.webp', 3),
+    ('Blazer formal', 'Blazer formal de alta calidad', 129.99, 1, 30, 5, 3, 4, 'assets/blazer_formal.webp', 1),
+    ('Pantalones cortos de playa', 'Pantalones cortos de playa para hombres', 39.99, 0.05, 60, 15, 5, 1, 'assets/pantalones_cortos_de_playa.webp', 2),
+    ('Falda plisada', 'Falda plisada de estilo retro', 34.99, 1, 90, 20, 10, 1, 'assets/falda_plisada.webp', 3),
+    ('Camiseta estampada', 'Camiseta estampada de manga corta para mujeres', 24.99, 1, 100, 20, 10, 2, 'assets/camiseta_estampada.webp', 1),
+    ('Botas de cuero', 'Botas de cuero duraderas para hombres', 89.99, 0.2, 40, 10, 5, 1, 'assets/botas_de_cuero.webp', 2),
+    ('Blusa de lunares', 'Blusa de manga larga con estampado de lunares', 29.99, 0.05, 70, 15, 5, 2, 'assets/blusa_de_lunares.webp', 3),
+    ('Gorra de moda', 'Gorra de moda con diseño moderno', 19.99, 1, 100, 20, 10, 3, 'assets/gorra_de_moda.webp', 1),
+    ('Traje de baño de una pieza', 'Traje de baño de una pieza para mujeres', 49.99, 0.1, 60, 10, 5, 4, 'assets/traje_de_baño_de_una_pieza.webp', 2),
+    ('Pantalones de vestir clásicos', 'Pantalones de vestir clásicos para hombres', 39.99, 1, 70, 15, 5, 1, 'assets/pantalones_de_vestir_clásicos.webp', 3),
+    ('Shorts deportivos', 'Shorts deportivos para hombres', 29.99, 1, 90, 20, 10, 3, 'assets/shorts_deportivos.webp', 1),
+    ('Vestido elegante de noche', 'Vestido elegante de noche para ocasiones especiales', 149.99, 1, 30, 5, 3, 4, 'assets/vestido_elegante_de_noche.webp', 23),
+    ('Jersey de cuello alto', 'Jersey de cuello alto para hombres', 59.99, 0.15, 50, 10, 5, 5, 'assets/jersey_de_cuello_alto.webp', 3),
+    ('Camisa de lino', 'Camisa de lino de manga corta para hombres', 49.99, 1, 70, 15, 5, 6, 'assets/camisa_de_lino.webp', 1),
+    ('Sandalias cómodas', 'Sandalias cómodas para uso diario', 29.99, 1, 80, 20, 10, 3, 'assets/sandalias_cómodas.webp', 2),
+    ('Vestido de noche con encaje', 'Vestido de noche con detalles de encaje', 69.99, 1, 40, 10, 5, 7, 'assets/vestido_de_noche_con_encaje.webp', 3),
+    ('Pantalones de vestir ajustados', 'Pantalones de vestir ajustados para hombres', 79.99, 0.1, 60, 15, 5, 7, 'assets/chaqueta_de_invierno.webp', 1),
+    ('Sudadera ligera', 'Sudadera ligera para uso casual', 44.99, 1, 90, 20, 10, 2, 'assets/sudadera_ligera.webp', 2),
+    ('Zapatos casuales de cuero', 'Zapatos casuales de cuero para hombres', 69.99, 0.05, 50, 10, 5, 9, 'assets/zapatos_casuales_de_cuero.webp', 3),
+    ('Vestido de encaje elegante', 'Vestido de encaje elegante para ocasiones especiales', 89.99, 1, 30, 5, 3, 13, 'assets/vestido_de_noche_con_encaje.webp', 1),
+    ('Jeans de estilo vintage', 'Jeans de estilo vintage para hombres', 59.99, 0.1, 70, 15, 5, 11, 'assets/jeans_de_estilo_vintage.webp', 2),
+    ('Blusa de seda con estampado', 'Blusa de seda con estampado floral', 49.99, 1, 80, 20, 10, 12, 'assets/blusa_de_seda_con_estampado.webp', 3),
+    ('Chaqueta deportiva transpirable', 'Chaqueta deportiva transpirable para hombres', 79.99, 0.15, 100, 30, 15, 3, 'assets/chaqueta_deportiva_transpirable.webp', 1),
+    ('Vestido de noche elegante', 'Vestido de noche elegante para ocasiones especiales', 129.99, 1, 30, 5, 3, 9, 'assets/vestido_elegante_de_noche.webp', 2),
+    ('Sneakers de moda', 'Sneakers de moda para uso diario', 59.99, 0.05, 80, 20, 10, 3, 'assets/sneakers_deportivos.webp', 3),
+    ('Camiseta de manga larga', 'Camiseta de manga larga para hombres', 34.99, 1, 70, 15, 5, 8, 'assets/camisa_de_manga_larga.webp', 1),
+    ('Vestido de cóctel con brillos', 'Vestido de cóctel con detalles brillantes', 149.99, 1, 40, 5, 3, 8, 'assets/vestido_de_cóctel_con_brillos.webp', 2),
+    ('Chaqueta de punto', 'Chaqueta de punto cálida y suave', 69.99, 0.1, 60, 15, 5, 5, 'assets/chaqueta_de_punto.webp', 3),
+    ('Blusa de manga corta', 'Blusa de manga corta para mujeres', 39.99, 1, 70, 15, 5, 7, 'assets/blusa_de_manga_corta.webp', 1),
+    ('Sandalias de playa', 'Sandalias de playa cómodas y ligeras', 29.99, 1, 80, 20, 10, 13, 'assets/sandalias_de_playa_2.webp', 2),
+    ('Vestido estampado de verano', 'Vestido estampado de verano para ocasiones informales', 49.99, 0.1, 60, 10, 5, 4, 'assets/vestido_estampado_de_verano.webp', 3);
 
 INSERT INTO Category (name)
 VALUES 

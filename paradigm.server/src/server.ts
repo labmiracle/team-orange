@@ -2,11 +2,14 @@ import { ApiServer } from "@miracledevs/paradigm-express-webapi";
 import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
+import path from "path";
 import * as swaggerDocument from "./docs/swagger.json";
 import { MySqlConnectionFilter } from "./filters/mysql.filter";
 import { HealthController } from "./controllers/health.controller";
 import { Configuration } from "./configuration/configuration";
 import { ProductController } from "./controllers/product.controller";
+import { UserController } from "./controllers/user.controller";
+import { StoreController } from "./controllers/store.controller";
 
 /**
  * Represents the api server application.
@@ -28,9 +31,10 @@ export class Server extends ApiServer {
             .use(cors({ exposedHeaders: "x-auth" }))
             .use(express.urlencoded({ extended: false }))
             .use(express.json())
+            .use("/", express.static(path.join(__dirname, "/assets")))
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
 
-        this.registerControllers([HealthController, ProductController]);
+        this.registerControllers([HealthController, ProductController, UserController, StoreController]);
         this.routing.ignoreClosedResponseOnFilters();
         this.routing.registerGlobalFilters([MySqlConnectionFilter]);
     }

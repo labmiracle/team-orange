@@ -2,18 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 
 export const productSchema = Joi.object({
-    name: Joi.string()
-        .alphanum()
-        .min(3)
-        .max(30)
-        .required()
-        .pattern(/^[\p{L}\p{M}]+([ \p{L}\p{M}])*$/u)
-        .messages({
-            "string.min": "Invalid name, it must contain more than 3 letters",
-            "string.max": "Invalid name, it must not contain more than 30 letters",
-            "string.pattern.base": "Invalid name, it must contain only letters",
-            "any.required": "Name is a required field",
-        }),
+    name: Joi.string().alphanum().min(3).max(30).required().messages({
+        "string.min": "Invalid name, it must contain more than 3 letters",
+        "string.max": "Invalid name, it must not contain more than 30 letters",
+        "any.required": "Name is a required field",
+    }),
     description: Joi.string().min(10).optional().required().messages({
         "string.min": "Invalid description, it must contain more than 10 letters",
         "any.required": "Description is a required field",
@@ -73,6 +66,9 @@ export const productSchema = Joi.object({
     }),
     brandName: Joi.string().required().messages({
         "any.required": "Discount porcentage is a required field",
+    }),
+    url_img: Joi.string().required().messages({
+        "any.required": "image path is a required field",
     }),
 });
 

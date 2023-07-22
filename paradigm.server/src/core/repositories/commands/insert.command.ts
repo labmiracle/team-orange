@@ -11,11 +11,18 @@ export class InsertDbCommand extends DbCommand {
     private prepareStatement(tableName: string, entities: any[]): void {
         if (!entities || !entities.length) throw new Error("The array of entities can not be null or empty.");
 
+        this._query = `INSERT INTO ${tableName} (${this.getColumnNames(entities)}) VALUES ${this.getValues(entities)}`;
+        this._parameters = this.getValueArray(entities);
+    }
+
+    /* private prepareStatement(tableName: string, entities: any[]): void {
+        if (!entities || !entities.length) throw new Error("The array of entities can not be null or empty.");
+
         this._query = `INSERT INTO ${tableName} (${this.getColumnNames(entities)}) VALUES ${this.getValues(
             entities
         )} ON DUPLICATE KEY UPDATE ${this.getUpdateStatement(entities)}`;
         this._parameters = this.getValueArray(entities);
-    }
+    } */
 
     private getColumnNames(entities: any[]): string {
         const keys = Object.keys(entities[0]).map(x => `\`${x}\``);
