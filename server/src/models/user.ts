@@ -8,6 +8,7 @@ export class User {
     email = "";
     password? = "";
     idDocumentType = "";
-    idDocumentNumber: 0;
+    idDocumentNumber = 0;
     rol = "";
+    status = 1;
 }

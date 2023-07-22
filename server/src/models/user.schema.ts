@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 
-const userSchema = Joi.object({
+export const userSchema = Joi.object({
+    id: Joi.number().optional(),
     name: Joi.string()
         .alphanum()
         .min(3)
@@ -53,6 +54,7 @@ const userSchema = Joi.object({
         "any.required": "Rol is a required field",
         "any.only": "Invalid rol, it must be 'client', 'manager' or 'admin'",
     }),
+    status: Joi.boolean(),
 });
 
 export const userValidations = (req: Request, res: Response, next: NextFunction) => {
@@ -67,7 +69,7 @@ export const userValidations = (req: Request, res: Response, next: NextFunction)
     return next();
 };
 
-const userLogin = Joi.object({
+export const userLogin = Joi.object({
     email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
         .required()
