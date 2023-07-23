@@ -31,17 +31,17 @@ export default function Product(this: any, { product, sequencer, setSequencer }:
                         currentTarget.src = "/placeholder.jpg";
                     }}
                     className={styles.product_img}
-                    src={product.url_img}
+                    src={`http://localhost:4000/${product.url_img}`}
                     width="200"
                     height="200"
                     alt={product.name}
                 />
                 <p>{product.brand.toUpperCase()}</p>
                 <h3 className={styles.product_name}>{product.name.toUpperCase()}</h3>
-                {product.discount < 1 && <p className={styles.product_discount}>-%{100 - product.discount * 100} discount!</p>}
-                <p className={styles.product_price}>${product.price * product.discount}</p>
-                <p>size: {product.size}</p>
-                <p>category: {product.category}</p>
+                {product.discountPercentage < 1 && <p className={styles.product_discount}>-%{100 - product.discountPercentage * 100} discount!</p>}
+                <p className={styles.product_price}>${(product.price * product.discountPercentage).toFixed(2)}</p>
+                <p>size: {product.sizes}</p>
+                <p>category: {product.categories}</p>
             </div>
             <button className={styles.product_buyBtn}>Comprar</button>
         </div>

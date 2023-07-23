@@ -5,8 +5,11 @@ import { Outlet } from "react-router-dom";
 import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { Input } from "../../components/ui/Input";
+import { useLoaderData } from "react-router-dom";
+import { StoreName } from "../utilities/storeNamesLoader";
 
 export default function Home() {
+    const storeNames = useLoaderData() as StoreName[];
     return (
         <div className={styles.container}>
             <nav className={styles.nav}>
@@ -21,9 +24,13 @@ export default function Home() {
                 </div>
                 <div className={`${styles.row} ${styles.secondRow}`}>
                     <ul className={styles.stores}>
-                        <Link to="stores/1">Store 1</Link>
-                        <Link to="stores/2">Store 2</Link>
-                        <Link to="stores/3">Store 3</Link>
+                        {storeNames.map(store => {
+                            return (
+                                <Link to={`stores/${store.id}`} key={store.id}>
+                                    {store.name}
+                                </Link>
+                            );
+                        })}
                     </ul>
 
                     <div className={styles.buttons_container}>
