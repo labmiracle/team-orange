@@ -10,15 +10,17 @@ import storeLoader from "./pages/utilities/storeLoader.tsx";
 import { Login } from "./pages/Login/index.tsx";
 import { AuthProvider } from "./Context/authContext.tsx";
 import storesNamesLoader from "./pages/utilities/storeNamesLoader.tsx";
+import { Product } from "./pages/Product";
+import { FetchProduct } from "./pages/Product/FetchProduct.ts";
 
 const router = createBrowserRouter([
     {
-        path: "/",
         element: <Layout />,
         errorElement: <ErrorPage />,
         loader: storesNamesLoader,
         children: [
             {
+                path: "/",
                 index: true,
                 element: <Home />,
             },
@@ -26,6 +28,11 @@ const router = createBrowserRouter([
                 path: "/stores/:id",
                 loader: storeLoader,
                 element: <Store />,
+            },
+            {
+                path: "/stores/:id/products/:productId",
+                element: <Product />,
+                loader: FetchProduct,
             },
         ],
     },

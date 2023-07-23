@@ -36,9 +36,9 @@ export default function Store() {
             <Sizes isCurrentFilter={filter.current.size} setFilter={setFilter} viewWindow={"big"} />
             <Types isCurrentFilter={filter.current.type} setFilter={setFilter} viewWindow={"big"} />
             <div className={styles.grid}>
-                {products.map((product, i) => {
-                    return <Product product={product} key={i} sequencer={sequencer} setSequencer={setSequencer} />;
-                })}
+                {products.map((product, i) => 
+                    <Product product={product} key={i} sequencer={sequencer} setSequencer={setSequencer} />
+                )}
             </div>
         </div>
     );

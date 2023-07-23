@@ -9,6 +9,7 @@
 	align-items: flex-start;
 	width: 100%;
 	background: white;
+	min-width: 768px;
 }
 
 .row {
@@ -23,15 +24,16 @@
 	justify-content: space-around;
 	color: black;
 	padding-block: 8px;
+	margin-inline: auto;
+}
+
+
+.firstRow h1 {
+	flex-basis: 4;
 }
 
 .firstRow ul {
-	width: 40%;
 	justify-content: center;
-}
-
-.firstRow>* {
-	width: 200px;
 }
 
 .secondRow {
