@@ -9,15 +9,25 @@ type Colors = {
     secondary: { hue: number; sat: number; light: number };
 };
 
-@Controller({ route: "/api/shop/:storeId" })
+@Controller({ route: "/api/shop" })
 export class StoreController extends ApiController {
     constructor(private storeRepo: StoreRepository, private productRepo: ProductRepository, private storeColorRepo: StoreColorRepository) {
         super();
     }
-    @Action({ route: "/" })
-    async get(): Promise<Store> {
+
+    @Action({ route: "/names" })
+    async getAll() {
         try {
-            const { storeId } = this.httpContext.request.params;
+            const store = await this.storeRepo.getBy("name");
+            return store;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    @Action({ route: "/:storeId" })
+    async getById(storeId: number): Promise<Store> {
+        try {
             const store = await this.storeRepo.getById(Number(storeId));
             const products = await this.productRepo.find("storeId", Number(storeId));
             const colorsResponse = await this.storeColorRepo.find("storeId", Number(storeId));

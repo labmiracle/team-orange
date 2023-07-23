@@ -8,4 +8,9 @@ export class StoreRepository extends EditRepositoryBase<Store> {
     constructor(dependecyContainer: DependencyContainer, connection: MySqlConnection) {
         super(dependecyContainer, connection, Store, "store");
     }
+
+    async getBy(args: any) {
+        const [rows] = await this.connection.connection.execute(`SELECT id, \`${args}\` FROM \`${this.tableName}\``);
+        return rows;
+    }
 }
