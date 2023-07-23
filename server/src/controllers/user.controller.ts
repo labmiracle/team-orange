@@ -49,44 +49,6 @@ export class UserController extends ApiController {
         }
     }
 
-    @Action({ route: "/:id", method: HttpMethod.GET })
-    async getById(id: number): Promise<Response> {
-        try {
-            const user = await this.userRepo.getById(Number(id));
-            return this.httpContext.response.status(200).json({
-                message: "User found",
-                data: user,
-                error: false,
-            });
-        } catch (error) {
-            return this.httpContext.response.status(404).json({
-                message: "User not found",
-                data: null,
-                error: true,
-            });
-        }
-    }
-
-    @Action({ route: "/:id", method: HttpMethod.DELETE })
-    async delete(id: number): Promise<Response> {
-        try {
-            const user = await this.userRepo.getById(id);
-            user.status = 0;
-            const userDeleted = await this.userRepo.update(user);
-            return this.httpContext.response.status(200).json({
-                message: "User deleted",
-                data: userDeleted,
-                error: false,
-            });
-        } catch (error) {
-            return this.httpContext.response.status(404).json({
-                message: "User not found",
-                data: null,
-                error: true,
-            });
-        }
-    }
-
     @Action({ route: "/", filters: [UserFilter], fromBody: true, method: HttpMethod.PUT })
     async update(user: User): Promise<Response> {
         try {
@@ -152,7 +114,9 @@ export class UserController extends ApiController {
                     error: true,
                 });
             }
-            const token = jwt.sign(user, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
+            delete userdb.password;
+            const { ...userobj } = userdb;
+            const token = jwt.sign(userobj, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.cookie("token", token, { httpOnly: true });
             return this.httpContext.response.status(200).json({
                 message: "Login successful",
@@ -163,6 +127,44 @@ export class UserController extends ApiController {
             console.log(error.message);
             return this.httpContext.response.status(404).json({
                 message: "Users not found",
+                data: null,
+                error: true,
+            });
+        }
+    }
+
+    @Action({ route: "/:id", method: HttpMethod.DELETE })
+    async delete(id: number): Promise<Response> {
+        try {
+            const user = await this.userRepo.getById(id);
+            user.status = 0;
+            const userDeleted = await this.userRepo.update(user);
+            return this.httpContext.response.status(200).json({
+                message: "User deleted",
+                data: userDeleted,
+                error: false,
+            });
+        } catch (error) {
+            return this.httpContext.response.status(404).json({
+                message: "User not found",
+                data: null,
+                error: true,
+            });
+        }
+    }
+
+    @Action({ route: "/:id", method: HttpMethod.GET })
+    async getById(id: number): Promise<Response> {
+        try {
+            const user = await this.userRepo.getById(Number(id));
+            return this.httpContext.response.status(200).json({
+                message: "User found",
+                data: user,
+                error: false,
+            });
+        } catch (error) {
+            return this.httpContext.response.status(404).json({
+                message: "User not found",
                 data: null,
                 error: true,
             });
