@@ -22,7 +22,7 @@ export class Server extends ApiServer {
     protected configureApplication(): void {
         this.logger.debug("Configuring application...");
         const configuration = this.configurationBuilder.build(Configuration);
-        const port = configuration.port || process.env.PORT || 5000;
+        const port = configuration.port || process.env.PORT || 4000;
 
         this.expressApplication
             .set("etag", false)
