@@ -1,5 +1,5 @@
 import { Params } from "react-router-dom";
-import { store1, store2, store3 } from "../stores";
+import { store1, store2, store3 } from "../../stores";
 
 export async function FetchProduct({ params }: { params: Params }) {
     const { id, productId } = params;

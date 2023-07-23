@@ -1,16 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Layout from "./pages/Layout/index.tsx";
-import ErrorPage from "./pages/Error/index.tsx";
+import Layout from "./pages/Layout/";
+import ErrorPage from "./pages/Error/";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Home } from "./pages/Home/";
 import Store from "./pages/Stores/indext.tsx";
 import storeLoader from "./pages/utilities/storeLoader.tsx";
-import { Login } from "./pages/Login/index.tsx";
-import { AuthProvider } from "./Context/authContext.tsx";
-import { Product } from "./pages/Product";
-import { FetchProduct } from "./pages/Product/FetchProduct.ts";
+import { Login } from "./pages/Login";
+import { AuthProvider } from "./Context/AuthContext.tsx";
+import { Product } from "./pages/Stores/Product/index.tsx";
+import { FetchProduct } from "./pages/Stores/Product/FetchProduct.ts";
+import { CartProvider } from "./Context/cartContext.tsx";
+import { Cart } from "./pages/Cart";
 
 const router = createBrowserRouter([
     {
@@ -32,6 +34,10 @@ const router = createBrowserRouter([
                 element: <Product />,
                 loader: FetchProduct,
             },
+            {
+                path: "/cart",
+                element: <Cart />,
+            },
         ],
     },
     {
@@ -43,7 +49,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
         <AuthProvider>
-            <RouterProvider router={router} />
+            <CartProvider>
+                <RouterProvider router={router} />
+            </CartProvider>
         </AuthProvider>
     </React.StrictMode>
 );

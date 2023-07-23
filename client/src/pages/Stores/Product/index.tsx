@@ -1,14 +1,22 @@
 import styles from "./index.module.css";
-import { ProductType } from "../../types";
+import { ProductType } from "../../../types";
 import { useLoaderData } from "react-router-dom";
+import { useCart } from "../../../Context/CartContext";
 
 export function Product() {
     const product = useLoaderData() as ProductType;
+    const { addProduct } = useCart();
 
     function formatPrice(price: number) {
         const formattedPrice = new Intl.NumberFormat("es-AR", { currency: "ARS", style: "currency" }).format(price);
 
         return formattedPrice;
+    }
+
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        const { amount } = event.target as HTMLFormElement;
+        addProduct(product, Number(amount.value));
     }
 
     return (
@@ -27,13 +35,13 @@ export function Product() {
                     )}
                     <p className={styles.description}>{product.description}</p>
                 </div>
-                <div className={styles.footer}>
+                <form className={styles.footer} onSubmit={handleSubmit}>
                     <div className={styles.field}>
                         <label htmlFor="amount">Cantidad</label>
                         <input id="amount" type="number" defaultValue={1} />
                     </div>
-                    <button>Agregar al carrito</button>
-                </div>
+                    <button type="submit">Agregar al carrito</button>
+                </form>
             </div>
         </main>
     );

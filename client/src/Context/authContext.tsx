@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState } from "react";
 
-interface contextType {
+interface ContextType {
     user: boolean | null;
     setUser: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
-const AuthContext = createContext<contextType | null>(null);
+const AuthContext = createContext<ContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<boolean | null>(null);
