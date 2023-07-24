@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DependencyContainer, DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 import { EditRepositoryBase } from "../core/repositories/edit.repository";
 import { Store } from "../models/store";
