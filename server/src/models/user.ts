@@ -27,3 +27,8 @@ export class User implements UserI {
     rol = "";
     status = 1;
 }
+
+export interface UserL {
+    email: string;
+    password: string;
+}

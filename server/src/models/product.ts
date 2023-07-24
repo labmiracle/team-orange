@@ -38,7 +38,7 @@ export class Product implements ProductI {
     sizes: string[] = [];
     brand = "";
     url_img = "";
-    status?: 1;
+    status? = 1;
 }
 
 export interface ProductDBI {

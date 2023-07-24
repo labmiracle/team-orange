@@ -36,6 +36,6 @@ export class Server extends ApiServer {
 
         this.registerControllers([HealthController, ProductController, UserController, StoreController]);
         this.routing.ignoreClosedResponseOnFilters();
-        this.routing.registerGlobalFilters([MySqlConnectionFilter, JWTAuth]);
+        this.routing.registerGlobalFilters([MySqlConnectionFilter]);
     }
 }

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 
 export const productSchema = Joi.object({
+    id: Joi.number().optional(),
     name: Joi.string().alphanum().min(3).max(30).required().messages({
         "string.min": "Invalid name, it must contain more than 3 letters",
         "string.max": "Invalid name, it must not contain more than 30 letters",
@@ -18,19 +19,19 @@ export const productSchema = Joi.object({
     discountPercentage: Joi.number().min(0).max(1).required().messages({
         "number.min": "Invalid discount percentage, it must be greater than 0",
         "number.max": "Invalid discount percentage, it must not exceed 1",
-        "any.required": "Discount porcentage is a required field",
+        "any.required": "Discount percentage is a required field",
     }),
     currentStock: Joi.number().min(0).required().messages({
         "number.min": "Invalid current stock, it must be greater than or equal to 0",
-        "any.required": "Discount porcentage is a required field",
+        "any.required": "currentStock is a required field",
     }),
     reorderPoint: Joi.number().min(0).required().messages({
         "number.min": "Invalid reorder point, it must be greater than or equal to 0",
-        "any.required": "Discount porcentage is a required field",
+        "any.required": "reorderPoint is a required field",
     }),
     minimum: Joi.number().min(0).required().messages({
         "number.min": "Invalid minimum, it must be greater than or equal to 0",
-        "any.required": "Discount porcentage is a required field",
+        "any.required": "minimum is a required field",
     }),
     categories: Joi.array()
         .items(
@@ -59,28 +60,31 @@ export const productSchema = Joi.object({
         )
         .required()
         .messages({
-            "any.required": "Discount porcentage is a required field",
+            "any.required": "categories is a required field",
         }),
     sizes: Joi.array().items(Joi.string().valid("Hombre", "Mujer", "Niños")).required().messages({
-        "any.required": "Discount porcentage is a required field",
+        "any.required": "sizes is a required field",
     }),
-    brandName: Joi.string().required().messages({
-        "any.required": "Discount porcentage is a required field",
+    brand: Joi.string().required().messages({
+        "any.required": "brand is a required field",
     }),
     url_img: Joi.string().required().messages({
         "any.required": "image path is a required field",
     }),
+    storeId: Joi.number().optional().messages({
+        "any.required": "storeId is a required field",
+    }),
     status: Joi.number(),
 });
 
-const paramsSchema = Joi.object({
+/* const paramsSchema = Joi.object({
     id: Joi.string()
         .pattern(/^[0-9]+$/, "numbers")
         .optional(),
     storeId: Joi.string().pattern(/^[0-9]+$/, "numbers"),
-});
+}); */
 
-export const ProductUserValidations = (req: Request, res: Response, next: NextFunction) => {
+/* export const ProductUserValidations = (req: Request, res: Response, next: NextFunction) => {
     const { error } = productSchema.validate(req.body) && paramsSchema.validate(req.params);
     if (error) {
         return res.status(400).json({
@@ -90,7 +94,7 @@ export const ProductUserValidations = (req: Request, res: Response, next: NextFu
         });
     }
     return next();
-};
+}; */
 
 export const updateProductSchema = Joi.object({
     price: Joi.number().positive().optional().messages({
@@ -111,7 +115,7 @@ export const updateProductSchema = Joi.object({
     }),
 });
 
-export const ProductUpdateValidations = (req: Request, res: Response, next: NextFunction) => {
+/* export const ProductUpdateValidations = (req: Request, res: Response, next: NextFunction) => {
     const { error } = updateProductSchema.validate(req.body) && paramsSchema.validate(req.params);
     if (error) {
         return res.status(400).json({
@@ -121,4 +125,4 @@ export const ProductUpdateValidations = (req: Request, res: Response, next: Next
         });
     }
     return next();
-};
+}; */

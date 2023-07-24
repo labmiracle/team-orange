@@ -77,15 +77,10 @@ export const userLogin = Joi.object({
             "string.email": "Invalid email format",
             "any.required": "Email is a required field",
         }),
-    password: Joi.string()
-        .min(8)
-        .pattern(/^(?=.*?[a-zA-Z])(?=.*?[0-9])(?!.*[^a-zA-Z0-9])/)
-        .required()
-        .messages({
-            "string.min": "Invalid password, it must contain more than 8 letters",
-            "string.pattern.base": "Invalid password, it must contain both letters and numbers",
-            "any.required": "Password is a required field",
-        }),
+    password: Joi.string().min(8).required().messages({
+        "string.min": "Invalid password, it must contain more than 8 letters",
+        "any.required": "Password is a required field",
+    }),
 });
 
 export const userLoginValidations = (req: Request, res: Response, next: NextFunction) => {
