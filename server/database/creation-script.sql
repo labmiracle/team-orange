@@ -209,13 +209,13 @@ VALUES
   ('Polo');
 
 INSERT INTO User (name, lastName, email, password, idDocumentType, idDocumentNumber, rol)
-VALUES 
+VALUES
   ('John', 'Doe', 'john.doe@example.com', 'password123', 'DNI', '1234567891', 'Manager'),
   ('Joe', 'Schmo', 'joe.schmo@example.com', 'password123', 'DNI', '1234567892', 'Manager'),
   ('Pedro', 'Perez', 'perdro.perez@example.com', 'password123', 'DNI', '1234567893', 'Manager');
 
 INSERT INTO Store (name, managerId, apiUrl)
-VALUES 
+VALUES
   ('Armario', 1, 'https://api.example.com'),
   ('Atico Vintage', 2, 'https://api.example.com'),
   ('Pasamela', 3, 'https://api.example.com');
@@ -274,7 +274,7 @@ VALUES
   ('Traje de baño de una pieza', 'Traje de baño de una pieza para mujeres', 49.99, 1, 60, 10, 5, 4, 'images/traje_de_baño_de_una_pieza.webp', 2),
   ('Pantalones de vestir clásicos', 'Pantalones de vestir clásicos para hombres', 39.99, 1, 70, 15, 5, 1, 'images/pantalones_de_vestir_clásicos.webp', 3),
   ('Shorts deportivos', 'Shorts deportivos para hombres', 29.99, 1, 90, 20, 10, 3, 'images/shorts_deportivos.webp', 1),
-  ('Vestido elegante de noche', 'Vestido elegante de noche para ocasiones especiales', 149.99, 1, 30, 5, 3, 4, 'images/vestido_elegante_de_noche.webp', 23),
+  ('Vestido elegante de noche', 'Vestido elegante de noche para ocasiones especiales', 149.99, 1, 30, 5, 3, 4, 'images/vestido_elegante_de_noche.webp', 2),
   ('Jersey de cuello alto', 'Jersey de cuello alto para hombres', 59.99, 1, 50, 10, 5, 5, 'images/jersey_de_cuello_alto.webp', 3),
   ('Camisa de lino', 'Camisa de lino de manga corta para hombres', 49.99, 1, 70, 15, 5, 6, 'images/camisa_de_lino.webp', 1),
   ('Sandalias cómodas', 'Sandalias cómodas para uso diario', 29.99, 1, 80, 20, 10, 3, 'images/sandalias_cómodas.webp', 2),
@@ -296,7 +296,7 @@ VALUES
   ('Vestido estampado de verano', 'Vestido estampado de verano para ocasiones informales', 49.99, 1, 60, 10, 5, 4, 'images/vestido_estampado_de_verano.webp', 3);
 
 INSERT INTO Category (name)
-VALUES 
+VALUES
   ('Chaqueta'),
   ('Sudadera'),
   ('Zapatillas'),
