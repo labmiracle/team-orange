@@ -1,8 +1,31 @@
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 
+export interface ProductI {
+    /** @IsInt */
+    id?: number;
+    name: string;
+    description: string;
+    price: number;
+    discountPercentage: number;
+    /** @IsInt */
+    currentStock: number;
+    /** @IsInt */
+    reorderPoint: number;
+    /** @IsInt */
+    minimum: number;
+    /** @IsInt */
+    storeId: number;
+    categories: string[];
+    sizes: string[];
+    brand: string;
+    url_img: string;
+    /** @IsInt */
+    status?: number;
+}
+
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class Product {
-    id = 0;
+export class Product implements ProductI {
+    id? = 0;
     name = "";
     description = "";
     price = 0;
@@ -15,10 +38,33 @@ export class Product {
     sizes: string[] = [];
     brand = "";
     url_img = "";
+    status?: 1;
+}
+
+export interface ProductDBI {
+    /**@IsInt */
+    id?: number;
+    name: string;
+    description: string;
+    price: number;
+    discountPercentage: number;
+    /**@IsInt */
+    currentStock: number;
+    /**@IsInt */
+    reorderPoint: number;
+    /**@IsInt */
+    minimum: number;
+    /**@IsInt */
+    storeId: number;
+    /**@IsInt */
+    brandId: number;
+    url_img: string;
+    /**@IsInt */
+    status?: number;
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class ProductDB {
+export class ProductDB implements ProductDBI {
     id? = 0;
     name = "";
     description = "";
@@ -30,4 +76,5 @@ export class ProductDB {
     storeId = 0;
     brandId = 0;
     url_img = "";
+    status? = 1;
 }

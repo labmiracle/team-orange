@@ -23,8 +23,12 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         return this.map(rows, this.entityType);
     }
 
-    async find(column: string, args: any): Promise<TEntity[]> {
-        const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${column}\`=?`, [args]);
+    async find(columns: string[], args: any[]): Promise<TEntity[]> {
+        const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
+        const query = `SELECT * FROM \`${this.tableName}\` WHERE ` + conditions;
+        console.log(query);
+        const [rows] = await this.connection.connection.execute(query, args);
+        //const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${column}\`=?`, [args]);
         return this.map(rows, this.entityType);
     }
 
