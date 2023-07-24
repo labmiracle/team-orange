@@ -1,10 +1,16 @@
-import { Action, ApiController, Controller } from "@miracledevs/paradigm-express-webapi";
+import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { StoreRepository } from "../repositories/store.repository";
 import { ProductRepository } from "../repositories/product.repository";
 import { StoreColorRepository } from "../repositories/storeColor.repository";
-import { StoreIS, Color } from "../models/store";
-import { Path, PathParam, GET } from "typescript-rest";
+import { StoreI, Color, StoreColorI } from "../models/store";
+import { Path, PathParam, GET, DELETE } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
+import { ProductDBRepository } from "../repositories/productDB.repository";
+import { BrandRepository } from "../repositories/brand.repository";
+import { CategoryRepository } from "../repositories/category.repository";
+import { SizeRepository } from "../repositories/size.repository";
+import { ProductCategoryRepository } from "../repositories/productCategory.repository";
+import { ProductSizeRepository } from "../repositories/productSize.repository";
 
 type Colors = {
     primary: Color;
@@ -21,7 +27,17 @@ type Names = {
 @Tags("Stores")
 @Controller({ route: "/api/shop" })
 export class StoreController extends ApiController {
-    constructor(private storeRepo: StoreRepository, private productRepo: ProductRepository, private storeColorRepo: StoreColorRepository) {
+    constructor(
+        private storeRepo: StoreRepository,
+        private productRepo: ProductRepository,
+        private productDBRepo: ProductDBRepository,
+        private storeColorRepo: StoreColorRepository,
+        private brandRepo: BrandRepository,
+        private categoryRepo: CategoryRepository,
+        private sizeRepo: SizeRepository,
+        private productCategoryRepo: ProductCategoryRepository,
+        private productSizeRepo: ProductSizeRepository
+    ) {
         super();
     }
 
@@ -33,11 +49,11 @@ export class StoreController extends ApiController {
     @GET
     @Response<Array<Names>>(200, "Return an array of each store id and name", [{ id: 1, name: "Tienda" }])
     @Response(500, "Stores not found", null)
-    @Action({ route: "/names" })
+    @Action({ route: "/names", method: HttpMethod.GET })
     async getAll() {
         try {
-            const store = await this.storeRepo.getBy("name");
-            return this.httpContext.response.status(200).send(store);
+            const stores = await this.storeRepo.getBy(["name"]);
+            return this.httpContext.response.status(200).send(stores);
         } catch (err) {
             console.error(err);
             return this.httpContext.response.status(500).send(err.message);
@@ -51,36 +67,9 @@ export class StoreController extends ApiController {
      */
     @Path("/:storeId")
     @GET
-    @Response<StoreIS>(200, "Return a store data", {
-        id: 1,
-        name: "Tienda 1",
-        managerId: 1,
-        apiUrl: "example.com",
-        colors: {
-            primary: { hue: 255, sat: 255, light: 0 },
-            secondary: { hue: 0, sat: 0, light: 255 },
-        },
-        products: [
-            {
-                id: 1,
-                name: "Camiseta",
-                description: "Camiseta de manga corta",
-                price: 100.0,
-                discountPercentage: 0.6,
-                currentStock: 250,
-                reorderPoint: 10,
-                minimum: 5,
-                storeId: 1,
-                categories: ["Camiseta"],
-                sizes: ["Hombre", "Mujer"],
-                brand: "Nike",
-                url_img: "/images/cammisa01.webp",
-                status: 1,
-            },
-        ],
-    })
+    @Response<StoreI>(200, "Return a store data")
     @Response(500, "Store not found", null)
-    @Action({ route: "/:storeId" })
+    @Action({ route: "/:storeId", method: HttpMethod.GET })
     async getById(@PathParam("storeId") storeId: number) {
         try {
             const store = await this.storeRepo.getById(Number(storeId));
@@ -92,6 +81,76 @@ export class StoreController extends ApiController {
                 colorsObj[type as keyof Colors] = { hue: color.hue, sat: color.sat, light: color.light };
             }
             return this.httpContext.response.status(200).send({ ...store, products: products, colors: colorsObj });
+        } catch (err) {
+            console.error(err);
+            return this.httpContext.response.status(500).send(err.message);
+        }
+    }
+
+    @Path("/:storeId")
+    @DELETE
+    @Action({ route: "/:storeId", method: HttpMethod.DELETE })
+    async disableStore(@PathParam("storeId") storeId: number) {
+        try {
+            const store = await this.storeRepo.getById(storeId);
+            delete store.colors;
+            delete store.products;
+            store.status = 0;
+            await this.storeRepo.update(store);
+            return this.httpContext.response.status(200).send("Store updated");
+        } catch (err) {
+            console.error(err);
+            return this.httpContext.response.status(500).send(err.message);
+        }
+    }
+
+    @Action({ route: "/", method: HttpMethod.POST, fromBody: true })
+    async createStore(store: StoreI) {
+        try {
+            const colors = store.colors;
+            const products = store.products;
+            delete store.colors;
+            delete store.products;
+            const result = await this.storeRepo.insertOne(store);
+
+            if (colors) {
+                const primary: StoreColorI = { ...colors.primary, storeId: result.insertId, type: "PRIMARY" };
+                const secondary: StoreColorI = { ...colors.secondary, storeId: result.insertId, type: "SECONDARY" };
+                await this.storeColorRepo.insertOne(primary);
+                await this.storeColorRepo.insertOne(secondary);
+            }
+
+            if (products.length > 0) {
+                for (const product of products) {
+                    const { categories, sizes, brand, ...rest } = product;
+                    const brandName = await this.brandRepo.find(["name"], [brand]);
+                    const result = await this.productDBRepo.insertOne({
+                        brandId: brandName[0].id,
+                        ...rest,
+                    });
+                    if (!result.insertId) throw new Error("Product creation failed");
+
+                    for (const category of categories) {
+                        const categoryResponse = await this.categoryRepo.find(["name"], [category]);
+                        if (categoryResponse.length) throw new Error(`${category} is not a valid category`);
+                        await this.productCategoryRepo.insertOne({
+                            productId: result.insertId,
+                            categoryId: categoryResponse[0].id,
+                        });
+                    }
+
+                    for (const size of sizes) {
+                        const sizeResponse = await this.sizeRepo.find(["name"], [size]);
+                        if (sizeResponse.length) throw new Error(`${size} is not a valid size`);
+                        await this.productSizeRepo.insertOne({
+                            productId: result.insertId,
+                            sizeId: sizeResponse[0].id,
+                        });
+                    }
+                }
+            }
+
+            return this.httpContext.response.status(200).send("Store created");
         } catch (err) {
             console.error(err);
             return this.httpContext.response.status(500).send(err.message);

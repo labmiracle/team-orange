@@ -2,7 +2,7 @@
 import { DependencyContainer, ObjectType } from "@miracledevs/paradigm-web-di";
 import { MySqlConnection } from "../mysql/mysql.connection";
 import { BatchDbCommand } from "./commands/batch.command";
-import { OkPacket, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { OkPacket, ResultSetHeader, RowDataPacket, format } from "mysql2/promise";
 
 export type RowType = RowDataPacket[][] | RowDataPacket[] | OkPacket | OkPacket[] | ResultSetHeader;
 
@@ -25,9 +25,8 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
 
     async find(columns: string[], args: any[]): Promise<TEntity[]> {
         const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
-        const query = `SELECT * FROM \`${this.tableName}\` WHERE ` + conditions;
-        console.log(query);
-        const [rows] = await this.connection.connection.execute(query, args);
+        const query = format(`SELECT * FROM \`${this.tableName}\` WHERE ` + conditions, args);
+        const [rows] = await this.connection.connection.execute(query);
         //const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${column}\`=?`, [args]);
         return this.map(rows, this.entityType);
     }
