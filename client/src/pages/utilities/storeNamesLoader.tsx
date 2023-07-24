@@ -1,17 +1,19 @@
-import { store1, store2, store3 } from "../stores";
-import { StoreType } from "../../types/index.d";
-import { Params } from "react-router-dom";
 /**
  * Fetch the store products, colors, managers
  * @param params url params
  * @returns store object {@link Types.StoreType}
  */
-export default async function storesLoader({ params }: { params: Params<string> }): Promise<StoreType | void> {
-    const storeId = params.id;
+
+export interface StoreName {
+    id: number;
+    name: string;
+}
+
+export default async function storesNamesLoader(): Promise<StoreName[] | void> {
     try {
-        const response = await fetch(`http://localhost:4000/api/shop/${storeId}`);
-        const products = await response.json();
-        return products;
+        const response = await fetch(`http://localhost:4000/api/shop/names`);
+        const names = await response.json();
+        return names;
     } catch (e) {
         return console.error((e as Error).message);
     }

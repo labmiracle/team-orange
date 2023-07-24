@@ -18,7 +18,7 @@ export default function Types({ isCurrentFilter, setFilter, viewWindow }: Props)
     const { products } = useLoaderData() as StoreType;
     const [types] = useState(() =>
         products
-            .map(product => product.category)
+            .map(product => product.categories)
             .flat()
             .filter((value, index, array) => array.indexOf(value) === index)
     );

@@ -4,14 +4,16 @@ export type ProductType = {
     id: number;
     name: string;
     brand: string;
-    category: string;
+    categories: string[];
     color: string;
-    stock: number;
+    currentStock: number;
+    reorderPoint: number;
+    minimum: number;
     price: number;
-    discount: number;
+    discountPercentage: number;
     description: string;
     url_img: string;
-    size: "Hombre" | "Mujer" | "Niños";
+    sizes: string[];
 };
 
 export type Color = { hue: number; sat: number; light: number };

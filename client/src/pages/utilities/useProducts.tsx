@@ -27,10 +27,10 @@ export function useProducts(productsArray: ProductType[]): Props {
     function filterProducts() {
         let newProducts = productsArray;
         if (filter.current.type) {
-            newProducts = newProducts.filter(product => product.category.includes(filter.current.type));
+            newProducts = newProducts.filter(product => product.categories.includes(filter.current.type));
         }
         if (filter.current.size) {
-            newProducts = newProducts.filter(product => product.size.includes(filter.current.size));
+            newProducts = newProducts.filter(product => product.sizes.includes(filter.current.size));
         }
         setProducts(newProducts);
     }

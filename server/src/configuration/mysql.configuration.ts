@@ -19,6 +19,7 @@ export class MySqlConfiguration {
      */
     user: string = process.env.SHOPPY__MYSQLUSER;
 
+    decimalNumbers = true;
     /**
      * The password of the user.
      */

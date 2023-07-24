@@ -11,13 +11,14 @@ import { Login } from "./pages/Login";
 import { AuthProvider } from "./Context/AuthContext.tsx";
 import { Product } from "./pages/Stores/Product/index.tsx";
 import { FetchProduct } from "./pages/Stores/Product/FetchProduct.ts";
-import { CartProvider } from "./Context/cartContext.tsx";
+import { CartProvider } from "./Context/CartContext.tsx";
 import { Cart } from "./pages/Cart";
 
 const router = createBrowserRouter([
     {
         element: <Layout />,
         errorElement: <ErrorPage />,
+        loader: storesNamesLoader,
         children: [
             {
                 path: "/",

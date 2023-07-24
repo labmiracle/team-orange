@@ -18,7 +18,7 @@ export default function Sizes({ isCurrentFilter, setFilter, viewWindow }: Props)
     const { products } = useLoaderData() as StoreType;
     const [sizes] = useState(() =>
         products
-            .map(product => product.size)
+            .map(product => product.sizes)
             .flat()
             .filter((value, index, array) => array.indexOf(value) === index)
     );
