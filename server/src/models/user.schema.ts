@@ -54,7 +54,7 @@ export const userSchema = Joi.object({
         "any.required": "Rol is a required field",
         "any.only": "Invalid rol, it must be 'client', 'manager' or 'admin'",
     }),
-    status: Joi.boolean(),
+    status: Joi.number(),
 });
 
 export const userValidations = (req: Request, res: Response, next: NextFunction) => {

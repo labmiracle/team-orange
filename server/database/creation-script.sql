@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS Store (
     name VARCHAR(255) NOT NULL,
     managerId INT,
     apiUrl VARCHAR(255) NOT NULL,
+    status BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_managerId_s FOREIGN KEY (managerId) REFERENCES User(id) ON DELETE SET NULL
 );
 
@@ -82,6 +83,7 @@ CREATE TABLE IF NOT EXISTS Product(
     brandId INT NOT NULL,
     url_img VARCHAR(255) NOT NULL,
     storeId INT,
+    status BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_brandId_p FOREIGN KEY (brandId) REFERENCES Brand(id),
     CONSTRAINT fk_storeId_p FOREIGN KEY (storeId) REFERENCES Store(id) ON DELETE SET NULL
 );
@@ -158,7 +160,8 @@ CREATE OR REPLACE VIEW product_view AS
             WHERE ProductCategory.productId = P.id
             ) AS Category
         ) AS categories,
-        JSON_ARRAYAGG(size.name) AS sizes
+        JSON_ARRAYAGG(size.name) AS sizes,
+        P.status
     FROM
         Product AS P
     LEFT JOIN
@@ -177,7 +180,8 @@ CREATE OR REPLACE VIEW product_view AS
         P.reorderPoint,
         P.minimum,
         P.storeId,
-        P.url_img;
+        P.url_img,
+        P.status;
 
 ########################################################################
 # STORED PROCEDURES

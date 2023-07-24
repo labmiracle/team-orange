@@ -70,6 +70,7 @@ export const productSchema = Joi.object({
     url_img: Joi.string().required().messages({
         "any.required": "image path is a required field",
     }),
+    status: Joi.number(),
 });
 
 const paramsSchema = Joi.object({
