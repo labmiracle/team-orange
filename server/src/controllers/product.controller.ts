@@ -10,7 +10,6 @@ import { ProductSizeRepository } from "../repositories/productSize.repository";
 import { ProductDBRepository } from "../repositories/productDB.repository";
 import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
-import { ResponseMessage } from "../types/ResponseMessage";
 
 @Path("/api/shop/:storeId/product")
 @Tags("Products")
@@ -35,27 +34,8 @@ export class ProductController extends ApiController {
      */
     @GET
     @Path("/:productId")
-    @Response<ResponseMessage>(201, "Retrieve a Product.", {
-        message: "Product found",
-        data: {
-            id: 1,
-            name: "Camiseta",
-            description: "Camiseta de manga corta",
-            price: 100.0,
-            discountPercentage: 0.6,
-            currentStock: 250,
-            reorderPoint: 10,
-            minimum: 5,
-            storeId: 1,
-            categories: ["Camiseta"],
-            sizes: ["Hombre", "Mujer"],
-            brand: "Nike",
-            url_img: "/images/cammisa01.webp",
-            status: 1,
-        },
-        error: true,
-    })
-    @Response<ResponseMessage>(404, "Product not found.", { message: "Product found", data: null, error: true })
+    @Response<ProductI>(201, "Retrieve a Product.")
+    @Response(404, "Product not found.")
     @Action({ route: "/:productId", method: HttpMethod.GET })
     async getById(@PathParam("productId") productId: number) {
         try {
@@ -81,29 +61,8 @@ export class ProductController extends ApiController {
      */
     @GET
     @Path("/")
-    @Response<ResponseMessage>(201, "Retrieve a list of Products.", {
-        message: "Products found",
-        data: [
-            {
-                id: 1,
-                name: "Camiseta",
-                description: "Camiseta de manga corta",
-                price: 100.0,
-                discountPercentage: 0.6,
-                currentStock: 250,
-                reorderPoint: 10,
-                minimum: 5,
-                storeId: 1,
-                categories: ["Camiseta"],
-                sizes: ["Hombre", "Mujer"],
-                brand: "Nike",
-                url_img: "/images/cammisa01.webp",
-                status: 1,
-            },
-        ],
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "Products not found.", { message: "Products not found", data: null, error: true })
+    @Response<ProductI[]>(201, "Retrieve a list of Products.")
+    @Response(404, "Products not found.")
     @Action({ route: "/", method: HttpMethod.GET })
     async getAll() {
         try {
@@ -117,7 +76,7 @@ export class ProductController extends ApiController {
         } catch (error) {
             console.error("Products " + error.message);
             return this.httpContext.response.status(404).json({
-                message: name + "Products " + error.message,
+                message: "Products " + error.message,
                 data: null,
                 error: true,
             });
@@ -149,33 +108,15 @@ export class ProductController extends ApiController {
      */
     @POST
     @Path("/")
-    @Response<ResponseMessage>(201, "Insert a Product on the Database.", {
-        message: "Product created",
-        data: {
-            id: 1,
-            name: "Camiseta",
-            description: "Camiseta de manga corta",
-            price: 100.0,
-            discountPercentage: 0.6,
-            currentStock: 250,
-            reorderPoint: 10,
-            minimum: 5,
-            storeId: 1,
-            categories: ["Camiseta"],
-            sizes: ["Hombre", "Mujer"],
-            brand: "Nike",
-            url_img: "/images/cammisa01.webp",
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(500, "Product insert failed.", {
-        message: "Product creation failed",
-        data: null,
-        error: true,
-    })
+    @Response<ProductI>(201, "Insert a Product on the Database.")
+    @Response(500, "Product insert failed.")
     @Action({ route: "/", filters: [ProductFilter], fromBody: true, method: HttpMethod.POST })
     async post(product: ProductI) {
         try {
+            if (!product.storeId) {
+                const { storeId } = this.httpContext.request.params;
+                product.storeId = Number(storeId);
+            }
             const { categories, sizes, brand, ...rest } = product;
             const brandName = await this.brandRepo.find(["name"], [brand]);
             const result = await this.productDBRepo.insertOne({
@@ -186,7 +127,7 @@ export class ProductController extends ApiController {
 
             for (const category of categories) {
                 const categoryResponse = await this.categoryRepo.find(["name"], [category]);
-                if (categoryResponse.length) throw new Error("Invalid category");
+                if (categoryResponse.length < 1) throw new Error("Invalid category");
                 await this.productCategoryRepo.insertOne({
                     productId: result.insertId,
                     categoryId: categoryResponse[0].id,
@@ -195,7 +136,7 @@ export class ProductController extends ApiController {
 
             for (const size of sizes) {
                 const sizeResponse = await this.sizeRepo.find(["name"], [size]);
-                if (sizeResponse.length) throw new Error("Invalid size");
+                if (sizeResponse.length < 1) throw new Error("Invalid size");
                 await this.productSizeRepo.insertOne({
                     productId: result.insertId,
                     sizeId: sizeResponse[0].id,
@@ -209,9 +150,9 @@ export class ProductController extends ApiController {
                     error: false,
                 });
         } catch (error) {
-            console.error("Product " + error.message);
+            console.error("Product: " + error.message);
             return this.httpContext.response.status(500).json({
-                message: "Product " + error.message,
+                message: "Product: " + error.message,
                 data: null,
                 error: true,
             });
@@ -219,25 +160,8 @@ export class ProductController extends ApiController {
     }
     @DELETE
     @Path("/:id")
-    @Response<ResponseMessage>(200, "Delete a Product on the Database.", {
-        message: "Product deleted successfully",
-        data: {
-            id: 1,
-            name: "Camiseta",
-            description: "Camiseta de manga corta",
-            price: 100.0,
-            discountPercentage: 0.6,
-            currentStock: 250,
-            reorderPoint: 10,
-            minimum: 5,
-            storeId: 1,
-            brandId: 2,
-            url_img: "/images/cammisa01.webp",
-            status: 1,
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "Product not found.", { message: "Product not found", data: null, error: true })
+    @Response<ProductI>(200, "Delete a Product on the Database.")
+    @Response(404, "Product not found.")
     @Action({ route: "/:id", method: HttpMethod.DELETE })
     async delete(@PathParam("id") id: number) {
         try {
@@ -250,9 +174,9 @@ export class ProductController extends ApiController {
                 error: false,
             });
         } catch (error) {
-            console.error("Product " + error.message);
+            console.error("Product: " + error.message);
             return this.httpContext.response.status(404).json({
-                message: "Product " + error.message,
+                message: "Product: " + error.message,
                 data: null,
                 error: true,
             });
@@ -283,28 +207,15 @@ export class ProductController extends ApiController {
      */
     @PUT
     @Path("/")
-    @Response<ResponseMessage>(200, "Update a Product on the Database. Except Categories and Sizes", {
-        message: "Product updated",
-        data: {
-            id: 1,
-            name: "Camiseta",
-            description: "Camiseta de manga corta",
-            price: 100.0,
-            discountPercentage: 0.6,
-            currentStock: 250,
-            reorderPoint: 10,
-            minimum: 5,
-            storeId: 1,
-            brandId: 2,
-            url_img: "/images/cammisa01.webp",
-            status: 1,
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "Product not found.", { message: "Product not found", data: null, error: true })
+    @Response<ProductI>(200, "Update a Product on the Database. Except Categories and Sizes")
+    @Response(404, "Product not found.")
     @Action({ route: "/", filters: [ProductFilter], fromBody: true, method: HttpMethod.PUT })
     async update(product: ProductI) {
         try {
+            if (!product.storeId) {
+                const { storeId } = this.httpContext.request.params;
+                product.storeId = Number(storeId);
+            }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { categories, sizes, brand, ...rest } = product;
             const brandName = await this.brandRepo.find(["name"], [brand]);
@@ -316,9 +227,9 @@ export class ProductController extends ApiController {
                 error: false,
             });
         } catch (error) {
-            console.error("Product " + error.message);
+            console.error("Product: " + error.message);
             return this.httpContext.response.status(404).json({
-                message: "Product " + error.message,
+                message: "Product: " + error.message,
                 data: null,
                 error: true,
             });

@@ -1,22 +1,5 @@
 basePath: null
 definitions:
-    ResponseMessage:
-        description: ""
-        properties:
-            message:
-                type: string
-                description: ""
-            data:
-                type: object
-                description: ""
-            error:
-                type: boolean
-                description: ""
-        type: object
-        required:
-            - message
-            - data
-            - error
     ProductI:
         description: ""
         properties:
@@ -102,7 +85,7 @@ definitions:
         required:
             - id
             - name
-    StoreIS:
+    StoreI:
         description: ""
         properties:
             id:
@@ -118,6 +101,10 @@ definitions:
                 description: ""
             apiUrl:
                 type: string
+                description: ""
+            status:
+                type: number
+                format: double
                 description: ""
             colors:
                 type: object
@@ -217,12 +204,9 @@ definitions:
                 description: ""
         type: object
         required:
-            - id
             - name
             - managerId
             - apiUrl
-            - colors
-            - products
     UserI:
         description: ""
         properties:
@@ -282,40 +266,11 @@ paths:
                 '201':
                     description: 'Retrieve a Product.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product found'
-                            data:
-                                id: 1
-                                name: Camiseta
-                                description: 'Camiseta de manga corta'
-                                price: 100
-                                discountPercentage: 0
-                                currentStock: 250
-                                reorderPoint: 10
-                                minimum: 5
-                                storeId: 1
-                                categories:
-                                    - Camiseta
-                                sizes:
-                                    - Hombre
-                                    - Mujer
-                                brand: Nike
-                                url_img: /images/cammisa01.webp
-                                status: 1
-                            error: true
+                        $ref: '#/definitions/ProductI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'Product not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product found'
-                            data: null
-                            error: true
             description: 'GET a specific product from it''s id'
             tags:
                 - Products
@@ -337,41 +292,13 @@ paths:
                 '201':
                     description: 'Retrieve a list of Products.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Products found'
-                            data:
-                                -
-                                    id: 1
-                                    name: Camiseta
-                                    description: 'Camiseta de manga corta'
-                                    price: 100
-                                    discountPercentage: 0
-                                    currentStock: 250
-                                    reorderPoint: 10
-                                    minimum: 5
-                                    storeId: 1
-                                    categories:
-                                        - Camiseta
-                                    sizes:
-                                        - Hombre
-                                        - Mujer
-                                    brand: Nike
-                                    url_img: /images/cammisa01.webp
-                                    status: 1
-                            error: false
+                        type: array
+                        items:
+                            $ref: '#/definitions/ProductI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'Products not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Products not found'
-                            data: null
-                            error: true
             description: 'GET all products from a store id'
             tags:
                 - Products
@@ -385,39 +312,11 @@ paths:
                 '201':
                     description: 'Insert a Product on the Database.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product created'
-                            data:
-                                id: 1
-                                name: Camiseta
-                                description: 'Camiseta de manga corta'
-                                price: 100
-                                discountPercentage: 0
-                                currentStock: 250
-                                reorderPoint: 10
-                                minimum: 5
-                                storeId: 1
-                                categories:
-                                    - Camiseta
-                                sizes:
-                                    - Hombre
-                                    - Mujer
-                                brand: Nike
-                                url_img: /images/cammisa01.webp
-                            error: false
+                        $ref: '#/definitions/ProductI'
                 '204':
                     description: 'No content'
                 '500':
                     description: 'Product insert failed.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product creation failed'
-                            data: null
-                            error: true
             description: 'CREATE a product on the database'
             tags:
                 - Products
@@ -440,35 +339,11 @@ paths:
                 '200':
                     description: 'Update a Product on the Database. Except Categories and Sizes'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product updated'
-                            data:
-                                id: 1
-                                name: Camiseta
-                                description: 'Camiseta de manga corta'
-                                price: 100
-                                discountPercentage: 0
-                                currentStock: 250
-                                reorderPoint: 10
-                                minimum: 5
-                                storeId: 1
-                                brandId: 2
-                                url_img: /images/cammisa01.webp
-                                status: 1
-                            error: false
+                        $ref: '#/definitions/ProductI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'Product not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product not found'
-                            data: null
-                            error: true
             description: 'UPDATE a product'
             tags:
                 - Products
@@ -492,35 +367,11 @@ paths:
                 '200':
                     description: 'Delete a Product on the Database.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product deleted successfully'
-                            data:
-                                id: 1
-                                name: Camiseta
-                                description: 'Camiseta de manga corta'
-                                price: 100
-                                discountPercentage: 0
-                                currentStock: 250
-                                reorderPoint: 10
-                                minimum: 5
-                                storeId: 1
-                                brandId: 2
-                                url_img: /images/cammisa01.webp
-                                status: 1
-                            error: false
+                        $ref: '#/definitions/ProductI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'Product not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Product not found'
-                            data: null
-                            error: true
             description: ""
             tags:
                 - Products
@@ -568,46 +419,30 @@ paths:
                 '200':
                     description: 'Return a store data'
                     schema:
-                        $ref: '#/definitions/StoreIS'
-                    examples:
-                        application/json:
-                            id: 1
-                            name: 'Tienda 1'
-                            managerId: 1
-                            apiUrl: example.com
-                            colors:
-                                primary:
-                                    hue: 255
-                                    sat: 255
-                                    light: 0
-                                secondary:
-                                    hue: 0
-                                    sat: 0
-                                    light: 255
-                            products:
-                                -
-                                    id: 1
-                                    name: Camiseta
-                                    description: 'Camiseta de manga corta'
-                                    price: 100
-                                    discountPercentage: 0
-                                    currentStock: 250
-                                    reorderPoint: 10
-                                    minimum: 5
-                                    storeId: 1
-                                    categories:
-                                        - Camiseta
-                                    sizes:
-                                        - Hombre
-                                        - Mujer
-                                    brand: Nike
-                                    url_img: /images/cammisa01.webp
-                                    status: 1
+                        $ref: '#/definitions/StoreI'
                 '204':
                     description: 'No content'
                 '500':
                     description: 'Store not found'
             description: 'Return a store data with a give id'
+            tags:
+                - Stores
+            parameters:
+                -
+                    description: ""
+                    in: path
+                    name: storeId
+                    required: true
+                    type: number
+                    format: double
+        delete:
+            operationId: StoreDisableStore
+            produces:
+                - text/html
+            responses:
+                '204':
+                    description: 'No content'
+            description: ""
             tags:
                 - Stores
             parameters:
@@ -628,32 +463,11 @@ paths:
                 '200':
                     description: 'Retrieve an User.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User found'
-                            data:
-                                id: 1
-                                name: John
-                                lastName: Doe
-                                email: john@email.com
-                                password: 123johnDoe
-                                idDocumentType: DNI
-                                idDocumentNumber: 12345678
-                                rol: client
-                                status: 1
-                            error: false
+                        $ref: '#/definitions/UserI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'User not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User not found'
-                            data: null
-                            error: true
             description: 'Produce an user with a given email'
             tags:
                 - Users
@@ -674,32 +488,11 @@ paths:
                 '200':
                     description: 'Updates an User.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User updated'
-                            data:
-                                id: 1
-                                name: John
-                                lastName: Doe
-                                email: john@email.com
-                                password: 123johnDoe
-                                idDocumentType: DNI
-                                idDocumentNumber: 12345678
-                                rol: client
-                                status: 1
-                            error: false
+                        $ref: '#/definitions/UserI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'User not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User not found'
-                            data: null
-                            error: true
             description: 'UPDATES an user'
             tags:
                 - Users
@@ -722,32 +515,11 @@ paths:
                 '200':
                     description: 'Creates an User.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User created'
-                            data:
-                                id: 1
-                                name: John
-                                lastName: Doe
-                                email: john@email.com
-                                password: 123johnDoe
-                                idDocumentType: DNI
-                                idDocumentNumber: 12345678
-                                rol: client
-                                status: 1
-                            error: true
+                        $ref: '#/definitions/UserI'
                 '204':
                     description: 'No content'
                 '500':
                     description: 'Server Error.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Failed to create user'
-                            data: null
-                            error: true
             description: 'CREATES an user'
             tags:
                 - Users
@@ -770,33 +542,13 @@ paths:
                 '200':
                     description: 'Retrieve a list of all Users.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Users found'
-                            data:
-                                -
-                                    id: 1
-                                    name: John
-                                    lastName: Doe
-                                    email: john@email.com
-                                    password: 123johnDoe
-                                    idDocumentType: DNI
-                                    idDocumentNumber: 12345678
-                                    rol: client
-                                    status: 1
-                            error: false
+                        type: array
+                        items:
+                            $ref: '#/definitions/UserI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'Users not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Users not found'
-                            data: null
-                            error: true
             description: 'Produce a list of all users'
             tags:
                 - Users
@@ -811,32 +563,11 @@ paths:
                 '200':
                     description: 'Logins an user.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'Login successful'
-                            data:
-                                id: 1
-                                name: John
-                                lastName: Doe
-                                email: john@email.com
-                                password: 123johnDoe
-                                idDocumentType: DNI
-                                idDocumentNumber: 12345678
-                                rol: client
-                                status: 1
-                            error: false
+                        $ref: '#/definitions/UserI'
                 '204':
                     description: 'No content'
                 '401':
                     description: 'User not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User not found'
-                            data: null
-                            error: true
             description: 'Logins an user with a given email and password'
             tags:
                 - Users
@@ -860,32 +591,11 @@ paths:
                 '200':
                     description: 'User deleted.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User deleted'
-                            data:
-                                id: 1
-                                name: John
-                                lastName: Doe
-                                email: john@email.com
-                                password: 123johnDoe
-                                idDocumentType: DNI
-                                idDocumentNumber: 12345678
-                                rol: client
-                                status: 1
-                            error: false
+                        $ref: '#/definitions/UserI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'User not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User not found'
-                            data: null
-                            error: true
             description: 'DELETE an user'
             tags:
                 - Users
@@ -906,32 +616,11 @@ paths:
                 '200':
                     description: 'Retrieve an User.'
                     schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User found'
-                            data:
-                                id: 1
-                                name: John
-                                lastName: Doe
-                                email: john@email.com
-                                password: 123johnDoe
-                                idDocumentType: DNI
-                                idDocumentNumber: 12345678
-                                rol: client
-                                status: 1
-                            error: false
+                        $ref: '#/definitions/UserI'
                 '204':
                     description: 'No content'
                 '404':
                     description: 'User not found.'
-                    schema:
-                        $ref: '#/definitions/ResponseMessage'
-                    examples:
-                        application/json:
-                            message: 'User not found'
-                            data: null
-                            error: true
             description: 'GET an user with a given id'
             tags:
                 - Users

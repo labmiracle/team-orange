@@ -1,17 +1,13 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { UserRepository } from "../repositories/user.repository";
-import { UserI } from "../models/user";
+import { UserI, UserL } from "../models/user";
 import { UserFilter } from "../filters/user.filter";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Path, PathParam, QueryParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
-
-interface ResponseMessage {
-    message: string;
-    data: UserI | UserI[] | null;
-    error: boolean;
-}
+import { userLogin } from "../models/user.schema";
+import { LoginFilter } from "../filters/login.filter";
 
 @Path("/api/users")
 @Tags("Users")
@@ -40,22 +36,8 @@ export class UserController extends ApiController {
      */
     @GET
     @Path("/q")
-    @Response<ResponseMessage>(200, "Retrieve an User.", {
-        message: "User found",
-        data: {
-            id: 1,
-            name: "John",
-            lastName: "Doe",
-            email: "john@email.com",
-            password: "123johnDoe",
-            idDocumentType: "DNI",
-            idDocumentNumber: 12345678,
-            rol: "client",
-            status: 1,
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "User not found.", { message: "User not found", data: null, error: true })
+    @Response<UserI>(200, "Retrieve an User.")
+    @Response(404, "User not found.")
     @Action({ route: "/q", query: ":email", method: HttpMethod.GET })
     async getByEmail(@QueryParam("email") email: string) {
         try {
@@ -94,22 +76,8 @@ export class UserController extends ApiController {
      */
     @PUT
     @Path("/")
-    @Response<ResponseMessage>(200, "Updates an User.", {
-        message: "User updated",
-        data: {
-            id: 1,
-            name: "John",
-            lastName: "Doe",
-            email: "john@email.com",
-            password: "123johnDoe",
-            idDocumentType: "DNI",
-            idDocumentNumber: 12345678,
-            rol: "client",
-            status: 1,
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "User not found.", { message: "User not found", data: null, error: true })
+    @Response<UserI>(200, "Updates an User.")
+    @Response(404, "User not found.")
     @Action({ route: "/", filters: [UserFilter], fromBody: true, method: HttpMethod.PUT })
     async update(user: UserI) {
         try {
@@ -148,30 +116,15 @@ export class UserController extends ApiController {
      */
     @POST
     @Path("/")
-    @Response<ResponseMessage>(200, "Creates an User.", {
-        message: "User created",
-        data: {
-            id: 1,
-            name: "John",
-            lastName: "Doe",
-            email: "john@email.com",
-            password: "123johnDoe",
-            idDocumentType: "DNI",
-            idDocumentNumber: 12345678,
-            rol: "client",
-            status: 1,
-        },
-        error: true,
-    })
-    @Response<ResponseMessage>(500, "Duplicate Email.", { message: "Email already exists", data: null, error: true })
-    @Response<ResponseMessage>(500, "Duplicate idDocumentNumber.", { message: "Duplicated Email", data: null, error: true })
-    @Response<ResponseMessage>(500, "Server Error.", { message: "Failed to create user", data: null, error: true })
+    @Response<UserI>(200, "Creates an User.")
+    @Response(500, "Duplicate Email.")
+    @Response(500, "Duplicate idDocumentNumber.")
+    @Response(500, "Server Error.")
     @Action({ route: "/", filters: [UserFilter], fromBody: true, method: HttpMethod.POST })
     async post(user: UserI) {
         try {
             user.password = await bcrypt.hash(user.password, 10);
             await this.userRepo.insertOne(user);
-            delete user.password;
             const token = jwt.sign(user, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.cookie("token", token, { httpOnly: true });
             return this.httpContext.response.status(201).json({
@@ -201,25 +154,11 @@ export class UserController extends ApiController {
      */
     @POST
     @Path("/login")
-    @Response<ResponseMessage>(200, "Logins an user.", {
-        message: "Login successful",
-        data: {
-            id: 1,
-            name: "John",
-            lastName: "Doe",
-            email: "john@email.com",
-            password: "123johnDoe",
-            idDocumentType: "DNI",
-            idDocumentNumber: 12345678,
-            rol: "client",
-            status: 1,
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(401, "Incorrect username or password.", { message: "Incorrect username or password", data: null, error: true })
-    @Response<ResponseMessage>(401, "User not found.", { message: "User not found", data: null, error: true })
-    @Action({ route: "/login", fromBody: true, method: HttpMethod.POST })
-    async login(user: UserI) {
+    @Response<UserI>(200, "Logins an user.")
+    @Response(401, "Incorrect username or password.")
+    @Response(401, "User not found.")
+    @Action({ route: "/login", fromBody: true, method: HttpMethod.POST, filters: [LoginFilter] })
+    async login(user: UserL) {
         try {
             const [userdb] = await this.userRepo.find(["email"], [user.email]);
             if (!userdb) {
@@ -230,6 +169,7 @@ export class UserController extends ApiController {
                 });
             }
             const isPasswordValid = await bcrypt.compare(user.password, userdb.password);
+            console.log(isPasswordValid);
             if (!isPasswordValid) {
                 return this.httpContext.response.status(401).json({
                     message: "Incorrect username or password",
@@ -262,22 +202,8 @@ export class UserController extends ApiController {
      */
     @DELETE
     @Path("/:id")
-    @Response<ResponseMessage>(200, "User deleted.", {
-        message: "User deleted",
-        data: {
-            id: 1,
-            name: "John",
-            lastName: "Doe",
-            email: "john@email.com",
-            password: "123johnDoe",
-            idDocumentType: "DNI",
-            idDocumentNumber: 12345678,
-            rol: "client",
-            status: 1,
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "User not found.", { message: "User not found", data: null, error: true })
+    @Response<UserI>(200, "User deleted.")
+    @Response(404, "User not found.")
     @Action({ route: "/:id", method: HttpMethod.DELETE })
     async delete(@PathParam("id") id: number) {
         try {
@@ -305,22 +231,8 @@ export class UserController extends ApiController {
      */
     @GET
     @Path("/:id")
-    @Response<ResponseMessage>(200, "Retrieve an User.", {
-        message: "User found",
-        data: {
-            id: 1,
-            name: "John",
-            lastName: "Doe",
-            email: "john@email.com",
-            password: "123johnDoe",
-            idDocumentType: "DNI",
-            idDocumentNumber: 12345678,
-            rol: "client",
-            status: 1,
-        },
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "User not found.", { message: "User not found", data: null, error: true })
+    @Response<UserI>(200, "Retrieve an User.")
+    @Response(404, "User not found.")
     @Action({ route: "/:id", method: HttpMethod.GET })
     async getById(@PathParam("id") id: number) {
         try {
@@ -345,24 +257,8 @@ export class UserController extends ApiController {
      */
     @GET
     @Path("/")
-    @Response<ResponseMessage>(200, "Retrieve a list of all Users.", {
-        message: "Users found",
-        data: [
-            {
-                id: 1,
-                name: "John",
-                lastName: "Doe",
-                email: "john@email.com",
-                password: "123johnDoe",
-                idDocumentType: "DNI",
-                idDocumentNumber: 12345678,
-                rol: "client",
-                status: 1,
-            },
-        ],
-        error: false,
-    })
-    @Response<ResponseMessage>(404, "Users not found.", { message: "Users not found", data: null, error: true })
+    @Response<UserI[]>(200, "Retrieve a list of all Users.")
+    @Response(404, "Users not found.")
     @Action({ route: "/", method: HttpMethod.GET })
     async getAll() {
         try {

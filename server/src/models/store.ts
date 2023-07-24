@@ -7,7 +7,7 @@ export type Color = {
     light: number;
 };
 
-export interface StoreI {
+/* export interface StoreI {
     id: number;
     name: string;
     managerId: number;
@@ -17,23 +17,25 @@ export interface StoreI {
         secondary: Color;
     };
     products: ProductI[];
-}
+    status?: number;
+} */
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
 export class Store implements StoreI {
-    id = 0;
+    id? = 0;
     name = "";
     managerId = 0;
     apiUrl = "";
-    colors = {
+    colors? = {
         primary: { hue: 0, sat: 0, light: 0 },
         secondary: { hue: 0, sat: 0, light: 0 },
     };
-    products = [] as ProductI[];
+    products? = [] as ProductI[];
+    status? = 1;
 }
 
 export interface StoreColorI extends Color {
-    id: number;
+    id?: number;
     type: string;
     hue: number;
     sat: number;
@@ -43,7 +45,7 @@ export interface StoreColorI extends Color {
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
 export class StoreColor implements StoreColorI {
-    id = 0;
+    id? = 0;
     type = "";
     hue = 0;
     sat = 0;
@@ -51,14 +53,15 @@ export class StoreColor implements StoreColorI {
     storeId = 0;
 }
 
-export interface StoreIS {
+export interface StoreI {
     /**@IsInt */
-    id: number;
+    id?: number;
     name: string;
     /**@IsInt */
     managerId: number;
     apiUrl: string;
-    colors: {
+    status?: number;
+    colors?: {
         primary: {
             /**@IsInt */
             hue: number;
@@ -76,7 +79,7 @@ export interface StoreIS {
             light: number;
         };
     };
-    products: {
+    products?: {
         /** @IsInt */
         id?: number;
         name: string;
