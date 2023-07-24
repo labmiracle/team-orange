@@ -249,6 +249,19 @@ definitions:
             - idDocumentNumber
             - rol
             - status
+    UserL:
+        description: ""
+        properties:
+            email:
+                type: string
+                description: ""
+            password:
+                type: string
+                description: ""
+        type: object
+        required:
+            - email
+            - password
 info:
     description: 'Shoppy API.'
     license:
@@ -302,7 +315,14 @@ paths:
             description: 'GET all products from a store id'
             tags:
                 - Products
-            parameters: []
+            parameters:
+                -
+                    description: ""
+                    in: path
+                    name: storeId
+                    required: true
+                    type: number
+                    format: double
         post:
             operationId: ProductPost
             produces:
@@ -580,7 +600,7 @@ paths:
                     name: user
                     required: true
                     schema:
-                        $ref: '#/definitions/UserI'
+                        $ref: '#/definitions/UserL'
     '/api/users/{id}':
         delete:
             operationId: UserDelete

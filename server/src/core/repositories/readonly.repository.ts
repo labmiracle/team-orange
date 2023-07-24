@@ -31,6 +31,13 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         return this.map(rows, this.entityType);
     }
 
+    async getBy(args: any[]) {
+        const columns = args.map(column => `\`${column}\``).join(", ");
+        const query = "SELECT id, " + columns + ` FROM \`${this.tableName}\` WHERE status = 1 `;
+        const [rows] = await this.connection.connection.execute(query);
+        return rows;
+    }
+
     async getById(id: TId): Promise<TEntity> {
         const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${this.idColumn}\`=?`, [id]);
         const entities = this.map(rows, this.entityType);

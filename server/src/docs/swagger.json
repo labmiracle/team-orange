@@ -323,6 +323,24 @@
 				"rol",
 				"status"
 			]
+		},
+		"UserL": {
+			"description": "",
+			"properties": {
+				"email": {
+					"type": "string",
+					"description": ""
+				},
+				"password": {
+					"type": "string",
+					"description": ""
+				}
+			},
+			"type": "object",
+			"required": [
+				"email",
+				"password"
+			]
 		}
 	},
 	"info": {
@@ -399,7 +417,16 @@
 				"tags": [
 					"Products"
 				],
-				"parameters": []
+				"parameters": [
+					{
+						"description": "",
+						"in": "path",
+						"name": "storeId",
+						"required": true,
+						"type": "number",
+						"format": "double"
+					}
+				]
 			},
 			"post": {
 				"operationId": "ProductPost",
@@ -798,7 +825,7 @@
 						"name": "user",
 						"required": true,
 						"schema": {
-							"$ref": "#/definitions/UserI"
+							"$ref": "#/definitions/UserL"
 						}
 					}
 				]

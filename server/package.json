@@ -40,6 +40,7 @@
         "@miracledevs/paradigm-web-di": "^1.0.3",
         "@miracledevs/paradigm-web-fetch": "^1.0.3",
         "bcrypt": "^5.1.0",
+        "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
         "dotenv": "^16.0.1",
         "express": "^4.18.1",

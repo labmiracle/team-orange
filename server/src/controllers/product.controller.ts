@@ -11,9 +11,9 @@ import { ProductDBRepository } from "../repositories/productDB.repository";
 import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 
-@Path("/api/shop/:storeId/product")
+@Path("/api/product")
 @Tags("Products")
-@Controller({ route: "/api/shop/:storeId/product" })
+@Controller({ route: "/api/product" })
 export class ProductController extends ApiController {
     constructor(
         private productRepo: ProductRepository,
@@ -66,8 +66,7 @@ export class ProductController extends ApiController {
     @Action({ route: "/", method: HttpMethod.GET })
     async getAll() {
         try {
-            const { storeId } = this.httpContext.request.params;
-            const products = await this.productRepo.find(["storeId"], [Number(storeId)]);
+            const products = await this.productRepo.getAll();
             return this.httpContext.response.status(200).json({
                 message: "Products found",
                 data: products,
@@ -84,11 +83,10 @@ export class ProductController extends ApiController {
     }
     /**
      * CREATE a product on the database
-     
-     * @param product 
+     * @param product
      * @returns {ResponseMessage}
-     * 
-     * @example 
+     *
+     * @example
      * ```
      * Product {
      *      name: "test",
@@ -113,10 +111,6 @@ export class ProductController extends ApiController {
     @Action({ route: "/", filters: [ProductFilter], fromBody: true, method: HttpMethod.POST })
     async post(product: ProductI) {
         try {
-            if (!product.storeId) {
-                const { storeId } = this.httpContext.request.params;
-                product.storeId = Number(storeId);
-            }
             const { categories, sizes, brand, ...rest } = product;
             const brandName = await this.brandRepo.find(["name"], [brand]);
             const result = await this.productDBRepo.insertOne({

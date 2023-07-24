@@ -10,6 +10,7 @@ import { ProductController } from "./controllers/product.controller";
 import { UserController } from "./controllers/user.controller";
 import { StoreController } from "./controllers/store.controller";
 import { JWTAuth } from "./filters/jwtAuth";
+import cookieParser from "cookie-parser";
 
 /**
  * Represents the api server application.
@@ -31,6 +32,7 @@ export class Server extends ApiServer {
             .use(cors({ exposedHeaders: "x-auth" }))
             .use(express.urlencoded({ extended: false }))
             .use(express.json())
+            .use(cookieParser())
             .use("/images", express.static("./public"))
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
 

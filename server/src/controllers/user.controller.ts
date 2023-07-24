@@ -6,8 +6,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Path, PathParam, QueryParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
-import { userLogin } from "../models/user.schema";
 import { LoginFilter } from "../filters/login.filter";
+import { JWTAuth } from "../filters/jwtAuth";
 
 @Path("/api/users")
 @Tags("Users")
@@ -75,19 +75,35 @@ export class UserController extends ApiController {
      *      }
      */
     @PUT
-    @Path("/")
+    @Path("/update")
     @Response<UserI>(200, "Updates an User.")
     @Response(404, "User not found.")
-    @Action({ route: "/", filters: [UserFilter], fromBody: true, method: HttpMethod.PUT })
-    async update(user: UserI) {
+    @Action({ route: "/update", filters: [UserFilter, JWTAuth], fromBody: true, method: HttpMethod.PUT })
+    async update({ user, decodedToken }: { user: UserI; decodedToken: UserI }) {
         try {
-            const result = await this.userRepo.update(user);
+            if (user.id !== decodedToken.id) throw new Error("Unauthorized");
+            user.password = await bcrypt.hash(user.password, 10);
+            const newUser = {
+                ...decodedToken,
+                name: user.name,
+                lastName: user.lastName,
+                email: user.email,
+                password: user.password,
+            };
+            const result = await this.userRepo.update(newUser);
             return this.httpContext.response.status(201).json({
                 message: "User updated",
                 data: result,
                 error: false,
             });
         } catch (error) {
+            if (error.message === "Unauthorized") {
+                return this.httpContext.response.status(401).json({
+                    message: error.message,
+                    data: null,
+                    error: true,
+                });
+            }
             return this.httpContext.response.status(404).json({
                 message: "User " + error.message,
                 data: null,
@@ -115,21 +131,22 @@ export class UserController extends ApiController {
      *      }
      */
     @POST
-    @Path("/")
+    @Path("/signup")
     @Response<UserI>(200, "Creates an User.")
     @Response(500, "Duplicate Email.")
     @Response(500, "Duplicate idDocumentNumber.")
     @Response(500, "Server Error.")
-    @Action({ route: "/", filters: [UserFilter], fromBody: true, method: HttpMethod.POST })
+    @Action({ route: "/signup", filters: [UserFilter], fromBody: true, method: HttpMethod.POST })
     async post(user: UserI) {
         try {
             user.password = await bcrypt.hash(user.password, 10);
-            await this.userRepo.insertOne(user);
+            console.log(user);
+            const userCreated = await this.userRepo.insertOne(user);
             const token = jwt.sign(user, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.cookie("token", token, { httpOnly: true });
             return this.httpContext.response.status(201).json({
                 message: "User created",
-                data: user,
+                data: { id: userCreated.insertId, ...user },
                 error: false,
             });
         } catch (error) {
@@ -201,23 +218,39 @@ export class UserController extends ApiController {
      * @returns
      */
     @DELETE
-    @Path("/:id")
+    @Path("/")
     @Response<UserI>(200, "User deleted.")
     @Response(404, "User not found.")
-    @Action({ route: "/:id", method: HttpMethod.DELETE })
-    async delete(@PathParam("id") id: number) {
+    @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth] })
+    async delete({ user, decodedToken }: { user: UserI; decodedToken: UserI }) {
         try {
-            const user = await this.userRepo.getById(id);
-            user.status = 0;
-            const userDeleted = await this.userRepo.update(user);
+            if (user.id !== decodedToken.id && decodedToken.rol !== "Admin") throw new Error("Unauthorized");
+            const userdb = await this.userRepo.getById(Number(user.id));
+            if (decodedToken.rol !== "Admin" && !(await bcrypt.compare(user.password, userdb.password))) throw new Error("Unauthorized");
+            userdb.status = 0;
+            const userDeleted = await this.userRepo.update(userdb);
             return this.httpContext.response.status(200).json({
                 message: "User deleted",
                 data: userDeleted,
                 error: false,
             });
         } catch (error) {
-            return this.httpContext.response.status(404).json({
-                message: "User not found",
+            if (error.message === "Unauthorized" || error.message === "data and hash arguments required") {
+                return this.httpContext.response.status(401).json({
+                    message: "Unauthorized",
+                    data: null,
+                    error: true,
+                });
+            }
+            if (error.message === "Unable to retrieve the entity.") {
+                return this.httpContext.response.status(404).json({
+                    message: "User not found",
+                    data: null,
+                    error: true,
+                });
+            }
+            return this.httpContext.response.status(500).json({
+                message: error.message,
                 data: null,
                 error: true,
             });
@@ -259,16 +292,27 @@ export class UserController extends ApiController {
     @Path("/")
     @Response<UserI[]>(200, "Retrieve a list of all Users.")
     @Response(404, "Users not found.")
-    @Action({ route: "/", method: HttpMethod.GET })
-    async getAll() {
+    @Action({ route: "/", method: HttpMethod.GET, filters: [JWTAuth], fromBody: true })
+    async getAll({ decodedToken }: { decodedToken: UserI }) {
         try {
-            const users = await this.userRepo.getAll();
+            const { id } = decodedToken;
+            const user = await this.userRepo.getById(id);
+            if (user.rol !== "Admin") throw new Error("Unauthorized");
+            const users = await this.userRepo.getBy(["name", "lastName", "email", "idDocumentType", "idDocumentNumber", "rol", "status"]);
             return this.httpContext.response.status(200).json({
                 message: "Users found",
                 data: users,
                 error: false,
             });
         } catch (error) {
+            console.log(error.message);
+            if (error.message === "Unauthorized") {
+                return this.httpContext.response.status(401).json({
+                    message: error.message,
+                    data: null,
+                    error: true,
+                });
+            }
             return this.httpContext.response.status(404).json({
                 message: "Users not found",
                 data: null,
