@@ -140,7 +140,6 @@ export class UserController extends ApiController {
     async post(user: UserI) {
         try {
             user.password = await bcrypt.hash(user.password, 10);
-            console.log(user);
             const { insertId } = await this.userRepo.insertOne(user);
             const userCreated = { id: insertId, ...user };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
@@ -289,11 +288,11 @@ export class UserController extends ApiController {
      * Produce a list of all users
      * @returns a list of all users
      */
-    @GET
+    @POST
     @Path("/")
     @Response<UserI[]>(200, "Retrieve a list of all Users.")
     @Response(404, "Users not found.")
-    @Action({ route: "/", method: HttpMethod.GET, filters: [JWTAuth], fromBody: true })
+    @Action({ route: "/", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
     async getAll({ decodedToken }: { decodedToken: UserI }) {
         try {
             const { id } = decodedToken;

@@ -144,7 +144,6 @@ export class ProductController extends ApiController {
                     error: false,
                 });
         } catch (error) {
-            console.error("Product: " + error.message);
             return this.httpContext.response.status(500).json({
                 message: "Product: " + error.message,
                 data: null,
