@@ -1,5 +1,66 @@
 basePath: null
 definitions:
+    CartI:
+        description: ""
+        properties:
+            id:
+                type: integer
+                format: int32
+                description: ""
+            userId:
+                type: integer
+                format: int32
+                description: ""
+            productId:
+                type: integer
+                format: int32
+                description: ""
+        type: object
+        required:
+            - userId
+            - productId
+    UserI:
+        description: ""
+        properties:
+            id:
+                type: integer
+                format: int32
+                description: ""
+            name:
+                type: string
+                description: ""
+            lastName:
+                type: string
+                description: ""
+            email:
+                type: string
+                description: ""
+            password:
+                type: string
+                description: ""
+            idDocumentType:
+                type: string
+                description: ""
+            idDocumentNumber:
+                type: integer
+                format: int32
+                description: ""
+            rol:
+                type: string
+                description: ""
+            status:
+                type: integer
+                format: int32
+                description: ""
+        type: object
+        required:
+            - name
+            - lastName
+            - email
+            - idDocumentType
+            - idDocumentNumber
+            - rol
+            - status
     ProductI:
         description: ""
         properties:
@@ -207,48 +268,6 @@ definitions:
             - name
             - managerId
             - apiUrl
-    UserI:
-        description: ""
-        properties:
-            id:
-                type: integer
-                format: int32
-                description: ""
-            name:
-                type: string
-                description: ""
-            lastName:
-                type: string
-                description: ""
-            email:
-                type: string
-                description: ""
-            password:
-                type: string
-                description: ""
-            idDocumentType:
-                type: string
-                description: ""
-            idDocumentNumber:
-                type: integer
-                format: int32
-                description: ""
-            rol:
-                type: string
-                description: ""
-            status:
-                type: integer
-                format: int32
-                description: ""
-        type: object
-        required:
-            - name
-            - lastName
-            - email
-            - idDocumentType
-            - idDocumentNumber
-            - rol
-            - status
     UserL:
         description: ""
         properties:
@@ -269,7 +288,111 @@ info:
     title: shoppy-api
     version: 1.0.0
 paths:
-    '/api/shop/{storeId}/product/{productId}':
+    /api/cart/:
+        post:
+            operationId: CartGet
+            produces:
+                - application/json
+                - text/html
+            responses:
+                '200':
+                    description: 'Retrieve a cart.'
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/definitions/CartI'
+                '204':
+                    description: 'No content'
+                '404':
+                    description: 'Cart not found.'
+            description: 'GET a cart'
+            tags:
+                - Cart
+            consumes:
+                - application/json
+            parameters:
+                -
+                    description: ""
+                    in: body
+                    name: null
+                    required: true
+                    schema:
+                        type: object
+                        properties:
+                            decodedToken:
+                                $ref: '#/definitions/UserI'
+        delete:
+            operationId: CartDelete
+            produces:
+                - text/html
+            responses:
+                '204':
+                    description: 'No content'
+            description: ""
+            tags:
+                - Cart
+            parameters:
+                -
+                    description: ""
+                    in: body
+                    name: null
+                    required: true
+                    schema:
+                        type: object
+                        properties:
+                            entity:
+                                $ref: '#/definitions/ProductI'
+                            decodedToken:
+                                $ref: '#/definitions/UserI'
+    /api/cart/add:
+        post:
+            operationId: CartAdd
+            produces:
+                - text/html
+            responses:
+                '204':
+                    description: 'No content'
+            description: ""
+            tags:
+                - Cart
+            consumes:
+                - application/json
+            parameters:
+                -
+                    description: ""
+                    in: body
+                    name: null
+                    required: true
+                    schema:
+                        type: object
+                        properties:
+                            entity:
+                                $ref: '#/definitions/ProductI'
+                            decodedToken:
+                                $ref: '#/definitions/UserI'
+    /api/cart/deleteAll:
+        delete:
+            operationId: CartDeleteAll
+            produces:
+                - text/html
+            responses:
+                '204':
+                    description: 'No content'
+            description: ""
+            tags:
+                - Cart
+            parameters:
+                -
+                    description: ""
+                    in: body
+                    name: null
+                    required: true
+                    schema:
+                        type: object
+                        properties:
+                            decodedToken:
+                                $ref: '#/definitions/UserI'
+    '/api/product/{productId}':
         get:
             operationId: ProductGetById
             produces:
@@ -295,7 +418,7 @@ paths:
                     required: true
                     type: number
                     format: double
-    '/api/shop/{storeId}/product/':
+    /api/product/:
         get:
             operationId: ProductGetAll
             produces:
@@ -315,14 +438,7 @@ paths:
             description: 'GET all products from a store id'
             tags:
                 - Products
-            parameters:
-                -
-                    description: ""
-                    in: path
-                    name: storeId
-                    required: true
-                    type: number
-                    format: double
+            parameters: []
         post:
             operationId: ProductPost
             produces:
@@ -377,7 +493,7 @@ paths:
                     required: true
                     schema:
                         $ref: '#/definitions/ProductI'
-    '/api/shop/{storeId}/product/{id}':
+    '/api/product/{id}':
         delete:
             operationId: ProductDelete
             produces:
@@ -498,7 +614,7 @@ paths:
                     name: email
                     required: true
                     type: string
-    /api/users/:
+    /api/users/update:
         put:
             operationId: UserUpdate
             produces:
@@ -522,10 +638,16 @@ paths:
                 -
                     description: ""
                     in: body
-                    name: user
+                    name: null
                     required: true
                     schema:
-                        $ref: '#/definitions/UserI'
+                        type: object
+                        properties:
+                            entity:
+                                $ref: '#/definitions/UserI'
+                            decodedToken:
+                                $ref: '#/definitions/UserI'
+    /api/users/signup:
         post:
             operationId: UserPost
             produces:
@@ -553,26 +675,6 @@ paths:
                     required: true
                     schema:
                         $ref: '#/definitions/UserI'
-        get:
-            operationId: UserGetAll
-            produces:
-                - application/json
-                - text/html
-            responses:
-                '200':
-                    description: 'Retrieve a list of all Users.'
-                    schema:
-                        type: array
-                        items:
-                            $ref: '#/definitions/UserI'
-                '204':
-                    description: 'No content'
-                '404':
-                    description: 'Users not found.'
-            description: 'Produce a list of all users'
-            tags:
-                - Users
-            parameters: []
     /api/users/login:
         post:
             operationId: UserLogin
@@ -601,7 +703,7 @@ paths:
                     required: true
                     schema:
                         $ref: '#/definitions/UserL'
-    '/api/users/{id}':
+    /api/users/:
         delete:
             operationId: UserDelete
             produces:
@@ -622,11 +724,49 @@ paths:
             parameters:
                 -
                     description: ""
-                    in: path
-                    name: id
+                    in: body
+                    name: null
                     required: true
-                    type: number
-                    format: double
+                    schema:
+                        type: object
+                        properties:
+                            entity:
+                                $ref: '#/definitions/UserI'
+                            decodedToken:
+                                $ref: '#/definitions/UserI'
+        post:
+            operationId: UserGetAll
+            produces:
+                - application/json
+                - text/html
+            responses:
+                '200':
+                    description: 'Retrieve a list of all Users.'
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/definitions/UserI'
+                '204':
+                    description: 'No content'
+                '404':
+                    description: 'Users not found.'
+            description: 'Produce a list of all users'
+            tags:
+                - Users
+            consumes:
+                - application/json
+            parameters:
+                -
+                    description: ""
+                    in: body
+                    name: null
+                    required: true
+                    schema:
+                        type: object
+                        properties:
+                            decodedToken:
+                                $ref: '#/definitions/UserI'
+    '/api/users/{id}':
         get:
             operationId: UserGetById
             produces:

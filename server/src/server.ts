@@ -11,6 +11,7 @@ import { UserController } from "./controllers/user.controller";
 import { StoreController } from "./controllers/store.controller";
 import cookieParser from "cookie-parser";
 import { CartController } from "./controllers/cart.controller";
+import { CheckoutController } from "./controllers/checkout.controller";
 
 /**
  * Represents the api server application.
@@ -36,7 +37,7 @@ export class Server extends ApiServer {
             .use("/images", express.static("./public"))
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
 
-        this.registerControllers([HealthController, ProductController, UserController, StoreController, CartController]);
+        this.registerControllers([HealthController, ProductController, UserController, StoreController, CartController, CheckoutController]);
         this.routing.ignoreClosedResponseOnFilters();
         this.routing.registerGlobalFilters([MySqlConnectionFilter]);
     }

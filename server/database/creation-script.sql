@@ -116,8 +116,7 @@ CREATE TABLE IF NOT EXISTS Item (
 );
 
 CREATE TABLE IF NOT EXISTS Cart (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    userId INT NOT NULL,
+    userId INT PRIMARY KEY NOT NULL,
     productId INT NOT NULL,
     CONSTRAINT fk_userId_c FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
     CONSTRAINT fk_productId_c FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE
@@ -165,7 +164,7 @@ CREATE OR REPLACE VIEW product_view AS
         ProductSize ON P.id = ProductSize.productId
     LEFT JOIN
         Size ON ProductSize.sizeId = Size.id
-    GROUP BY 
+    GROUP BY
         P.id,
         P.name,
         P.description,
@@ -178,6 +177,49 @@ CREATE OR REPLACE VIEW product_view AS
         P.url_img,
         P.status;
 
+CREATE OR REPLACE VIEW invoice_view AS
+  SELECT
+    inv.date As date,
+    inv.total AS total,
+    inv.userId AS user,
+    (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', p.name, 'store', s.name))) as products
+  FROM invoice inv
+  JOIN item i ON i.invoiceId = inv.id
+  JOIN product p ON p.id = i.productId
+  JOIN store s ON s.id = p.storeId
+  GROUP BY
+    date,
+    total,
+    user;
+
+/* CREATE OR REPLACE VIEW cart_view AS
+  SELECT
+    Cart.userId,
+    JSON_ARRAYAGG (product_view) AS products
+    FROM Cart
+    LEFT JOIN
+      product_view ON product_view.id = Cart.productId
+    GROUP BY
+      Cart.userId; */
+
+
+CREATE OR REPLACE VIEW cart_view AS
+	SELECT
+    c.id,
+    c.userId,
+    pv.id AS productId,
+    pv.name,
+    pv.description,
+    pv.price,
+    pv.discountPercentage,
+    pv.storeId,
+    pv.url_img,
+    pv.brand,
+    pv.categories,
+    pv.sizes
+	FROM Cart c
+	JOIN
+	  product_view pv ON pv.id = c.productId;
 ########################################################################
 # STORED PROCEDURES
 ########################################################################
