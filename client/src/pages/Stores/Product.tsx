@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { ProductType } from "../../types/types";
 import styles from "./css/product.module.css";
-import { Link, useNavigation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 type ProductProps = {
     product: ProductType;

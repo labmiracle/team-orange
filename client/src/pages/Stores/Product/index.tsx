@@ -2,17 +2,13 @@ import styles from "./index.module.css";
 import { LoaderResponse, ProductType } from "../../../types/types";
 import { useLoaderData } from "react-router-dom";
 import { useCart } from "../../../Context/CartContext";
+import { formatPrice } from "../../utilities/formatPrice";
 
 export function Product() {
     const { data: product } = useLoaderData() as LoaderResponse<ProductType>;
     const { addProduct } = useCart();
 
     console.log(product);
-    function formatPrice(price: number) {
-        const formattedPrice = new Intl.NumberFormat("es-AR", { currency: "ARS", style: "currency" }).format(price);
-
-        return formattedPrice;
-    }
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();

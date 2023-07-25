@@ -67,11 +67,13 @@ ul {
 	border: none;
 	background-color: transparent;
 	cursor: pointer;
+	transition: all 100ms ease-in-out;
 }
 
 .button_cart:hover,
 .button_signup:hover {
-	box-shadow: 0 0 5px 5px var(--black);
+	border-radius: 4px;
+	/* filter: drop-shadow(0 0 2px #3c3c3c); */
 }
 
 .button_cart svg {
