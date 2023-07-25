@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ProductType, setFilterType } from "../../types/index.d";
+import { ProductType, setFilterType } from "../../types/types";
 
 type Props = [
     ProductType[],

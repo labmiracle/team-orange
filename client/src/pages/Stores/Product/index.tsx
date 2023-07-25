@@ -1,12 +1,13 @@
 import styles from "./index.module.css";
-import { ProductType } from "../../../types";
+import { LoaderResponse, ProductType } from "../../../types/types";
 import { useLoaderData } from "react-router-dom";
 import { useCart } from "../../../Context/CartContext";
 
 export function Product() {
-    const product = useLoaderData() as ProductType;
+    const { data: product } = useLoaderData() as LoaderResponse<ProductType>;
     const { addProduct } = useCart();
 
+    console.log(product);
     function formatPrice(price: number) {
         const formattedPrice = new Intl.NumberFormat("es-AR", { currency: "ARS", style: "currency" }).format(price);
 
@@ -21,13 +22,13 @@ export function Product() {
 
     return (
         <main className={styles.container}>
-            <img src={"../../" + product.url_img} alt="A product image" width={500} />
+            <img src={`http://localhost:4000/${product.url_img}`} alt="A product image" width={500} />
             <div className={styles.infoContainer}>
                 <div className={styles.content}>
                     <p className={styles.title}>{product.name}</p>
-                    {product.discount < 1 ? (
+                    {product.discountPercentage < 1 ? (
                         <div className={styles.offerPriceContainer}>
-                            <p className={styles.price}>{formatPrice(product.price * product.discount)}</p>
+                            <p className={styles.price}>{formatPrice(product.price * product.discountPercentage)}</p>
                             <p className={styles.oldPrice}>{formatPrice(product.price)}</p>
                         </div>
                     ) : (

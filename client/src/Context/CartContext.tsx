@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { ProductType } from "../types";
+import { ProductType } from "../types/types";
 
 interface CartItem {
     product: ProductType;
@@ -24,10 +24,6 @@ export function useCart() {
     if (!authContext) throw new Error("You have to wrap your app with cartProvider");
 
     const { cart, setCart } = authContext;
-
-    useEffect(() => {
-        console.log(cart);
-    }, [cart]);
 
     function addProduct(product: ProductType, amount: number) {
         if (isNaN(amount)) return;

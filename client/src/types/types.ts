@@ -1,5 +1,3 @@
-export as namespace Types;
-
 export type ProductType = {
     id: number;
     name: string;
@@ -30,3 +28,9 @@ export type StoreType = {
 };
 
 export type setFilterType = ({ type, size }: { type?: string; size?: string }) => void;
+
+export type LoaderResponse<T> = {
+    data: T;
+    message: string;
+    error: boolean;
+};

@@ -2,7 +2,7 @@
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useProducts } from "../utilities/useProducts";
-import { StoreType } from "../../types";
+import { StoreType } from "../../types/types";
 import { setColors } from "../utilities/setColors";
 import Product from "./Product";
 import Types from "./Types";
@@ -36,9 +36,9 @@ export default function Store() {
             <Sizes isCurrentFilter={filter.current.size} setFilter={setFilter} viewWindow={"big"} />
             <Types isCurrentFilter={filter.current.type} setFilter={setFilter} viewWindow={"big"} />
             <div className={styles.grid}>
-                {products.map((product, i) => 
+                {products.map((product, i) => (
                     <Product product={product} key={i} sequencer={sequencer} setSequencer={setSequencer} />
-                )}
+                ))}
             </div>
         </div>
     );

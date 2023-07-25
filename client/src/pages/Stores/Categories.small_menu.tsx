@@ -1,6 +1,6 @@
 import Sizes from "./Sizes";
 import Types from "./Types";
-import { setFilterType } from "../../types";
+import { setFilterType } from "../../types/types";
 import { useState } from "react";
 import styles from "./css/menu.module.css";
 import MenuSVG from "../../assets/MenuSVG";
@@ -18,7 +18,9 @@ export default function CategoriesSmallMenu({ isCurrentFilter, setFilter }: Prop
 
     return (
         <div className={styles.menu_container}>
-            <div onClick={() => setVisibility(last => !last)} className={visible ? styles.menu_background : styles.hidden}></div>
+            <div
+                onClick={() => setVisibility(last => !last)}
+                className={visible ? styles.menu_background : styles.hidden}></div>
             <button className={styles.menu_button} onClick={() => setVisibility(last => !last)}>
                 <MenuSVG />
             </button>

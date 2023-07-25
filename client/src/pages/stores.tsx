@@ -1,4 +1,4 @@
-import { StoreType } from "../types";
+import { StoreType } from "../types/types";
 
 /* new Array(10000).fill({
     id: 1,
