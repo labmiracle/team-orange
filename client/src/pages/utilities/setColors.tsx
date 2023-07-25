@@ -1,4 +1,4 @@
-import { ColorsType } from "../../types/index.d";
+import { ColorsType } from "../../types/types";
 /**
  * Set the text color depending on the brightness of the background color
  * @param light lightness of color
@@ -29,9 +29,18 @@ export function setColors(colors: ColorsType) {
     if (root) {
         root.style.setProperty("--text-primary", setTextColor(colors.primary.light));
         root.style.setProperty("--text-secondary", setTextColor(colors.secondary.light));
-        root.style.setProperty("--primary", `hsl(${colors.primary.hue} ${colors.primary.sat}% ${colors.primary.light}%)`);
-        root.style.setProperty("--secondary", `hsl(${colors.secondary.hue} ${colors.secondary.sat}% ${colors.secondary.light}%)`);
-        root.style.setProperty("--tertiary", `hsl(${colors.primary.hue} ${colors.primary.sat - 7}% ${colors.primary.light + 10}%)`);
+        root.style.setProperty(
+            "--primary",
+            `hsl(${colors.primary.hue} ${colors.primary.sat}% ${colors.primary.light}%)`
+        );
+        root.style.setProperty(
+            "--secondary",
+            `hsl(${colors.secondary.hue} ${colors.secondary.sat}% ${colors.secondary.light}%)`
+        );
+        root.style.setProperty(
+            "--tertiary",
+            `hsl(${colors.primary.hue} ${colors.primary.sat - 7}% ${colors.primary.light + 10}%)`
+        );
         root.style.setProperty("--logo-color-filter", `invert(${setLogoColor(colors.primary.light)})`);
     }
 }

@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router-dom";
-import { StoreType, setFilterType } from "../../types";
+import { StoreType, setFilterType } from "../../types/types";
 import styles from "./css/categories.module.css";
 import { useState } from "react";
 

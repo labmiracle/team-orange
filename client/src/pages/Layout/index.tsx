@@ -1,15 +1,16 @@
 import SignUpIconSVG from "../../assets/SignUpIconSVG";
 import CartIconSVG from "../../assets/CartIconSVG";
 import Footer from "./Footer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { Input } from "../../components/ui/Input";
 import { useLoaderData } from "react-router-dom";
-import { StoreName } from "../utilities/storeNamesLoader";
+import { StoreName } from "../../Loaders/storeNamesLoader";
 
 export default function Home() {
     const storeNames = useLoaderData() as StoreName[];
+    const navigate = useNavigate();
     return (
         <div className={styles.container}>
             <nav className={styles.nav}>
@@ -34,7 +35,7 @@ export default function Home() {
                     </ul>
 
                     <div className={styles.buttons_container}>
-                        <button className={styles.button_cart}>
+                        <button className={styles.button_cart} onClick={() => navigate("/cart")}>
                             <CartIconSVG />
                         </button>
                         <button className={styles.button_signup}>

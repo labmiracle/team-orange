@@ -6,11 +6,11 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Home } from "./pages/Home/";
 import Store from "./pages/Stores/indext.tsx";
-import storeLoader from "./pages/utilities/storeLoader.tsx";
+import { StoresLoader } from "./Loaders/StoreLoader.ts";
+import { ProductsLoader } from "./Loaders/Product.loader.ts";
 import { Login } from "./pages/Login";
 import { AuthProvider } from "./Context/AuthContext.tsx";
 import { Product } from "./pages/Stores/Product/index.tsx";
-import { FetchProduct } from "./pages/Stores/Product/FetchProduct.ts";
 import { CartProvider } from "./Context/CartContext.tsx";
 import { Cart } from "./pages/Cart";
 
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     {
         element: <Layout />,
         errorElement: <ErrorPage />,
-        loader: storesNamesLoader,
+        loader: StoresLoader.getStoresName,
         children: [
             {
                 path: "/",
@@ -27,13 +27,13 @@ const router = createBrowserRouter([
             },
             {
                 path: "/stores/:id",
-                loader: storeLoader,
+                loader: StoresLoader.getStore,
                 element: <Store />,
             },
             {
-                path: "/stores/:id/products/:productId",
+                path: "/products/:productId",
                 element: <Product />,
-                loader: FetchProduct,
+                loader: ProductsLoader.getProduct,
             },
             {
                 path: "/cart",
