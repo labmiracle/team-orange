@@ -9,8 +9,8 @@ import { Configuration } from "./configuration/configuration";
 import { ProductController } from "./controllers/product.controller";
 import { UserController } from "./controllers/user.controller";
 import { StoreController } from "./controllers/store.controller";
-import { JWTAuth } from "./filters/jwtAuth";
 import cookieParser from "cookie-parser";
+import { CartController } from "./controllers/cart.controller";
 
 /**
  * Represents the api server application.
@@ -36,7 +36,7 @@ export class Server extends ApiServer {
             .use("/images", express.static("./public"))
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
 
-        this.registerControllers([HealthController, ProductController, UserController, StoreController]);
+        this.registerControllers([HealthController, ProductController, UserController, StoreController, CartController]);
         this.routing.ignoreClosedResponseOnFilters();
         this.routing.registerGlobalFilters([MySqlConnectionFilter]);
     }

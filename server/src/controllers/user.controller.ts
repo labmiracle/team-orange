@@ -79,16 +79,16 @@ export class UserController extends ApiController {
     @Response<UserI>(200, "Updates an User.")
     @Response(404, "User not found.")
     @Action({ route: "/update", filters: [UserFilter, JWTAuth], fromBody: true, method: HttpMethod.PUT })
-    async update({ user, decodedToken }: { user: UserI; decodedToken: UserI }) {
+    async update({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
         try {
-            if (user.id !== decodedToken.id) throw new Error("Unauthorized");
-            user.password = await bcrypt.hash(user.password, 10);
+            if (entity.id !== decodedToken.id) throw new Error("Unauthorized");
+            entity.password = await bcrypt.hash(entity.password, 10);
             const newUser = {
                 ...decodedToken,
-                name: user.name,
-                lastName: user.lastName,
-                email: user.email,
-                password: user.password,
+                name: entity.name,
+                lastName: entity.lastName,
+                email: entity.email,
+                password: entity.password,
             };
             const result = await this.userRepo.update(newUser);
             return this.httpContext.response.status(201).json({
@@ -141,12 +141,13 @@ export class UserController extends ApiController {
         try {
             user.password = await bcrypt.hash(user.password, 10);
             console.log(user);
-            const userCreated = await this.userRepo.insertOne(user);
-            const token = jwt.sign(user, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
+            const { insertId } = await this.userRepo.insertOne(user);
+            const userCreated = { id: insertId, ...user };
+            const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.cookie("token", token, { httpOnly: true });
             return this.httpContext.response.status(201).json({
                 message: "User created",
-                data: { id: userCreated.insertId, ...user },
+                data: userCreated,
                 error: false,
             });
         } catch (error) {
@@ -222,11 +223,11 @@ export class UserController extends ApiController {
     @Response<UserI>(200, "User deleted.")
     @Response(404, "User not found.")
     @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth] })
-    async delete({ user, decodedToken }: { user: UserI; decodedToken: UserI }) {
+    async delete({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
         try {
-            if (user.id !== decodedToken.id && decodedToken.rol !== "Admin") throw new Error("Unauthorized");
-            const userdb = await this.userRepo.getById(Number(user.id));
-            if (decodedToken.rol !== "Admin" && !(await bcrypt.compare(user.password, userdb.password))) throw new Error("Unauthorized");
+            if (entity.id !== decodedToken.id && decodedToken.rol !== "Admin") throw new Error("Unauthorized");
+            const userdb = await this.userRepo.getById(Number(entity.id));
+            if (decodedToken.rol !== "Admin" && !(await bcrypt.compare(entity.password, userdb.password))) throw new Error("Unauthorized");
             userdb.status = 0;
             const userDeleted = await this.userRepo.update(userdb);
             return this.httpContext.response.status(200).json({

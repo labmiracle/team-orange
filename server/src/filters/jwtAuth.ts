@@ -8,9 +8,9 @@ export class JWTAuth implements IFilter {
         const token = httpContext.request.cookies.token;
         try {
             if (!token) throw new Error("Token not found");
-            const user = httpContext.request.body;
+            const entity = httpContext.request.body;
             httpContext.request.body = {};
-            httpContext.request.body.user = user;
+            httpContext.request.body.entity = entity;
             const decodedToken = jwt.verify(token, process.env.SHOPPY__ACCESS_TOKEN) as JwtPayload;
             delete decodedToken.iat;
             delete decodedToken.exp;

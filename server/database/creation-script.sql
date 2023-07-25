@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS StoreColor (
     CONSTRAINT fk_storeId_sc FOREIGN KEY (storeId) REFERENCES Store(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Purchase (
+CREATE TABLE IF NOT EXISTS Invoice (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     date DATE NOT NULL,
     total DECIMAL(15,2) NOT NULL,
@@ -110,24 +110,19 @@ CREATE TABLE IF NOT EXISTS Item (
     total DECIMAL(15,2) NOT NULL,
     unitPrice DECIMAL(10,2) NOT NULL,
     productId INT NOT NULL,
-    purchaseId  INT NOT NULL,
+    invoiceId  INT NOT NULL,
     CONSTRAINT fk_productId_i FOREIGN KEY (productId) REFERENCES Product(id),
-    CONSTRAINT fk_purchaseId_i FOREIGN KEY (purchaseId) REFERENCES Purchase(id)
+    CONSTRAINT fk_purchaseId_i FOREIGN KEY (invoiceId) REFERENCES Invoice(id)
 );
 
 CREATE TABLE IF NOT EXISTS Cart (
     id INT PRIMARY KEY AUTO_INCREMENT,
     userId INT NOT NULL,
-    CONSTRAINT fk_userId_c FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    productId INT NOT NULL,
+    CONSTRAINT fk_userId_c FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+    CONSTRAINT fk_productId_c FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS CartItem (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    cartId INT NOT NULL,
-    productId INT NOT NULL,
-    CONSTRAINT fk_cartId_ci FOREIGN KEY (cartId) REFERENCES Cart(id) ON DELETE CASCADE,
-    CONSTRAINT fk_productId_ci FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE
-);
 
 ########################################################################
 # TABLE UPGRADES
@@ -210,9 +205,9 @@ VALUES
 
 INSERT INTO User (name, lastName, email, password, idDocumentType, idDocumentNumber, rol)
 VALUES
-  ('John', 'Doe', 'john.doe@example.com', 'password123', 'DNI', '1234567891', 'Manager'),
-  ('Joe', 'Schmo', 'joe.schmo@example.com', 'password123', 'DNI', '1234567892', 'Manager'),
-  ('Pedro', 'Perez', 'perdro.perez@example.com', 'password123', 'DNI', '1234567893', 'Manager');
+  ('John', 'Doe', 'admin@example.com', 'test1234', 'DNI', '1234567891', 'admin'),
+  ('Joe', 'Schmo', 'manager@example.com', 'test1234', 'DNI', '1234567892', 'manager'),
+  ('Pedro', 'Perez', 'client@example.com', 'test1234', 'DNI', '1234567893', 'client');
 
 INSERT INTO Store (name, managerId, apiUrl)
 VALUES

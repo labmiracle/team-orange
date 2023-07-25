@@ -6,7 +6,7 @@ import { BatchDbCommand } from "./commands/batch.command";
 import { ReplaceDbCommand } from "./commands/replace.command";
 import { InsertDbCommand } from "./commands/insert.command";
 import { ReadonlyRepositoryBase, RowType } from "./readonly.repository";
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, format } from "mysql2";
 
 export abstract class EditRepositoryBase<TEntity, TId = number> extends ReadonlyRepositoryBase<TEntity, TId> {
     constructor(dependencyContainer: DependencyContainer, connection: MySqlConnection, entityType: ObjectType<TEntity>, tableName: string, idColumn = "id") {
@@ -47,8 +47,10 @@ export abstract class EditRepositoryBase<TEntity, TId = number> extends Readonly
         return entity;
     }
 
-    async delete(id: TId): Promise<void> {
-        const [result] = await this.connection.connection.query<ResultSetHeader>(`DELETE FROM \`${this.tableName}\` WHERE \`${this.idColumn}\`=?`, [id]);
+    async delete(columns: string[], args: any[]): Promise<void> {
+        const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
+        const query = format(`DELETE FROM \`${this.tableName}\` WHERE ` + conditions, args);
+        const [result] = await this.connection.connection.query<ResultSetHeader>(query);
         if (!result.affectedRows) throw new Error("not found");
     }
 
