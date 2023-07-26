@@ -93,6 +93,7 @@ export class UserController extends ApiController {
                 password: entity.password,
             };
             const result = await this.userRepo.update(newUser);
+            delete result.password;
             return this.httpContext.response.status(201).json({
                 message: "User updated",
                 data: result,
@@ -145,6 +146,7 @@ export class UserController extends ApiController {
         try {
             user.password = await bcrypt.hash(user.password, 10);
             const { insertId } = await this.userRepo.insertOne(user);
+            delete user.password;
             const userCreated = { id: insertId, ...user };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.cookie("token", token, { httpOnly: true });
@@ -235,6 +237,7 @@ export class UserController extends ApiController {
             if (decodedToken.rol !== "Admin" && !(await bcrypt.compare(entity.password, userdb.password))) throw new Error("Unauthorized");
             userdb.status = 0;
             const userDeleted = await this.userRepo.update(userdb);
+            delete userDeleted.password;
             return this.httpContext.response.status(200).json({
                 message: "User deleted",
                 data: userDeleted,
@@ -276,6 +279,7 @@ export class UserController extends ApiController {
     async getById(@PathParam("id") id: number) {
         try {
             const user = await this.userRepo.getById(Number(id));
+            delete user.password;
             return this.httpContext.response.status(200).json({
                 message: "User found",
                 data: user,
