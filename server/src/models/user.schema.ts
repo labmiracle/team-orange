@@ -50,11 +50,11 @@ export const userSchema = Joi.object({
             "string.email": "Invalid email format",
             "any.required": "Email is a required field",
         }),
-    rol: Joi.string().valid("client", "manager", "admin").messages({
+    rol: Joi.string().optional().valid("client", "manager", "admin").messages({
         "any.required": "Rol is a required field",
         "any.only": "Invalid rol, it must be 'client', 'manager' or 'admin'",
     }),
-    status: Joi.number(),
+    status: Joi.number().optional(),
 });
 
 export const userValidations = (req: Request, res: Response, next: NextFunction) => {
