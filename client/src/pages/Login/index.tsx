@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { useLogin } from "../../services/useLogin";
 import { Input } from "../../components/ui/Input";
@@ -7,13 +7,15 @@ import { Button } from "../../components/ui/Button";
 
 export function Login() {
     const { setUser } = useAuth();
-    const { isAuth, data } = useLogin();
+    const { auth, data } = useLogin();
+    const navigate = useNavigate();
 
     function login(event: React.FormEvent) {
         event.preventDefault();
-        const { user, password } = event.target as HTMLFormElement;
-        isAuth(user.value, password.value);
+        const { email, password } = event.target as HTMLFormElement;
+        auth(email.value, password.value);
         if (data) {
+            console.log(data);
             setUser(data);
         }
     }
@@ -28,15 +30,17 @@ export function Login() {
             <main className={styles.main}>
                 <p className={styles.title}>Iniciar sesion</p>
                 <form onSubmit={login} className={styles.loginForm}>
-                    <Input id="user" type="text" required>
-                        Usuario
+                    <Input id="email" type="text" required>
+                        Correo electronico
                     </Input>
                     <Input id="password" type="password" required>
                         Clave
                     </Input>
                     <div className={styles.buttonContainer}>
                         <Button type="submit">Acceder</Button>
-                        <Button variant="ghost">Registrarse</Button>
+                        <Button variant="ghost" type="button" onClick={() => navigate("/register")}>
+                            Registrarse
+                        </Button>
                     </div>
                 </form>
             </main>

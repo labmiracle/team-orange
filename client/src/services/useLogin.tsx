@@ -1,13 +1,22 @@
 import { useState } from "react";
 
+type RegisterData = {
+    email: string;
+    password: string;
+    name: string;
+    lastname: string;
+    docType: string;
+    docNumber: number;
+};
+
 export function useLogin() {
     const [data, setData] = useState();
-    const isAuth = (username: string, password: string) => {
-        fetch("https://dummyjson.com/auth/login", {
+    function auth(email: string, password: string) {
+        fetch("http://localhost:4000/api/users/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                username,
+                email,
                 password,
             }),
         })
@@ -17,7 +26,29 @@ export function useLogin() {
                 }
             })
             .then(data => setData(data));
-    };
+    }
 
-    return { data, isAuth };
+    function register({ email, password, name, lastname, docType, docNumber }: RegisterData) {
+        fetch("http://localhost:4000/api/users/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email,
+                password,
+                name,
+                lastName: lastname,
+                idDocumentType: docType,
+                idDocumentNumber: docNumber,
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (!data.error) {
+                    setData(data);
+                }
+            });
+    }
+
+    return { data, auth, register };
 }
