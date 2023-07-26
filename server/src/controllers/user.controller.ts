@@ -18,45 +18,6 @@ export class UserController extends ApiController {
     }
 
     /**
-     * Produce an user with a given email
-     * @example
-     * url/q?email="test@email.com"
-     * @returns
-     * User {
-     *        id: number;
-     *        name: string;
-     *        lastName: string;
-     *        email: string;
-     *        password?: string;
-     *        idDocumentType: string;
-     *        idDocumentNumber: number;
-     *        rol: string;
-     *        status: number;
-     *      }
-     */
-    @GET
-    @Path("/q")
-    @Response<UserI>(200, "Retrieve an User.")
-    @Response(404, "User not found.")
-    @Action({ route: "/q", query: ":email", method: HttpMethod.GET })
-    async getByEmail(@QueryParam("email") email: string) {
-        try {
-            //const { email } = this.httpContext.request.query;
-            const user = await this.userRepo.find({ email: email });
-            return this.httpContext.response.status(200).json({
-                message: "User found",
-                data: user,
-                error: false,
-            });
-        } catch (error) {
-            return this.httpContext.response.status(404).json({
-                message: "User not found",
-                data: null,
-                error: true,
-            });
-        }
-    }
-    /**
      * UPDATES an user
      * entity: UserI - The user to delete
      * decodedToken: UserI - It's the token each user get when they login or signup
@@ -150,6 +111,7 @@ export class UserController extends ApiController {
             const userCreated = { id: insertId, ...user };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.setHeader("x-auth", "Bearer " + token);
+            this.httpContext.response.setHeader("Access-Control-Expose-Headers", "*");
             return this.httpContext.response.status(201).json({
                 message: "User created",
                 data: userCreated,
@@ -204,6 +166,7 @@ export class UserController extends ApiController {
             const { ...userobj } = userdb;
             const token = jwt.sign(userobj, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.setHeader("x-auth", "Bearer " + token);
+            this.httpContext.response.setHeader("Access-Control-Expose-Headers", "*");
             return this.httpContext.response.status(200).json({
                 message: "Login successful",
                 data: userdb,
