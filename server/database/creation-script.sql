@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS User (
     password VARCHAR(255) NOT NULL,
     idDocumentType VARCHAR (20) NOT NULL,
     idDocumentNumber VARCHAR(20) NOT NULL UNIQUE,
-    rol ENUM('Admin', 'Client', 'Manager') NOT NULL,
+    rol ENUM('Admin', 'Client', 'Manager') NOT NULL DEFAULT 'Client',
     status BOOLEAN NOT NULL DEFAULT TRUE
 );
 
