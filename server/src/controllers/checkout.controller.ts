@@ -7,7 +7,8 @@ import { ItemRepository } from "../repositories/item.repository";
 import { CartViewRepository } from "../repositories/cartView.repository";
 import { InvoiceViewRepository } from "../repositories/invoiceView.repository";
 import { CartRepository } from "../repositories/cart.repository";
-import { Tags } from "typescript-rest-swagger";
+import { Tags, Response } from "typescript-rest-swagger";
+import { InvoiceViewI } from "../models/invoiceView";
 
 @Path("/api/cart")
 @Tags("Cart")
@@ -24,24 +25,41 @@ export class CheckoutController extends ApiController {
     }
 
     @POST
-    @Path("/")
-    @Action({ route: "/", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
+    @Path("/get")
+    @Response<InvoiceViewI[]>(200, "Retrieve an invoice.")
+    @Response(404, "Invoice not found.")
+    @Response(500, "Server error.")
+    @Action({ route: "/get", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
     async getInvoice({ decodedToken }: { decodedToken: UserI }) {
         try {
-            return await this.invoiceViewRepo.find({ userId: decodedToken.id });
-        } catch (err) {
-            console.log(err);
-            this.httpContext.response.sendStatus(500);
+            const invoiceView = await this.invoiceViewRepo.find({ userId: decodedToken.id });
+            if (invoiceView.length === 0) throw new Error("No Invoice found");
+            return this.httpContext.response.status(200).json({
+                message: "Invoice found",
+                data: invoiceView,
+                error: false,
+            });
+        } catch (error) {
+            console.error(error);
+            const response = this.httpContext.response;
+            if (error.message === "No Invoice found") response.status(404);
+            else response.status(500);
+            return response.json({
+                message: error.message,
+                data: null,
+                error: true,
+            });
         }
     }
 
     @POST
-    @Path("/")
-    @Action({ route: "/", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
+    @Path("/produce")
+    @Action({ route: "/produce", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
     async produceInvoice({ decodedToken }: { decodedToken: UserI }) {
         try {
             const date = new Date();
             const cart = await this.cartViewRepo.find({ userId: decodedToken.id });
+            if (cart.length === 0) throw new Error("No items in cart");
             const grandTotal = [...cart].reduce((acc, c) => acc + c.total, 0);
             const invoice = await this.invoiceRepo.insertOne({ userId: decodedToken.id, date: date, total: grandTotal });
             for (const item of cart) {
@@ -55,10 +73,22 @@ export class CheckoutController extends ApiController {
                 });
             }
             await this.cartRepo.delete({ userId: decodedToken.id });
-            return await this.invoiceViewRepo.getById(invoice.insertId);
-        } catch (err) {
-            console.log(err);
-            this.httpContext.response.sendStatus(500);
+            const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
+            return this.httpContext.response.status(200).json({
+                message: "Invoice produced",
+                data: invoiceView,
+                error: false,
+            });
+        } catch (error) {
+            console.error(error);
+            const response = this.httpContext.response;
+            if (error.message === "No items in cart") response.status(404);
+            else response.status(500);
+            return response.json({
+                message: error.message,
+                data: null,
+                error: true,
+            });
         }
     }
 }

@@ -2,7 +2,7 @@ import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/para
 import { CartRepository } from "../repositories/cart.repository";
 import { UserI } from "../models/user";
 import { JWTAuth } from "../filters/jwtAuth";
-import { Path, GET, POST, DELETE } from "typescript-rest";
+import { Path, POST, DELETE } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { ProductI } from "../models/product";
 import { CartI } from "../models/cart";
@@ -26,21 +26,22 @@ export class CartController extends ApiController {
     @Path("/")
     @Response<CartI[]>(200, "Retrieve a cart.")
     @Response(404, "Cart not found.")
+    @Response(500, "Server error.")
     @Action({ route: "/", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
     async get({ decodedToken }: { decodedToken: UserI }) {
         try {
             const cart = await this.cartViewRepo.find({ userId: decodedToken.id });
             if (!cart) throw new Error("Cart not found");
-            return cart;
+            return this.httpContext.response.status(200).json({
+                message: "Cart found",
+                data: cart,
+                error: false,
+            });
         } catch (error) {
-            if (error.message) {
-                return this.httpContext.response.status(500).json({
-                    message: error.message,
-                    data: null,
-                    error: true,
-                });
-            }
-            return this.httpContext.response.status(500).json({
+            const response = this.httpContext.response;
+            if (error.message === "Cart not found") response.status(404);
+            else response.status(500);
+            return response.json({
                 message: error.message,
                 data: null,
                 error: true,
@@ -100,21 +101,11 @@ export class CartController extends ApiController {
                 error: false,
             });
         } catch (error) {
-            if (error.message === "Missing ID product") {
-                return this.httpContext.response.status(409).json({
-                    message: error.message,
-                    data: null,
-                    error: true,
-                });
-            }
-            if (error.message === "not found") {
-                return this.httpContext.response.status(404).json({
-                    message: "Product " + error.message,
-                    data: null,
-                    error: true,
-                });
-            }
-            return this.httpContext.response.status(500).json({
+            const response = this.httpContext.response;
+            if (error.message === "Missing ID product") response.status(409);
+            if (error.message === "not found") response.status(404);
+            else response.status(500);
+            return response.json({
                 message: error.message,
                 data: null,
                 error: true,

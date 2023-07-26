@@ -1,10 +1,5 @@
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 
-interface Product {
-    name: string;
-    store: string;
-}
-
 export interface InvoiceViewI {
     /**@IsInt */
     id?: number;
@@ -12,7 +7,7 @@ export interface InvoiceViewI {
     total: number;
     /**@IsInt */
     userId: number;
-    products: Product[];
+    products: { name: string; store: string }[];
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
@@ -21,5 +16,5 @@ export class InvoiceView implements InvoiceViewI {
     date: Date = undefined;
     total = 0;
     userId = 0;
-    products: Product[] = [];
+    products = [{ name: "", store: "" }];
 }

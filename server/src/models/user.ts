@@ -24,7 +24,7 @@ export class User implements UserI {
     password? = "";
     idDocumentType = "";
     idDocumentNumber = 0;
-    rol? = "client";
+    rol? = "";
     status? = 1;
 }
 

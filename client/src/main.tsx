@@ -13,6 +13,7 @@ import { AuthProvider } from "./Context/AuthContext.tsx";
 import { Product } from "./pages/Stores/Product/index.tsx";
 import { CartProvider } from "./Context/CartContext.tsx";
 import { Cart } from "./pages/Cart";
+import { Register } from "./pages/Register/index.tsx";
 
 const router = createBrowserRouter([
     {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />,
+    },
+    {
+        path: "/register",
+        element: <Register />,
     },
 ]);
 
