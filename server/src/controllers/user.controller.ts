@@ -111,7 +111,6 @@ export class UserController extends ApiController {
             const userCreated = { id: insertId, ...user };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.setHeader("x-auth", "Bearer " + token);
-            this.httpContext.response.setHeader("Access-Control-Expose-Headers", "*");
             return this.httpContext.response.status(201).json({
                 message: "User created",
                 data: userCreated,
@@ -166,7 +165,6 @@ export class UserController extends ApiController {
             const { ...userobj } = userdb;
             const token = jwt.sign(userobj, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.setHeader("x-auth", "Bearer " + token);
-            this.httpContext.response.setHeader("Access-Control-Expose-Headers", "*");
             return this.httpContext.response.status(200).json({
                 message: "Login successful",
                 data: userdb,
