@@ -73,8 +73,8 @@ export class StoreController extends ApiController {
     async getById(@PathParam("storeId") storeId: number) {
         try {
             const store = await this.storeRepo.getById(Number(storeId));
-            const products = await this.productRepo.find(["storeId", "status"], [Number(storeId), 1]);
-            const colorsResponse = await this.storeColorRepo.find(["storeId"], [Number(storeId)]);
+            const products = await this.productRepo.find({ storeId: Number(storeId), status: 1 });
+            const colorsResponse = await this.storeColorRepo.find({ storeId: Number(storeId) });
             const colorsObj: Colors = {} as Colors;
             for (const color of colorsResponse) {
                 const type = color.type.toLowerCase();
@@ -123,7 +123,7 @@ export class StoreController extends ApiController {
             if (products.length > 0) {
                 for (const product of products) {
                     const { categories, sizes, brand, ...rest } = product;
-                    const brandName = await this.brandRepo.find(["name"], [brand]);
+                    const brandName = await this.brandRepo.find({ name: brand });
                     const result = await this.productDBRepo.insertOne({
                         brandId: brandName[0].id,
                         ...rest,
@@ -131,7 +131,7 @@ export class StoreController extends ApiController {
                     if (!result.insertId) throw new Error("Product creation failed");
 
                     for (const category of categories) {
-                        const categoryResponse = await this.categoryRepo.find(["name"], [category]);
+                        const categoryResponse = await this.categoryRepo.find({ name: category });
                         if (categoryResponse.length) throw new Error(`${category} is not a valid category`);
                         await this.productCategoryRepo.insertOne({
                             productId: result.insertId,
@@ -140,7 +140,7 @@ export class StoreController extends ApiController {
                     }
 
                     for (const size of sizes) {
-                        const sizeResponse = await this.sizeRepo.find(["name"], [size]);
+                        const sizeResponse = await this.sizeRepo.find({ name: size });
                         if (sizeResponse.length) throw new Error(`${size} is not a valid size`);
                         await this.productSizeRepo.insertOne({
                             productId: result.insertId,

@@ -42,7 +42,7 @@ export class UserController extends ApiController {
     async getByEmail(@QueryParam("email") email: string) {
         try {
             //const { email } = this.httpContext.request.query;
-            const user = await this.userRepo.find(["email"], [email]);
+            const user = await this.userRepo.find({ email: email });
             return this.httpContext.response.status(200).json({
                 message: "User found",
                 data: user,
@@ -58,6 +58,8 @@ export class UserController extends ApiController {
     }
     /**
      * UPDATES an user
+     * entity: UserI - The user to delete
+     * decodedToken: UserI - It's the token each user get when they login or signup
      * @param user
      * @returns
      *
@@ -114,6 +116,8 @@ export class UserController extends ApiController {
 
     /**
      * CREATES an user
+     * entity: UserI - The user to delete
+     * decodedToken: UserI - It's the token each user get when they login or signup
      * @param user
      * @returns
      *
@@ -177,7 +181,7 @@ export class UserController extends ApiController {
     @Action({ route: "/login", fromBody: true, method: HttpMethod.POST, filters: [LoginFilter] })
     async login(user: UserL) {
         try {
-            const [userdb] = await this.userRepo.find(["email"], [user.email]);
+            const [userdb] = await this.userRepo.find({ email: user.email });
             if (!userdb) {
                 return this.httpContext.response.status(401).json({
                     message: "Incorrect username or password",
@@ -214,6 +218,8 @@ export class UserController extends ApiController {
     }
     /**
      * DELETE an user
+     * entity: UserI - The user to delete
+     * decodedToken: UserI - It's the token each user get when they login or signup
      * @param id
      * @returns
      */
@@ -286,6 +292,7 @@ export class UserController extends ApiController {
 
     /**
      * Produce a list of all users
+     * decodedToken: UserI - It's the token each user get when they login or signup
      * @returns a list of all users
      */
     @POST

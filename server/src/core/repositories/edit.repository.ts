@@ -47,9 +47,11 @@ export abstract class EditRepositoryBase<TEntity, TId = number> extends Readonly
         return entity;
     }
 
-    async delete(columns: string[], args: any[]): Promise<void> {
+    async delete(entity: Partial<TEntity>): Promise<void> {
+        const columns = Object.keys(entity);
+        const values = Object.values(entity);
         const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
-        const query = format(`DELETE FROM \`${this.tableName}\` WHERE ` + conditions, args);
+        const query = format(`DELETE FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [result] = await this.connection.connection.query<ResultSetHeader>(query);
         if (!result.affectedRows) throw new Error("not found");
     }

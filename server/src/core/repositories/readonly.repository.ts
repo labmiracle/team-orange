@@ -23,16 +23,22 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         return this.map(rows, this.entityType);
     }
 
-    async find(columns: string[], args: any[]): Promise<TEntity[]> {
+    /**
+     * SELECT * FROM {this.tableName} WHERE entity[0].key = entity[0].value AND entity[1].key = entity[1].value AND ...
+     */
+    async find(entity: Partial<TEntity>): Promise<TEntity[]> {
+        const columns = Object.keys(entity);
+        const values = Object.values(entity);
         const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
-        const query = format(`SELECT * FROM \`${this.tableName}\` WHERE ` + conditions, args);
+        const query = format(`SELECT * FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [rows] = await this.connection.connection.execute(query);
-        //const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${column}\`=?`, [args]);
         return this.map(rows, this.entityType);
     }
-
-    async getBy(args: any[]) {
-        const columns = args.map(column => `\`${column}\``).join(", ");
+    /**
+     * SELECT id, args[0], args[1], ... FROM {this.tableName} WHERE status = 1
+     */
+    async getBy(args: (keyof TEntity)[]) {
+        const columns = args.map(column => `\`${String(column)}\``).join(", ");
         const query = "SELECT id, " + columns + ` FROM \`${this.tableName}\` WHERE status = 1 `;
         const [rows] = await this.connection.connection.execute(query);
         return rows;

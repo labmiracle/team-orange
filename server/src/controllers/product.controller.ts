@@ -112,7 +112,7 @@ export class ProductController extends ApiController {
     async post(product: ProductI) {
         try {
             const { categories, sizes, brand, ...rest } = product;
-            const brandName = await this.brandRepo.find(["name"], [brand]);
+            const brandName = await this.brandRepo.find({ name: brand });
             const result = await this.productDBRepo.insertOne({
                 brandId: brandName[0].id,
                 ...rest,
@@ -120,7 +120,7 @@ export class ProductController extends ApiController {
             if (!result.insertId) throw new Error("Product creation failed");
 
             for (const category of categories) {
-                const categoryResponse = await this.categoryRepo.find(["name"], [category]);
+                const categoryResponse = await this.categoryRepo.find({ name: category });
                 if (categoryResponse.length < 1) throw new Error("Invalid category");
                 await this.productCategoryRepo.insertOne({
                     productId: result.insertId,
@@ -129,7 +129,7 @@ export class ProductController extends ApiController {
             }
 
             for (const size of sizes) {
-                const sizeResponse = await this.sizeRepo.find(["name"], [size]);
+                const sizeResponse = await this.sizeRepo.find({ name: size });
                 if (sizeResponse.length < 1) throw new Error("Invalid size");
                 await this.productSizeRepo.insertOne({
                     productId: result.insertId,
@@ -211,7 +211,7 @@ export class ProductController extends ApiController {
             }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { categories, sizes, brand, ...rest } = product;
-            const brandName = await this.brandRepo.find(["name"], [brand]);
+            const brandName = await this.brandRepo.find({ name: brand });
             const result = await this.productDBRepo.update({ brandId: brandName[0].id, ...rest });
 
             return this.httpContext.response.status(200).json({
