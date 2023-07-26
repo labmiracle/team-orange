@@ -109,15 +109,17 @@ CREATE TABLE IF NOT EXISTS Item (
     quantity INT NOT NULL,
     total DECIMAL(15,2) NOT NULL,
     unitPrice DECIMAL(10,2) NOT NULL,
-    productId INT NOT NULL,
+    productId INT NOT NULL UNIQUE,
     invoiceId  INT NOT NULL,
     CONSTRAINT fk_productId_i FOREIGN KEY (productId) REFERENCES Product(id),
     CONSTRAINT fk_purchaseId_i FOREIGN KEY (invoiceId) REFERENCES Invoice(id)
 );
 
 CREATE TABLE IF NOT EXISTS Cart (
-    userId INT PRIMARY KEY NOT NULL,
-    productId INT NOT NULL,
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    userId INT NOT NULL,
+    productId INT NOT NULL UNIQUE,
+    quantity INT NOT NULL DEFAULT 1,
     CONSTRAINT fk_userId_c FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
     CONSTRAINT fk_productId_c FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE
 );
@@ -179,18 +181,20 @@ CREATE OR REPLACE VIEW product_view AS
 
 CREATE OR REPLACE VIEW invoice_view AS
   SELECT
+    inv.id,
     inv.date As date,
     inv.total AS total,
-    inv.userId AS user,
-    (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', p.name, 'store', s.name))) as products
+    inv.userId,
+    (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', p.name, 'store', s.name, 'price', i.unitPrice, 'quantity', i.quantity, 'total', i.total))) as products
   FROM invoice inv
   JOIN item i ON i.invoiceId = inv.id
   JOIN product p ON p.id = i.productId
   JOIN store s ON s.id = p.storeId
   GROUP BY
+    id,
     date,
     total,
-    user;
+    userId;
 
 /* CREATE OR REPLACE VIEW cart_view AS
   SELECT
@@ -211,6 +215,8 @@ CREATE OR REPLACE VIEW cart_view AS
     pv.name,
     pv.description,
     pv.price,
+    c.quantity,
+    (pv.price*pv.discountPercentage*c.quantity) as total,
     pv.discountPercentage,
     pv.storeId,
     pv.url_img,
@@ -220,6 +226,7 @@ CREATE OR REPLACE VIEW cart_view AS
 	FROM Cart c
 	JOIN
 	  product_view pv ON pv.id = c.productId;
+
 ########################################################################
 # STORED PROCEDURES
 ########################################################################

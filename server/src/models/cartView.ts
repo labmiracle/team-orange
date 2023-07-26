@@ -16,6 +16,9 @@ export interface CartViewI {
     brand: string;
     categories: string[];
     sizes: string[];
+    /**@IsInt */
+    quantity: number;
+    total: number;
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
@@ -32,4 +35,6 @@ export class CartView implements CartViewI {
     brand = "";
     categories: string[] = [];
     sizes: string[] = [];
+    quantity = 0;
+    total = 0;
 }

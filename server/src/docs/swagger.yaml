@@ -15,6 +15,10 @@ definitions:
                 type: integer
                 format: int32
                 description: ""
+            quantity:
+                type: integer
+                format: int32
+                description: ""
         type: object
         required:
             - userId
@@ -290,22 +294,13 @@ info:
 paths:
     /api/cart/:
         post:
-            operationId: CartGet
+            operationId: CheckoutProduceInvoice
             produces:
-                - application/json
                 - text/html
             responses:
-                '200':
-                    description: 'Retrieve a cart.'
-                    schema:
-                        type: array
-                        items:
-                            $ref: '#/definitions/CartI'
                 '204':
                     description: 'No content'
-                '404':
-                    description: 'Cart not found.'
-            description: 'GET a cart'
+            description: ""
             tags:
                 - Cart
             consumes:
@@ -326,9 +321,17 @@ paths:
             produces:
                 - text/html
             responses:
+                '201':
+                    description: 'Delete a product from cart.'
                 '204':
                     description: 'No content'
-            description: ""
+                '404':
+                    description: 'Product not found.'
+                '409':
+                    description: 'Product ID .'
+                '500':
+                    description: 'Server error.'
+            description: "DELETE a cart\r\nentity: ProductI - The product to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup"
             tags:
                 - Cart
             parameters:
@@ -350,9 +353,13 @@ paths:
             produces:
                 - text/html
             responses:
+                '201':
+                    description: 'Add product to cart.'
                 '204':
                     description: 'No content'
-            description: ""
+                '500':
+                    description: 'Server error.'
+            description: "ADD a cart\r\nentity: ProductI - The product to add\r\ndecodedToken: UserI - It's the token each user get when they login or signup"
             tags:
                 - Cart
             consumes:
@@ -376,9 +383,13 @@ paths:
             produces:
                 - text/html
             responses:
+                '201':
+                    description: 'Delete all products from cart.'
                 '204':
                     description: 'No content'
-            description: ""
+                '500':
+                    description: 'Server Error.'
+            description: "DELETE all cart\r\ndecodedToken: UserI - It's the token each user get whent hey login or signup"
             tags:
                 - Cart
             parameters:
@@ -629,7 +640,7 @@ paths:
                     description: 'No content'
                 '404':
                     description: 'User not found.'
-            description: 'UPDATES an user'
+            description: "UPDATES an user\r\nentity: UserI - The user to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup"
             tags:
                 - Users
             consumes:
@@ -662,7 +673,7 @@ paths:
                     description: 'No content'
                 '500':
                     description: 'Server Error.'
-            description: 'CREATES an user'
+            description: "CREATES an user\r\nentity: UserI - The user to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup"
             tags:
                 - Users
             consumes:
@@ -718,7 +729,7 @@ paths:
                     description: 'No content'
                 '404':
                     description: 'User not found.'
-            description: 'DELETE an user'
+            description: "DELETE an user\r\nentity: UserI - The user to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup"
             tags:
                 - Users
             parameters:
@@ -750,7 +761,7 @@ paths:
                     description: 'No content'
                 '404':
                     description: 'Users not found.'
-            description: 'Produce a list of all users'
+            description: "Produce a list of all users\r\ndecodedToken: UserI - It's the token each user get when they login or signup"
             tags:
                 - Users
             consumes:

@@ -17,6 +17,11 @@
 					"type": "integer",
 					"format": "int32",
 					"description": ""
+				},
+				"quantity": {
+					"type": "integer",
+					"format": "int32",
+					"description": ""
 				}
 			},
 			"type": "object",
@@ -379,29 +384,16 @@
 	"paths": {
 		"/api/cart/": {
 			"post": {
-				"operationId": "CartGet",
+				"operationId": "CheckoutProduceInvoice",
 				"produces": [
-					"application/json",
 					"text/html"
 				],
 				"responses": {
-					"200": {
-						"description": "Retrieve a cart.",
-						"schema": {
-							"type": "array",
-							"items": {
-								"$ref": "#/definitions/CartI"
-							}
-						}
-					},
 					"204": {
 						"description": "No content"
-					},
-					"404": {
-						"description": "Cart not found."
 					}
 				},
-				"description": "GET a cart",
+				"description": "",
 				"tags": [
 					"Cart"
 				],
@@ -430,11 +422,23 @@
 					"text/html"
 				],
 				"responses": {
+					"201": {
+						"description": "Delete a product from cart."
+					},
 					"204": {
 						"description": "No content"
+					},
+					"404": {
+						"description": "Product not found."
+					},
+					"409": {
+						"description": "Product ID ."
+					},
+					"500": {
+						"description": "Server error."
 					}
 				},
-				"description": "",
+				"description": "DELETE a cart\r\nentity: ProductI - The product to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup",
 				"tags": [
 					"Cart"
 				],
@@ -465,11 +469,17 @@
 					"text/html"
 				],
 				"responses": {
+					"201": {
+						"description": "Add product to cart."
+					},
 					"204": {
 						"description": "No content"
+					},
+					"500": {
+						"description": "Server error."
 					}
 				},
-				"description": "",
+				"description": "ADD a cart\r\nentity: ProductI - The product to add\r\ndecodedToken: UserI - It's the token each user get when they login or signup",
 				"tags": [
 					"Cart"
 				],
@@ -503,11 +513,17 @@
 					"text/html"
 				],
 				"responses": {
+					"201": {
+						"description": "Delete all products from cart."
+					},
 					"204": {
 						"description": "No content"
+					},
+					"500": {
+						"description": "Server Error."
 					}
 				},
-				"description": "",
+				"description": "DELETE all cart\r\ndecodedToken: UserI - It's the token each user get whent hey login or signup",
 				"tags": [
 					"Cart"
 				],
@@ -869,7 +885,7 @@
 						"description": "User not found."
 					}
 				},
-				"description": "UPDATES an user",
+				"description": "UPDATES an user\r\nentity: UserI - The user to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup",
 				"tags": [
 					"Users"
 				],
@@ -917,7 +933,7 @@
 						"description": "Server Error."
 					}
 				},
-				"description": "CREATES an user",
+				"description": "CREATES an user\r\nentity: UserI - The user to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup",
 				"tags": [
 					"Users"
 				],
@@ -999,7 +1015,7 @@
 						"description": "User not found."
 					}
 				},
-				"description": "DELETE an user",
+				"description": "DELETE an user\r\nentity: UserI - The user to delete\r\ndecodedToken: UserI - It's the token each user get when they login or signup",
 				"tags": [
 					"Users"
 				],
@@ -1045,7 +1061,7 @@
 						"description": "Users not found."
 					}
 				},
-				"description": "Produce a list of all users",
+				"description": "Produce a list of all users\r\ndecodedToken: UserI - It's the token each user get when they login or signup",
 				"tags": [
 					"Users"
 				],

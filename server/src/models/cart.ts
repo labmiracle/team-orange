@@ -7,6 +7,8 @@ export interface CartI {
     userId: number;
     /**@IsInt */
     productId: number;
+    /**@IsInt */
+    quantity?: number;
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
@@ -14,4 +16,5 @@ export class Cart implements CartI {
     id? = 0;
     userId = 0;
     productId = 0;
+    quantity? = 1;
 }
