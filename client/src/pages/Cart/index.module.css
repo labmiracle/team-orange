@@ -3,6 +3,7 @@
 	justify-content: space-between;
 	padding-inline: 4em;
 	padding-block: 2em;
+	width: 100%;
 }
 
 .cartContainer {
@@ -58,3 +59,45 @@
 	justify-content: space-between;
 }
 
+.container form {
+	display: flex;
+	margin: auto;
+	width: 300px;
+	flex-direction: column;
+	gap: 16px;
+	width: fit-content;
+}
+
+.personalInfo {
+	display: flex;
+	gap: 8px;
+	justify-content: space-between;
+}
+
+.name {
+	width: 60%;
+}
+
+.documentNumber {
+	width: 25%;
+}
+
+.cardInfo {
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+}
+
+
+.thirdRow {
+	display: flex;
+	justify-content: space-between;
+}
+
+.expireDate {
+	width: 40%;
+}
+
+.securityCode {
+	width: 15%;
+}
