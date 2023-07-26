@@ -1,4 +1,9 @@
 import { useState } from "react";
+// import { WebFetcher, HttpClient } from "@miracledevs/paradigm-web-fetch";
+// const paradigm = new HttpClient();
+// const fetcher = new WebFetcher();
+
+// paradigm.setFetcher(fetcher);
 
 type RegisterData = {
     email: string;
@@ -45,7 +50,7 @@ export function useLogin() {
             .then(data => {
                 console.log(data);
                 if (!data.error) {
-                    setData(data);
+                    auth(email, password);
                 }
             });
     }
