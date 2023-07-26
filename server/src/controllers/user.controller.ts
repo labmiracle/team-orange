@@ -149,7 +149,7 @@ export class UserController extends ApiController {
             delete user.password;
             const userCreated = { id: insertId, ...user };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
-            this.httpContext.response.setHeader("x-auth", token);
+            this.httpContext.response.setHeader("x-auth", "Bearer " + token);
             return this.httpContext.response.status(201).json({
                 message: "User created",
                 data: userCreated,
@@ -203,7 +203,7 @@ export class UserController extends ApiController {
             delete userdb.password;
             const { ...userobj } = userdb;
             const token = jwt.sign(userobj, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
-            this.httpContext.response.setHeader("x-auth", token);
+            this.httpContext.response.setHeader("x-auth", "Bearer " + token);
             return this.httpContext.response.status(200).json({
                 message: "Login successful",
                 data: userdb,
