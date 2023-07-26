@@ -1,8 +1,103 @@
-.cartContainer {}
+.container {
+	display: flex;
+	justify-content: space-between;
+	padding-inline: 4em;
+	padding-block: 2em;
+	width: 100%;
+}
 
-.paymentDataContainer {}
+.cartContainer {
+	width: 65%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.itemContainer {
+	background: #cdcdcd;
+	width: 100%;
+	border-radius: 4px;
+	display: flex;
+	gap: 16px;
+}
+
+.itemInfo {
+	padding-block-start: 8px;
+}
+
+.paymentDataContainer {
+	width: 30%;
+	display: flex;
+	max-height: 250px;
+	flex-direction: column;
+	justify-content: space-between;
+}
 
 .message {
 	text-align: center;
 	min-height: 200px;
+}
+
+.priceContainer {
+	display: flex;
+	gap: 16px;
+}
+
+.oldPrice {
+	color: crimson;
+	text-decoration: line-through;
+}
+
+.summary {
+	display: flex;
+	flex-direction: column;
+}
+
+.detail {
+	display: flex;
+	padding-block: 8px;
+	justify-content: space-between;
+}
+
+.container form {
+	display: flex;
+	margin: auto;
+	width: 300px;
+	flex-direction: column;
+	gap: 16px;
+	width: fit-content;
+}
+
+.personalInfo {
+	display: flex;
+	gap: 8px;
+	justify-content: space-between;
+}
+
+.name {
+	width: 60%;
+}
+
+.documentNumber {
+	width: 25%;
+}
+
+.cardInfo {
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+}
+
+
+.thirdRow {
+	display: flex;
+	justify-content: space-between;
+}
+
+.expireDate {
+	width: 40%;
+}
+
+.securityCode {
+	width: 15%;
 }

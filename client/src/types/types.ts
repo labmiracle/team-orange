@@ -34,3 +34,8 @@ export type LoaderResponse<T> = {
     message: string;
     error: boolean;
 };
+
+export type StoreName = {
+    id: string;
+    name: string;
+};

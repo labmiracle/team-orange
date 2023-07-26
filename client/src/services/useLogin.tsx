@@ -1,5 +1,4 @@
-import { HttpClient } from "@miracledevs/paradigm-web-fetch";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function useLogin() {
     const [data, setData] = useState();

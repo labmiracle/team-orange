@@ -5,7 +5,7 @@ import ErrorPage from "./pages/Error/";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Home } from "./pages/Home/";
-import Store from "./pages/Stores/indext.tsx";
+import Store from "./pages/Stores/index.tsx";
 import { StoresLoader } from "./Loaders/StoreLoader.ts";
 import { ProductsLoader } from "./Loaders/Product.loader.ts";
 import { Login } from "./pages/Login";
