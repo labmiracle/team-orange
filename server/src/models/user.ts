@@ -10,7 +10,7 @@ export interface UserI {
     idDocumentType: string;
     /**@IsInt */
     idDocumentNumber: number;
-    rol: string;
+    rol?: string;
     /**@IsInt */
     status: number;
 }
@@ -24,7 +24,7 @@ export class User implements UserI {
     password? = "";
     idDocumentType = "";
     idDocumentNumber = 0;
-    rol = "";
+    rol? = "client";
     status = 1;
 }
 
