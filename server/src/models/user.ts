@@ -10,9 +10,9 @@ export interface UserI {
     idDocumentType: string;
     /**@IsInt */
     idDocumentNumber: number;
-    rol: string;
+    rol?: string;
     /**@IsInt */
-    status: number;
+    status?: number;
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
@@ -24,8 +24,8 @@ export class User implements UserI {
     password? = "";
     idDocumentType = "";
     idDocumentNumber = 0;
-    rol = "";
-    status = 1;
+    rol? = "client";
+    status? = 1;
 }
 
 export interface UserL {

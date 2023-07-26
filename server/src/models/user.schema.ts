@@ -70,13 +70,10 @@ export const userValidations = (req: Request, res: Response, next: NextFunction)
 };
 
 export const userLogin = Joi.object({
-    email: Joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
-        .required()
-        .messages({
-            "string.email": "Invalid email format",
-            "any.required": "Email is a required field",
-        }),
+    email: Joi.string().email({ minDomainSegments: 2 }).required().messages({
+        "string.email": "Invalid email format",
+        "any.required": "Email is a required field",
+    }),
     password: Joi.string().min(8).required().messages({
         "string.min": "Invalid password, it must contain more than 8 letters",
         "any.required": "Password is a required field",
