@@ -3,8 +3,8 @@
 ########################################################################
 # drops the database if the database already exists.
 # uncomment this line if you want to recreate the database.
-# DROP DATABASE IF EXISTS `paradigm_api_db`;
-#--default-character-set=tf8mb4
+# DROP DATABASE IF EXISTS `shoppy_db`;
+# FLAGS: --default-character-set=tf8mb4
 # creates a new database.
 CREATE DATABASE IF NOT EXISTS `shoppy_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
@@ -184,9 +184,14 @@ CREATE OR REPLACE VIEW invoice_view AS
     inv.id,
     inv.date As date,
     inv.total AS total,
-    inv.userId,
+    u.name,
+    u.lastName,
+    u.email,
+    u.idDocumentType,
+    u.idDocumentNumber,
     (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', p.name, 'store', s.name, 'price', i.unitPrice, 'quantity', i.quantity, 'total', i.total))) as products
   FROM invoice inv
+  JOIN user u ON u.id = inv.userId
   JOIN item i ON i.invoiceId = inv.id
   JOIN product p ON p.id = i.productId
   JOIN store s ON s.id = p.storeId
@@ -195,17 +200,6 @@ CREATE OR REPLACE VIEW invoice_view AS
     date,
     total,
     userId;
-
-/* CREATE OR REPLACE VIEW cart_view AS
-  SELECT
-    Cart.userId,
-    JSON_ARRAYAGG (product_view) AS products
-    FROM Cart
-    LEFT JOIN
-      product_view ON product_view.id = Cart.productId
-    GROUP BY
-      Cart.userId; */
-
 
 CREATE OR REPLACE VIEW cart_view AS
 	SELECT
