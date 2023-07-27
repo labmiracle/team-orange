@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-import { StoreType, setFilterType } from "../../types/types";
-import styles from "./css/categories.module.css";
+import { StoreType, setFilterType } from "../../../types/types";
+import styles from "./categories.module.css";
 import { useState } from "react";
 
 type Props = {
@@ -10,15 +10,15 @@ type Props = {
 };
 
 /**
- * List of buttons that set the size category
+ * List of buttons that set the type category
  * @isCurrentFilter current set type filter
  * @setFilter takes a type:string or size:string and set the filters for the product grid
  */
-export default function Sizes({ isCurrentFilter, setFilter, viewWindow }: Props) {
+export default function Types({ isCurrentFilter, setFilter, viewWindow }: Props) {
     const { products } = useLoaderData() as StoreType;
-    const [sizes] = useState(() =>
+    const [types] = useState(() =>
         products
-            .map(product => product.sizes)
+            .map(product => product.categories)
             .flat()
             .filter((value, index, array) => array.indexOf(value) === index)
     );
@@ -28,16 +28,16 @@ export default function Sizes({ isCurrentFilter, setFilter, viewWindow }: Props)
     }
 
     return (
-        <ul className={[styles.sizes_category, styles[viewWindow]].join(" ")}>
+        <ul className={[styles.types_category, styles[viewWindow]].join(" ")}>
             <li>
-                <button className={isActive("")} onClick={() => setFilter({ size: "" })}>
+                <button className={isActive("")} onClick={() => setFilter({ type: "" })}>
                     All
                 </button>
             </li>
-            {sizes.map((category, i) => {
+            {types.map((category, i) => {
                 return (
                     <li key={i}>
-                        <button className={isActive(category)} onClick={() => setFilter({ size: category })}>
+                        <button className={isActive(category)} onClick={() => setFilter({ type: category })}>
                             {category}
                         </button>
                     </li>

@@ -1,14 +1,11 @@
-import { NavLink, NavLinkProps } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import styles from "./index.module.css";
+import { LinkProps } from "react-router-dom";
 
-export function Link({ children, className = "", ...props }: NavLinkProps & { className?: string }) {
+export function Link({ children, className = "", ...props }: LinkProps & { className?: string }) {
     return (
-        <li className={className}>
-            <NavLink
-                className={({ isActive }) => `${isActive ? styles.active : styles.inactive} ${styles.link}`}
-                {...props}>
-                {children}
-            </NavLink>
-        </li>
+        <RouterLink className={`${styles.link || ""} ${className}`} {...props}>
+            {children}
+        </RouterLink>
     );
 }

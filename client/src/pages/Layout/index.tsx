@@ -4,10 +4,10 @@ import Footer from "./Footer";
 import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
-import { Input } from "../../components/ui/Input";
+import { NavLink } from "../../components/ui/NavLink";
 import { StoreName } from "../../types/types";
 
-export default function Home() {
+export function Layout() {
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();
     return (
@@ -21,14 +21,13 @@ export default function Home() {
                     <ul className={styles.stores}>
                         {storeNames.map(store => {
                             return (
-                                <Link to={`stores/${store.id}`} key={store.id}>
+                                <NavLink to={`stores/${store.id}`} key={store.id}>
                                     {store.name}
-                                </Link>
+                                </NavLink>
                             );
                         })}
                     </ul>
 
-                    <Input className={styles.search}></Input>
                     <div className={styles.buttons_container}>
                         <button className={styles.button_cart} onClick={() => navigate("/cart")}>
                             <CartIconSVG />

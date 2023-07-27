@@ -4,6 +4,7 @@ import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 export function Cart() {
     const { cart } = useCart();
@@ -17,13 +18,17 @@ export function Cart() {
         setShowForm(false);
     }
 
+    function backToCart() {
+        setShowForm(false);
+    }
+
     if (cart === null) return null;
 
     if (cart.length === 0) return <h1 className={styles.message}>No hay nada en el carrito</h1>;
     return (
         <main className={styles.container}>
             {showForm ? (
-                <form onSubmit={confirmPayment}>
+                <form onSubmit={confirmPayment} className={styles.paymentForm}>
                     <h3>Informacion personal</h3>
                     <div className={styles.personalInfo}>
                         <Input className={styles.name} required>
@@ -48,6 +53,9 @@ export function Cart() {
                         </div>
                     </div>
                     <Button>Confirmar pago</Button>
+                    <Button type="button" variant="ghost" onClick={backToCart}>
+                        Volver
+                    </Button>
                 </form>
             ) : (
                 <>
@@ -80,7 +88,7 @@ export function Cart() {
                             </li>
                         ))}
                     </ul>
-                    <div className={styles.paymentDataContainer}>
+                    <div className={styles.purchaseSummaryContainer}>
                         <div>
                             <h2>Resumen de compra</h2>
                             <div className={styles.summary}>
@@ -88,10 +96,11 @@ export function Cart() {
                                     <p>Productos ({cart.reduce((acc, element) => acc + element.amount, 0)})</p>
                                     {formatPrice(
                                         cart.reduce(
-                                            (_, element) =>
+                                            (acc, element) =>
+                                                acc +
                                                 element.product.price *
-                                                element.product.discountPercentage *
-                                                element.amount,
+                                                    element.product.discountPercentage *
+                                                    element.amount,
                                             0
                                         )
                                     )}
@@ -105,16 +114,19 @@ export function Cart() {
                                 <p>
                                     {formatPrice(
                                         cart.reduce(
-                                            (_, element) =>
+                                            (acc, element) =>
+                                                acc +
                                                 element.product.price *
-                                                element.product.discountPercentage *
-                                                element.amount,
+                                                    element.product.discountPercentage *
+                                                    element.amount,
                                             0
                                         )
                                     )}
                                 </p>
                             </div>
-                            <Button onClick={confirmCartContent}>Continuar</Button>
+                            <Button onClick={confirmCartContent} className={styles.continueButton}>
+                                Continuar
+                            </Button>
                         </div>
                     </div>
                 </>

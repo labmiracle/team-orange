@@ -19,7 +19,7 @@ export function Product() {
 
     return (
         <main className={styles.container}>
-            <img src={`http://localhost:4000/${product.url_img}`} alt="A product image" width={500} />
+            <img src={`http://localhost:4000/${product.url_img}`} alt="A product image" width={300} height={250} />
             <div className={styles.infoContainer}>
                 <div className={styles.content}>
                     <p className={styles.title}>{product.name}</p>
