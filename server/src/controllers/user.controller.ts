@@ -4,7 +4,7 @@ import { UserI, UserL } from "../models/user";
 import { UserFilter } from "../filters/user.filter";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Path, PathParam, QueryParam, GET, POST, DELETE, PUT } from "typescript-rest";
+import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { LoginFilter } from "../filters/login.filter";
 import { JWTAuth } from "../filters/jwtAuth";
@@ -259,14 +259,15 @@ export class UserController extends ApiController {
      * decodedToken: UserI - It's the token each user get when they login or signup
      * @returns a list of all users
      */
-    @POST
+    @GET
     @Path("/")
     @Response<UserI[]>(200, "Retrieve a list of all Users.")
+    @Response(401, "Unauthorized")
     @Response(404, "Users not found.")
-    @Action({ route: "/", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
-    async getAll({ decodedToken }: { decodedToken: UserI }) {
+    @Action({ route: "/", method: HttpMethod.GET, filters: [JWTAuth] })
+    async getAll() {
         try {
-            const { id } = decodedToken;
+            const { id } = this.httpContext.request.body.decodedToken;
             const user = await this.userRepo.getById(id);
             if (user.rol !== "Admin") throw new Error("Unauthorized");
             const users = await this.userRepo.getBy(["name", "lastName", "email", "idDocumentType", "idDocumentNumber", "rol", "status"]);
@@ -276,7 +277,6 @@ export class UserController extends ApiController {
                 error: false,
             });
         } catch (error) {
-            console.log(error.message);
             if (error.message === "Unauthorized") {
                 return this.httpContext.response.status(401).json({
                     message: error.message,
