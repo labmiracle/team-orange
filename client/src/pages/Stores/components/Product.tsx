@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { ProductType } from "../../types/types";
-import styles from "./css/product.module.css";
+import { ProductType } from "../../../types/types";
+import styles from "./product.module.css";
 import { Link } from "react-router-dom";
 
 type ProductProps = {
@@ -10,7 +10,7 @@ type ProductProps = {
     setSequencer: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
-export default function Product({ product, sequencer, setSequencer }: ProductProps) {
+export function Product({ product, sequencer, setSequencer }: ProductProps) {
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {

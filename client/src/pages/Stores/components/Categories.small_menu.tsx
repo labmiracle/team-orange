@@ -1,9 +1,9 @@
 import Sizes from "./Sizes";
 import Types from "./Types";
-import { setFilterType } from "../../types/types";
+import { setFilterType } from "../../../types/types";
 import { useState } from "react";
-import styles from "./css/menu.module.css";
-import MenuSVG from "../../assets/MenuSVG";
+import styles from "./menu.module.css";
+import MenuSVG from "../../../assets/MenuSVG";
 
 type Props = {
     isCurrentFilter: React.MutableRefObject<{

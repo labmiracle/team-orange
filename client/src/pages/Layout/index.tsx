@@ -5,10 +5,9 @@ import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
-import { Input } from "../../components/ui/Input";
 import { StoreName } from "../../types/types";
 
-export default function Home() {
+export function Layout() {
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();
     return (

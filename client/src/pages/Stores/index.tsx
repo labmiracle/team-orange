@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { useProducts } from "../utilities/useProducts";
 import { StoreType } from "../../types/types";
 import { setColors } from "../utilities/setColors";
-import Product from "./Product";
-import Types from "./Types";
-import Sizes from "./Sizes";
-import CategoriesSmallMenu from "./Categories.small_menu";
+import { Product } from "./components/Product";
+import Types from "./components/Types";
+import Sizes from "./components/Sizes";
+import CategoriesSmallMenu from "./components/Categories.small_menu";
 import styles from "./css/index.module.css";
 import Loader from "../Loader";
 import { useNavigation } from "react-router-dom";
 
-export default function Store() {
+export function Store() {
     const navigation = useNavigation();
     const data = useLoaderData() as StoreType;
     const [products, setProducts, filter, setFilter] = useProducts(data.products);
