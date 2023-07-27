@@ -194,6 +194,7 @@ export class UserController extends ApiController {
         try {
             if (entity.id !== decodedToken.id && decodedToken.rol !== "Admin") throw new Error("Unauthorized");
             const userdb = await this.userRepo.getById(Number(entity.id));
+            if (userdb.status === 0) throw new Error("Unable to retrieve the entity.");
             if (decodedToken.rol !== "Admin" && !(await bcrypt.compare(entity.password, userdb.password))) throw new Error("Unauthorized");
             userdb.status = 0;
             const userDeleted = await this.userRepo.update(userdb);
