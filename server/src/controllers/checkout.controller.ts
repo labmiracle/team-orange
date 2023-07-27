@@ -11,13 +11,15 @@ import { Tags, Response } from "typescript-rest-swagger";
 import { InvoiceViewI } from "../models/invoiceView";
 import nodemailer from "nodemailer";
 import setEmail from "../utils/setEmailInvoice";
+import dotenv from "dotenv";
+dotenv.config();
 
 const transport = nodemailer.createTransport({
     host: "smtp.ethereal.email",
     port: 587,
     auth: {
-        user: "kurtis.lang7@ethereal.email",
-        pass: "Yx5wWMV8q2hVcxTmAu",
+        user: process.env.NODEMAILER_USER,
+        pass: process.env.NODEMAILER_PASSWORD,
     },
 });
 

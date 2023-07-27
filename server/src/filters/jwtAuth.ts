@@ -8,11 +8,10 @@ export class JWTAuth implements IFilter {
         const token = httpContext.request.header("x-auth");
         try {
             if (!token) throw new Error("Token not found");
-            token.replace("Bearer ", "");
             const entity = httpContext.request.body;
             httpContext.request.body = {};
             httpContext.request.body.entity = entity;
-            const decodedToken = jwt.verify(token, process.env.SHOPPY__ACCESS_TOKEN) as JwtPayload;
+            const decodedToken = jwt.verify(token.replace("Bearer ", ""), process.env.SHOPPY__ACCESS_TOKEN) as JwtPayload;
             delete decodedToken.iat;
             delete decodedToken.exp;
             httpContext.request.body.decodedToken = decodedToken;
