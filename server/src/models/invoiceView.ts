@@ -5,9 +5,20 @@ export interface InvoiceViewI {
     id?: number;
     date: Date;
     total: number;
+    name: string;
+    lastName: string;
+    email: string;
+    idDocumentType: string;
     /**@IsInt */
-    userId: number;
-    products: { name: string; store: string }[];
+    idDocumentNumber: number;
+    products: {
+        name: string;
+        store: string;
+        price: number;
+        /**@IsInt */
+        quantity: number;
+        total: number;
+    }[];
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
@@ -16,5 +27,18 @@ export class InvoiceView implements InvoiceViewI {
     date: Date = undefined;
     total = 0;
     userId = 0;
-    products = [{ name: "", store: "" }];
+    name = "";
+    lastName = "";
+    email = "";
+    idDocumentType = "";
+    idDocumentNumber = 0;
+    products = [
+        {
+            name: "",
+            store: "",
+            price: 0,
+            quantity: 0,
+            total: 0,
+        },
+    ];
 }

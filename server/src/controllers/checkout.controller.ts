@@ -9,6 +9,24 @@ import { InvoiceViewRepository } from "../repositories/invoiceView.repository";
 import { CartRepository } from "../repositories/cart.repository";
 import { Tags, Response } from "typescript-rest-swagger";
 import { InvoiceViewI } from "../models/invoiceView";
+import nodemailer from "nodemailer";
+import setEmail from "../utils/setEmailInvoice";
+
+const transport = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    auth: {
+        user: "kurtis.lang7@ethereal.email",
+        pass: "Yx5wWMV8q2hVcxTmAu",
+    },
+});
+
+const message = {
+    from: "shoppy@email.com",
+    to: "to@email.com",
+    subject: "Invoice",
+    html: "",
+};
 
 @Path("/api/cart")
 @Tags("Cart")
@@ -74,6 +92,8 @@ export class CheckoutController extends ApiController {
             }
             await this.cartRepo.delete({ userId: decodedToken.id });
             const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
+            message.html = setEmail(invoiceView);
+            transport.sendMail(message);
             return this.httpContext.response.status(200).json({
                 message: "Invoice produced",
                 data: invoiceView,
