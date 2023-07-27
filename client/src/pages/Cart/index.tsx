@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "../../Context/CartContext";
 import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
-
+// () => JSON.parse(window.localStorage.getItem("cart") || "")
 export function Cart() {
-    const { cart } = useCart();
+    const { cart, clearCart } = useCart();
     const [showForm, setShowForm] = useState(false);
 
     function confirmCartContent() {
@@ -15,11 +15,19 @@ export function Cart() {
     }
 
     function confirmPayment() {
+        clearCart();
         setShowForm(false);
     }
 
     function backToCart() {
         setShowForm(false);
+    }
+
+    function calculateTotal() {
+        return cart.reduce(
+            (acc, element) => acc + element.product.price * element.product.discountPercentage * element.amount,
+            0
+        );
     }
 
     if (cart === null) return null;
@@ -94,16 +102,7 @@ export function Cart() {
                             <div className={styles.summary}>
                                 <div className={styles.detail}>
                                     <p>Productos ({cart.reduce((acc, element) => acc + element.amount, 0)})</p>
-                                    {formatPrice(
-                                        cart.reduce(
-                                            (acc, element) =>
-                                                acc +
-                                                element.product.price *
-                                                    element.product.discountPercentage *
-                                                    element.amount,
-                                            0
-                                        )
-                                    )}
+                                    {formatPrice(calculateTotal())}
                                 </div>
                             </div>
                         </div>
