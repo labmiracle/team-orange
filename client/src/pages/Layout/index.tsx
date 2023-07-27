@@ -3,6 +3,7 @@ import CartIconSVG from "../../assets/CartIconSVG";
 import Footer from "./Footer";
 import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
+import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
 import { Input } from "../../components/ui/Input";
 import { StoreName } from "../../types/types";
@@ -14,9 +15,9 @@ export default function Home() {
         <div className={styles.container}>
             <nav className={styles.nav}>
                 <div className={`${styles.row} ${styles.secondRow}`}>
-                    <NavLink to="/" className={styles.home}>
+                    <Link to="/" className={styles.home}>
                         <h1>Shoppy</h1>
-                    </NavLink>
+                    </Link>
 
                     <ul className={styles.stores}>
                         {storeNames.map(store => {
@@ -28,7 +29,6 @@ export default function Home() {
                         })}
                     </ul>
 
-                    <Input className={styles.search}></Input>
                     <div className={styles.buttons_container}>
                         <button className={styles.button_cart} onClick={() => navigate("/cart")}>
                             <CartIconSVG />
