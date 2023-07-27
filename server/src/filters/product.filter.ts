@@ -1,6 +1,6 @@
 import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
-import { productSchema } from "../models/product.schema";
+import { productSchema } from "../models/schemas/product.schema";
 
 /**
  * Requires a mysql connection from the connection pool for the ongoing request.

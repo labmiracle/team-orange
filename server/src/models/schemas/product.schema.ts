@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 
 export const productSchema = Joi.object({
@@ -76,53 +75,3 @@ export const productSchema = Joi.object({
     }),
     status: Joi.number(),
 });
-
-/* const paramsSchema = Joi.object({
-    id: Joi.string()
-        .pattern(/^[0-9]+$/, "numbers")
-        .optional(),
-    storeId: Joi.string().pattern(/^[0-9]+$/, "numbers"),
-}); */
-
-/* export const ProductUserValidations = (req: Request, res: Response, next: NextFunction) => {
-    const { error } = productSchema.validate(req.body) && paramsSchema.validate(req.params);
-    if (error) {
-        return res.status(400).json({
-            message: error.details[0].message,
-            data: undefined,
-            error: true,
-        });
-    }
-    return next();
-}; */
-
-export const updateProductSchema = Joi.object({
-    price: Joi.number().positive().optional().messages({
-        "number.positive": "Invalid price, it must be positive number",
-    }),
-    discountPercentage: Joi.number().min(0).max(1).optional().messages({
-        "number.min": "Invalid discount percentage, it must be greater than 0",
-        "number.max": "Invalid discount percentage, it must not exceed 1",
-    }),
-    currentStock: Joi.number().min(0).optional().messages({
-        "number.min": "Invalid current stock, it must be greater than or equal to 0",
-    }),
-    reorderPoint: Joi.number().min(0).optional().messages({
-        "number.min": "Invalid reorder point, it must be greater than or equal to 0",
-    }),
-    minimum: Joi.number().min(0).optional().messages({
-        "number.min": "Invalid minimum, it must be greater than or equal to 0",
-    }),
-});
-
-/* export const ProductUpdateValidations = (req: Request, res: Response, next: NextFunction) => {
-    const { error } = updateProductSchema.validate(req.body) && paramsSchema.validate(req.params);
-    if (error) {
-        return res.status(400).json({
-            message: error.details[0].message,
-            data: undefined,
-            error: true,
-        });
-    }
-    return next();
-}; */

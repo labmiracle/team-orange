@@ -1,6 +1,6 @@
 import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
-import { userLogin } from "../models/user.schema";
+import { userLogin } from "../models/schemas/user.schema";
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class LoginFilter implements IFilter {

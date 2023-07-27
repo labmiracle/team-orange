@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 
 export const userSchema = Joi.object({
@@ -57,18 +56,6 @@ export const userSchema = Joi.object({
     status: Joi.number().optional(),
 });
 
-export const userValidations = (req: Request, res: Response, next: NextFunction) => {
-    const userValidation = userSchema.validate(req.body);
-    if (userValidation.error) {
-        return res.status(400).json({
-            message: userValidation.error.details[0].message,
-            data: undefined,
-            error: true,
-        });
-    }
-    return next();
-};
-
 export const userLogin = Joi.object({
     email: Joi.string().email({ minDomainSegments: 2 }).required().messages({
         "string.email": "Invalid email format",
@@ -79,15 +66,3 @@ export const userLogin = Joi.object({
         "any.required": "Password is a required field",
     }),
 });
-
-export const userLoginValidations = (req: Request, res: Response, next: NextFunction) => {
-    const userValidation = userLogin.validate(req.body);
-    if (userValidation.error) {
-        return res.status(400).json({
-            message: userValidation.error.details[0].message,
-            data: undefined,
-            error: true,
-        });
-    }
-    return next();
-};
