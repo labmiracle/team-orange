@@ -38,17 +38,19 @@ export function Product({ product, sequencer, setSequencer }: ProductProps) {
                     height="200"
                     alt={product.name}
                 />
-                <p>{product.brand.toUpperCase()}</p>
-                <h3 className={styles.product_name}>{product.name.toUpperCase()}</h3>
-                {product.discountPercentage < 1 && (
-                    <p className={styles.product_discount}>-%{100 - product.discountPercentage * 100} discount!</p>
-                )}
-                <p className={styles.product_price}>${(product.price * product.discountPercentage).toFixed(2)}</p>
-                <p>{product.sizes}</p>
-                <p>{product.categories}</p>
+                <div className={styles.infoProduct}>
+                    <p>{product.brand.toUpperCase()}</p>
+                    <h3 className={styles.product_name}>{product.name.toUpperCase()}</h3>
+                    {product.discountPercentage < 1 && (
+                        <p className={styles.product_discount}>-%{100 - product.discountPercentage * 100} discount!</p>
+                    )}
+                    <p className={styles.product_price}>${(product.price * product.discountPercentage).toFixed(2)}</p>
+                    <p>{product.sizes}</p>
+                    <p>{product.categories}</p>
+                </div>
             </div>
             <Link to={`/products/${product.id}`} className={styles.product_buyBtn}>
-                Ver
+                <span>Ver</span>
             </Link>
         </div>
     );
