@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { JWTPayload, decodeJwt } from "jose";
+import { AuthData, User } from "../types/types";
+import { useAuthContext } from "../Context/AuthContext";
+
 // import { WebFetcher, HttpClient } from "@miracledevs/paradigm-web-fetch";
 // const paradigm = new HttpClient();
 // const fetcher = new WebFetcher();
@@ -15,8 +19,9 @@ type RegisterData = {
 };
 
 export function useLogin() {
-    const [data, setData] = useState();
-    function auth(email: string, password: string) {
+    const { user, setUser } = useAuthContext();
+
+    function getAuth(email: string, password: string) {
         fetch("http://localhost:4000/api/users/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -24,13 +29,15 @@ export function useLogin() {
                 email,
                 password,
             }),
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
+        }).then(response => {
+            if (response.ok) {
+                const token = response.headers.get("x-auth");
+                if (token) {
+                    const payload = decodeJwt(token) as User;
+                    setUser({ token, rol: payload.rol, name: payload.name, lastname: payload.lastName });
                 }
-            })
-            .then(data => setData(data));
+            }
+        });
     }
 
     function register({ email, password, name, lastname, docType, docNumber }: RegisterData) {
@@ -50,10 +57,10 @@ export function useLogin() {
             .then(data => {
                 console.log(data);
                 if (!data.error) {
-                    auth(email, password);
+                    getAuth(email, password);
                 }
             });
     }
 
-    return { data, auth, register };
+    return { user, getAuth, register };
 }

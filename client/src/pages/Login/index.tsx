@@ -1,26 +1,20 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
 import { useLogin } from "../../services/useLogin";
 import { Input } from "../../components/ui/Input";
 import styles from "./index.module.css";
 import { Button } from "../../components/ui/Button";
 
 export function Login() {
-    const { setUser } = useAuth();
-    const { auth, data } = useLogin();
+    const { getAuth, user } = useLogin();
     const navigate = useNavigate();
 
     function login(event: React.FormEvent) {
         event.preventDefault();
         const { email, password } = event.target as HTMLFormElement;
-        auth(email.value, password.value);
-        if (data) {
-            console.log(data);
-            setUser(data);
-        }
+        getAuth(email.value, password.value);
     }
 
-    return data ? (
+    return user ? (
         <Navigate to={"/"} />
     ) : (
         <>

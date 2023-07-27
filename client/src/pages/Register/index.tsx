@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuthContext } from "../../Context/AuthContext";
 import { useLogin } from "../../services/useLogin";
 import { Input } from "../../components/ui/Input";
 import styles from "./index.module.css";
@@ -16,7 +16,7 @@ const ErrorMessages = {
 };
 
 export function Register() {
-    const { setUser } = useAuth();
+    const { setUser } = useAuthContext();
     const { register, data } = useLogin();
     const [error, setError] = useState<InputError>(InputError.NONE);
     const navigate = useNavigate();

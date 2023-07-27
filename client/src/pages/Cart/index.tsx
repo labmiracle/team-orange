@@ -3,6 +3,7 @@ import { useCart } from "../../Context/CartContext";
 import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Input } from "../../components/ui/Input";
+import { Button } from "../../components/ui/Button";
 
 export function Cart() {
     const { cart } = useCart();
@@ -46,7 +47,7 @@ export function Cart() {
                             </Input>
                         </div>
                     </div>
-                    <button>Confirmar pago</button>
+                    <Button>Confirmar pago</Button>
                 </form>
             ) : (
                 <>
@@ -113,7 +114,7 @@ export function Cart() {
                                     )}
                                 </p>
                             </div>
-                            <button onClick={confirmCartContent}>Continuar</button>
+                            <Button onClick={confirmCartContent}>Continuar</Button>
                         </div>
                     </div>
                 </>

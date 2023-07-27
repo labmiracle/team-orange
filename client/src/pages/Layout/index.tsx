@@ -13,16 +13,11 @@ export default function Home() {
     return (
         <div className={styles.container}>
             <nav className={styles.nav}>
-                <div className={`${styles.row} ${styles.firstRow}`}>
-                    <h1>Shoppy</h1>
-                    <ul>
-                        <Link to="/">Inicio</Link>
-                        <Link to="/products">Productos</Link>
-                        <Link to="/contacts">Contactos</Link>
-                    </ul>
-                    <Input className={styles.search}></Input>
-                </div>
                 <div className={`${styles.row} ${styles.secondRow}`}>
+                    <Link to="/" className={styles.home}>
+                        <h1>Shoppy</h1>
+                    </Link>
+
                     <ul className={styles.stores}>
                         {storeNames.map(store => {
                             return (
@@ -33,9 +28,10 @@ export default function Home() {
                         })}
                     </ul>
 
+                    <Input className={styles.search}></Input>
                     <div className={styles.buttons_container}>
                         <button className={styles.button_cart} onClick={() => navigate("/cart")}>
-                            <CartIconSVG  />
+                            <CartIconSVG />
                         </button>
                         <button className={styles.button_signup}>
                             <SignUpIconSVG />

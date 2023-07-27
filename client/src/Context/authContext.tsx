@@ -1,18 +1,19 @@
 import React, { createContext, useContext, useState } from "react";
+import { AuthData } from "../types/types";
 
 interface ContextType {
-    user: boolean | null;
-    setUser: React.Dispatch<React.SetStateAction<boolean | null>>;
+    user: AuthData | null;
+    setUser: React.Dispatch<React.SetStateAction<AuthData | null>>;
 }
 const AuthContext = createContext<ContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<boolean | null>(null);
+    const [user, setUser] = useState<AuthData | null>(null);
 
     return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuthContext() {
     const authContext = useContext(AuthContext);
 
     if (authContext) {

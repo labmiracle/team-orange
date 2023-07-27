@@ -3,6 +3,7 @@ import { LoaderResponse, ProductType } from "../../../types/types";
 import { useLoaderData } from "react-router-dom";
 import { useCart } from "../../../Context/CartContext";
 import { formatPrice } from "../../utilities/formatPrice";
+import { Button } from "../../../components/ui/Button";
 
 export function Product() {
     const { data: product } = useLoaderData() as LoaderResponse<ProductType>;
@@ -37,7 +38,7 @@ export function Product() {
                         <label htmlFor="amount">Cantidad</label>
                         <input id="amount" type="number" defaultValue={1} />
                     </div>
-                    <button type="submit">Agregar al carrito</button>
+                    <Button type="submit">Agregar al carrito</Button>
                 </form>
             </div>
         </main>

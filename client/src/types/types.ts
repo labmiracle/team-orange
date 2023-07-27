@@ -39,3 +39,22 @@ export type StoreName = {
     id: string;
     name: string;
 };
+
+export type User = {
+    id: number;
+    name: string;
+    lastName: string;
+    email: string;
+    password: string;
+    idDocumentType: string;
+    idDocumentNumber: number;
+    rol: string;
+    status: number;
+};
+
+export type AuthData = {
+    token: string;
+    rol: string;
+    name: string;
+    lastname: string;
+};

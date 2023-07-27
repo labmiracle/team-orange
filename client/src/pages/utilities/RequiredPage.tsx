@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuthContext } from "../../Context/AuthContext";
 
 export function RequiredPage({ children }: { children: React.ReactNode }) {
-    const { user } = useAuth();
+    const { user } = useAuthContext();
 
     if (user) {
         return <Navigate to={"/"} />;
