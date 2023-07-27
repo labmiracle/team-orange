@@ -104,4 +104,4 @@ dist
 .tern-port
 
 #swagger
-.docs/swagger
+docs/
