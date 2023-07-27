@@ -145,7 +145,7 @@ export class UserController extends ApiController {
     async login(user: UserL) {
         try {
             const [userdb] = await this.userRepo.find({ email: user.email });
-            if (!userdb) {
+            if (!userdb || userdb.status === 0) {
                 return this.httpContext.response.status(401).json({
                     message: "Incorrect username or password",
                     data: undefined,
@@ -153,7 +153,6 @@ export class UserController extends ApiController {
                 });
             }
             const isPasswordValid = await bcrypt.compare(user.password, userdb.password);
-            console.log(isPasswordValid);
             if (!isPasswordValid) {
                 return this.httpContext.response.status(401).json({
                     message: "Incorrect username or password",
