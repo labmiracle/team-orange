@@ -5,10 +5,10 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class JWTAuth implements IFilter {
     async beforeExecute(httpContext: HttpContext) {
-        const token = httpContext.request.header("x-auth").replace("Bearer ", "");
-        console.log(token);
+        const token = httpContext.request.header("x-auth");
         try {
             if (!token) throw new Error("Token not found");
+            token.replace("Bearer ", "");
             const entity = httpContext.request.body;
             httpContext.request.body = {};
             httpContext.request.body.entity = entity;
