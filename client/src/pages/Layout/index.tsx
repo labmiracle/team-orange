@@ -3,7 +3,7 @@ import CartIconSVG from "../../assets/CartIconSVG";
 import Footer from "./Footer";
 import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
-import { Link } from "../../components/ui/Link";
+import { NavLink } from "../../components/ui/NavLink";
 import { Input } from "../../components/ui/Input";
 import { StoreName } from "../../types/types";
 
@@ -14,16 +14,16 @@ export default function Home() {
         <div className={styles.container}>
             <nav className={styles.nav}>
                 <div className={`${styles.row} ${styles.secondRow}`}>
-                    <Link to="/" className={styles.home}>
+                    <NavLink to="/" className={styles.home}>
                         <h1>Shoppy</h1>
-                    </Link>
+                    </NavLink>
 
                     <ul className={styles.stores}>
                         {storeNames.map(store => {
                             return (
-                                <Link to={`stores/${store.id}`} key={store.id}>
+                                <NavLink to={`stores/${store.id}`} key={store.id}>
                                     {store.name}
-                                </Link>
+                                </NavLink>
                             );
                         })}
                     </ul>
