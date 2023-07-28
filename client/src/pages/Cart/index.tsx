@@ -6,11 +6,13 @@ import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useCheckout } from "../utilities/useCheckout";
 import Invoice from "./Invoice";
+import Loader from "../Loader";
 export function Cart() {
     const { cart, clearCart } = useCart();
     const [showForm, setShowForm] = useState(false);
     const { submit } = useCheckout();
     const [invoice, setInvoice] = useState(null);
+    const [isLoading, setLoading] = useState(false);
 
     function confirmCartContent() {
         setShowForm(true);
@@ -18,8 +20,9 @@ export function Cart() {
 
     async function confirmPayment(event: React.FormEvent) {
         event.preventDefault();
+        setLoading(true);
         const invoice = await submit();
-        console.log(invoice);
+        setLoading(false);
         setInvoice(invoice);
         clearCart();
         setShowForm(false);
@@ -39,6 +42,9 @@ export function Cart() {
         if (invoice) return <Invoice {...{ invoice }} />;
         return <h1 className={styles.message}>No hay nada en el carrito</h1>;
     }
+
+    //if (isLoading) return <Loader />;
+
     return (
         <main className={styles.container}>
             {showForm ? (
@@ -66,7 +72,13 @@ export function Cart() {
                             </Input>
                         </div>
                     </div>
-                    <Button type="submit">Confirmar pago</Button>
+                    {isLoading ? (
+                        <div style={{ height: 35, margin: "auto" }}>
+                            <Loader />
+                        </div>
+                    ) : (
+                        <Button type="submit">Confirmar pago</Button>
+                    )}
                     <Button type="button" variant="ghost" onClick={backToCart}>
                         Volver
                     </Button>

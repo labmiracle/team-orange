@@ -41,21 +41,25 @@ export default function Invoice({ invoice }: { invoice: InvoiceI }) {
                 {invoice.idDocumentType}: {invoice.idDocumentNumber}
             </p>
             <table style={{ width: "100%", textAlign: "left" }}>
-                <th>
-                    <b>name</b>
-                </th>
-                <th>
-                    <b>store</b>
-                </th>
-                <th>
-                    <b>price</b>
-                </th>
-                <th>
-                    <b>quantity</b>
-                </th>
-                <th>
-                    <b>total</b>
-                </th>
+                <thead>
+                    <tr>
+                        <th>
+                            <b>name</b>
+                        </th>
+                        <th>
+                            <b>store</b>
+                        </th>
+                        <th>
+                            <b>price</b>
+                        </th>
+                        <th>
+                            <b>quantity</b>
+                        </th>
+                        <th>
+                            <b>total</b>
+                        </th>
+                    </tr>
+                </thead>
                 <tbody>
                     {invoice.products.map((product, i) => {
                         const num = odd(i);
@@ -72,7 +76,7 @@ export default function Invoice({ invoice }: { invoice: InvoiceI }) {
                 </tbody>
             </table>
             <p>
-                Email sento to:{" "}
+                Email enviado a:{" "}
                 <a href={invoice.messageUrl} target="_blank">
                     ethereal email
                 </a>{" "}

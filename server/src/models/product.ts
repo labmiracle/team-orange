@@ -21,6 +21,8 @@ export interface ProductI {
     url_img: string;
     /** @IsInt */
     status?: number;
+    quantity?: number;
+    total?: number;
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
@@ -39,6 +41,8 @@ export class Product implements ProductI {
     brand = "";
     url_img = "";
     status? = 1;
+    quantity? = 0;
+    total? = 0;
 }
 
 export interface ProductDBI {

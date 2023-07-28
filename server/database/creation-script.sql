@@ -203,23 +203,25 @@ CREATE OR REPLACE VIEW invoice_view AS
 
 CREATE OR REPLACE VIEW cart_view AS
 	SELECT
-    c.id,
-    c.userId,
+    i.id,
+    inv.userId,
     pv.id AS productId,
     pv.name,
     pv.description,
     pv.price,
-    c.quantity,
-    (pv.price*pv.discountPercentage*c.quantity) as total,
+    i.quantity,
+    (pv.price*pv.discountPercentage*i.quantity) as total,
     pv.discountPercentage,
     pv.storeId,
     pv.url_img,
     pv.brand,
     pv.categories,
     pv.sizes
-	FROM Cart c
+	FROM Item i
 	JOIN
-	  product_view pv ON pv.id = c.productId;
+	  product_view pv ON pv.id = c.productId
+  JOIN
+    invoice inv ON i.invoiceId = inv.id;
 
 ########################################################################
 # STORED PROCEDURES
