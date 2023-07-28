@@ -41,8 +41,8 @@ export function Layout() {
                             </>
                         ) : (
                             <>
-                                <Link to="/register">create user</Link>
-                                <Link to="/login">login</Link>
+                                <Link to="/register">Registrarse</Link>
+                                <Link to="/login">Ingresar</Link>
                             </>
                         )}
                         <button className={styles.button_cart} onClick={() => navigate("/cart")}>
