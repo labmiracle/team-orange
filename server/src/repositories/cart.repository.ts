@@ -10,10 +10,10 @@ export class CartRepository extends EditRepositoryBase<Cart> {
     constructor(dependecyContainer: DependencyContainer, connection: MySqlConnection) {
         super(dependecyContainer, connection, Cart, "cart");
     }
-    async insertItem(item: Cart) {
-        const columns = Object.keys(item);
-        const values = Object.values(item);
-        const query = format(`INSERT INTO \`${this.tableName}\` (??) VALUES (?) ON DUPLICATE KEY UPDATE quantity=quantity+1`, [columns, values]);
+    async insertItem(items: Cart[]) {
+        const values = items.map(item => Object.values(item));
+        const columns = Object.keys(items[0]);
+        const query = format(`INSERT INTO \`${this.tableName}\` (??) VALUES ? ON DUPLICATE KEY UPDATE quantity=quantity+1`, [columns, values]);
         const [rows] = await this.connection.connection.execute(query);
         return rows;
     }
