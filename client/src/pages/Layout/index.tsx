@@ -1,4 +1,3 @@
-import SignUpIconSVG from "../../assets/SignUpIconSVG";
 import CartIconSVG from "../../assets/CartIconSVG";
 import Footer from "./Footer";
 import { Outlet, useLoaderData, useNavigate } from "react-router-dom";

@@ -5,15 +5,13 @@
 	border-radius: 4px;
 }
 
-.link:visited {
-	color: inherit;
-}
-
 .inactive {
 	background-color: transparent;
+	color: var(--black);
 }
 
 .active {
+	color: var(--text-secondary);
 	background-color: var(--tertiary);
 }
 

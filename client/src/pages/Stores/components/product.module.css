@@ -39,11 +39,9 @@
 	border: none;
 	background-color: #828282;
 	align-self: center;
-	font-weight: bold;
 	width: 100%;
 	text-align: center;
-
-	color: black;
+	color: var(--text-primary);
 	background-color: var(--tertiary);
 }
 
