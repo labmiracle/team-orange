@@ -4,7 +4,7 @@ import { UserI, UserL } from "../models/user";
 import { UserFilter } from "../filters/user.filter";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
+import { Path, PathParam, GET, POST, DELETE, PUT, Security } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { LoginFilter } from "../filters/login.filter";
 import { JWTAuth } from "../filters/jwtAuth";
@@ -110,7 +110,7 @@ export class UserController extends ApiController {
             delete user.password;
             const userCreated = { id: insertId, ...user };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
-            this.httpContext.response.setHeader("x-auth", "Bearer " + token);
+            this.httpContext.response.setHeader("x-auth", token);
             return this.httpContext.response.status(201).json({
                 message: "User created",
                 data: userCreated,
@@ -163,7 +163,7 @@ export class UserController extends ApiController {
             delete userdb.password;
             const { ...userobj } = userdb;
             const token = jwt.sign(userobj, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
-            this.httpContext.response.setHeader("x-auth", "Bearer " + token);
+            this.httpContext.response.setHeader("x-auth", token);
             return this.httpContext.response.status(200).json({
                 message: "Login successful",
                 data: userdb,
@@ -261,6 +261,7 @@ export class UserController extends ApiController {
      */
     @GET
     @Path("/")
+    @Security("Admin")
     @Response<UserI[]>(200, "Retrieve a list of all Users.")
     @Response(401, "Unauthorized")
     @Response(404, "Users not found.")
