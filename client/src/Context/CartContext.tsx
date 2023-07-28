@@ -15,7 +15,7 @@ interface ContextType {
 const CartContext = createContext<ContextType | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const [cart, setCart] = useState<ProductType[]>([]);
+    const [cart, setCart] = useState<ProductType[]>(() => JSON.parse(window.localStorage.getItem("cart") || "[]"));
     /* const { user } = useAuthContext();
     useEffect(() => {
         const load = async () => {
@@ -25,18 +25,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         load();
     }, [user]); */
 
-    useEffect(() => {
+    /* useEffect(() => {
         try {
             const cart = window.localStorage.getItem("cart");
             if (cart && cart?.length > 0) setCart(JSON.parse(cart));
         } catch (err) {
             console.error(err);
         }
-    }, []);
-
-    useEffect(() => {
-        if (cart.length > 0) window.localStorage.setItem("cart", JSON.stringify(cart));
-    }, [cart]);
+    }, []); */
 
     return <CartContext.Provider value={{ cart, setCart }}>{children}</CartContext.Provider>;
 }
@@ -47,6 +43,10 @@ export function useCart() {
     if (!authContext) throw new Error("You have to wrap your app with cartProvider");
 
     const { cart, setCart } = authContext;
+
+    useEffect(() => {
+        window.localStorage.setItem("cart", JSON.stringify(cart));
+    }, [cart]);
 
     /*    useEffect(() => {
         window.localStorage.setItem("cart", JSON.stringify(cart));
@@ -78,7 +78,8 @@ export function useCart() {
     }
 
     function clearCart() {
-        window.localStorage.removeItem("cart");
+        // window.localStorage.setItem("cart", "[]");
+        // window.localStorage.removeItem("cart");
         setCart([]);
     }
 
