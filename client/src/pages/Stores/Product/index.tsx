@@ -9,8 +9,6 @@ export function Product() {
     const { data: product } = useLoaderData() as LoaderResponse<ProductType>;
     const { addProduct } = useCart();
 
-    console.log(product);
-
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const { amount } = event.target as HTMLFormElement;

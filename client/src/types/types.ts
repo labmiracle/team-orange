@@ -12,6 +12,8 @@ export type ProductType = {
     description: string;
     url_img: string;
     sizes: string[];
+    quantity: number;
+    total?: number;
 };
 
 export type Color = { hue: number; sat: number; light: number };

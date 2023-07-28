@@ -1,20 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCart } from "../../Context/CartContext";
 import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
-import { useNavigate } from "react-router-dom";
-// () => JSON.parse(window.localStorage.getItem("cart") || "")
+import { useCheckout } from "../utilities/useCheckout";
+import Invoice from "./Invoice";
 export function Cart() {
     const { cart, clearCart } = useCart();
     const [showForm, setShowForm] = useState(false);
+    const { submit } = useCheckout();
+    const [invoice, setInvoice] = useState(null);
 
     function confirmCartContent() {
         setShowForm(true);
     }
 
-    function confirmPayment() {
+    async function confirmPayment(event: React.FormEvent) {
+        event.preventDefault();
+        const invoice = await submit();
+        console.log(invoice);
+        setInvoice(invoice);
         clearCart();
         setShowForm(false);
     }
@@ -24,15 +30,15 @@ export function Cart() {
     }
 
     function calculateTotal() {
-        return cart.reduce(
-            (acc, element) => acc + element.product.price * element.product.discountPercentage * element.amount,
-            0
-        );
+        return cart.reduce((acc, element) => acc + element.price * element.discountPercentage * element.quantity, 0);
     }
 
     if (cart === null) return null;
 
-    if (cart.length === 0) return <h1 className={styles.message}>No hay nada en el carrito</h1>;
+    if (!cart || cart.length === 0) {
+        if (invoice) return <Invoice {...{ invoice }} />;
+        return <h1 className={styles.message}>No hay nada en el carrito</h1>;
+    }
     return (
         <main className={styles.container}>
             {showForm ? (
@@ -60,7 +66,7 @@ export function Cart() {
                             </Input>
                         </div>
                     </div>
-                    <Button>Confirmar pago</Button>
+                    <Button type="submit">Confirmar pago</Button>
                     <Button type="button" variant="ghost" onClick={backToCart}>
                         Volver
                     </Button>
@@ -69,27 +75,20 @@ export function Cart() {
                 <>
                     <ul className={styles.cartContainer}>
                         {cart.map(item => (
-                            <li className={styles.itemContainer} key={item.product.id}>
-                                <img
-                                    src={`http://localhost:4000/${item.product.url_img}`}
-                                    alt=""
-                                    width={100}
-                                    height={100}
-                                />
+                            <li className={styles.itemContainer} key={item.id}>
+                                <img src={`http://localhost:4000/${item.url_img}`} alt="" width={100} height={100} />
                                 <div className={styles.itemInfo}>
                                     <div>
-                                        {item.product.name} ({item.amount})
+                                        {item.name} ({item.quantity})
                                     </div>
                                     <div className={styles.priceContainer}>
-                                        {item.product.discountPercentage < 1 && (
+                                        {item.discountPercentage < 1 && (
                                             <div className={styles.oldPrice}>
-                                                {formatPrice(item.product.price * item.amount)}
+                                                {formatPrice(item.price * item.quantity)}
                                             </div>
                                         )}
                                         <div className={styles.price}>
-                                            {formatPrice(
-                                                item.product.price * item.product.discountPercentage * item.amount
-                                            )}
+                                            {formatPrice(item.price * item.discountPercentage * item.quantity)}
                                         </div>
                                     </div>
                                 </div>
@@ -101,7 +100,7 @@ export function Cart() {
                             <h2>Resumen de compra</h2>
                             <div className={styles.summary}>
                                 <div className={styles.detail}>
-                                    <p>Productos ({cart.reduce((acc, element) => acc + element.amount, 0)})</p>
+                                    <p>Productos ({cart.reduce((acc, element) => acc + element.quantity, 0)})</p>
                                     {formatPrice(calculateTotal())}
                                 </div>
                             </div>
@@ -114,10 +113,7 @@ export function Cart() {
                                     {formatPrice(
                                         cart.reduce(
                                             (acc, element) =>
-                                                acc +
-                                                element.product.price *
-                                                    element.product.discountPercentage *
-                                                    element.amount,
+                                                acc + element.price * element.discountPercentage * element.quantity,
                                             0
                                         )
                                     )}

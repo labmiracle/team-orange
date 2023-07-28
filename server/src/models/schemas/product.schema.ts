@@ -73,5 +73,9 @@ export const productSchema = Joi.object({
     storeId: Joi.number().optional().messages({
         "any.required": "storeId is a required field",
     }),
-    status: Joi.number(),
+    quantity: Joi.number().required(),
+    total: Joi.number().optional(),
+    status: Joi.number().optional(),
 });
+
+export const productArray = Joi.array().items(productSchema);

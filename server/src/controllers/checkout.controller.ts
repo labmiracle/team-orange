@@ -12,6 +12,7 @@ import { InvoiceViewI } from "../models/invoiceView";
 import nodemailer from "nodemailer";
 import setEmail from "../utils/setEmailInvoice";
 import dotenv from "dotenv";
+import { ProductI } from "../models/product";
 dotenv.config();
 
 const transport = nodemailer.createTransport({
@@ -72,12 +73,15 @@ export class CheckoutController extends ApiController {
         }
     }
 
+    //refactorizar produce
     @POST
     @Path("/produce")
     @Action({ route: "/produce", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
-    async produceInvoice({ decodedToken }: { decodedToken: UserI }) {
+    async produceInvoice({ entity, decodedToken }: { entity: ProductI[]; decodedToken: UserI }) {
         try {
             const date = new Date();
+            const items = entity.map(item => ({ userId: decodedToken.id, productId: item.id }));
+            await this.cartRepo.insertItem(items);
             const cart = await this.cartViewRepo.find({ userId: decodedToken.id });
             if (cart.length === 0) throw new Error("No items in cart");
             const grandTotal = [...cart].reduce((acc, c) => acc + c.total, 0);
@@ -95,10 +99,11 @@ export class CheckoutController extends ApiController {
             await this.cartRepo.delete({ userId: decodedToken.id });
             const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
             message.html = setEmail(invoiceView);
-            transport.sendMail(message);
+            const info = await transport.sendMail(message);
+            const url = nodemailer.getTestMessageUrl(info);
             return this.httpContext.response.status(200).json({
                 message: "Invoice produced",
-                data: invoiceView,
+                data: { ...invoiceView, messageUrl: url },
                 error: false,
             });
         } catch (error) {
