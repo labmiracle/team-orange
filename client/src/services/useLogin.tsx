@@ -35,6 +35,7 @@ export function useLogin() {
                 if (token) {
                     const payload = decodeJwt(token) as User;
                     setUser({ token, rol: payload.rol, name: payload.name, lastname: payload.lastName });
+                    window.localStorage.setItem("user", token);
                 }
             }
         });

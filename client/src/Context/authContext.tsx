@@ -1,14 +1,27 @@
-import React, { createContext, useContext, useState } from "react";
-import { AuthData } from "../types/types";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { AuthData, User } from "../types/types";
+import { decodeJwt } from "jose";
 
 interface ContextType {
     user: AuthData | null;
     setUser: React.Dispatch<React.SetStateAction<AuthData | null>>;
 }
-const AuthContext = createContext<ContextType | null>(null);
+export const AuthContext = createContext<ContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AuthData | null>(null);
+
+    useEffect(() => {
+        try {
+            const token = window.localStorage.getItem("user");
+            if (token && token !== "undefined") {
+                const payload = decodeJwt(token) as User;
+                setUser({ token, rol: payload.rol, name: payload.name, lastname: payload.lastName });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
 
     return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 }
