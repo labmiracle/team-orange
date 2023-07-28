@@ -35,14 +35,14 @@ export const Router = createBrowserRouter([
                 path: "/cart",
                 element: <Cart />,
             },
+            {
+                path: "/login",
+                element: <Login />,
+            },
+            {
+                path: "/register",
+                element: <Register />,
+            },
         ],
-    },
-    {
-        path: "/login",
-        element: <Login />,
-    },
-    {
-        path: "/register",
-        element: <Register />,
     },
 ]);

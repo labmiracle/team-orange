@@ -17,7 +17,7 @@ const ErrorMessages = {
 
 export function Register() {
     const { setUser } = useAuthContext();
-    const { register, data } = useLogin();
+    const { register, user } = useLogin();
     const [error, setError] = useState<InputError>(InputError.NONE);
     const navigate = useNavigate();
 
@@ -38,19 +38,19 @@ export function Register() {
                 docNumber: Number(docNumber.value),
             });
         }
-        if (data) {
-            console.log(data);
-            setUser(data);
+        if (user) {
+            console.log(user);
+            setUser(user);
         }
     }
 
-    return data ? (
+    return user ? (
         <Navigate to={"/"} />
     ) : (
         <>
-            <header className={styles.header}>
+            {/* <header className={styles.header}>
                 <p className={styles.logo}>Shoppy</p>
-            </header>
+            </header> */}
             <main className={styles.main}>
                 <p className={styles.title}>Registrarse</p>
                 <form onSubmit={handleSubmit} className={styles.loginForm}>

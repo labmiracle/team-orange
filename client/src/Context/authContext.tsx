@@ -6,7 +6,7 @@ interface ContextType {
     user: AuthData | null;
     setUser: React.Dispatch<React.SetStateAction<AuthData | null>>;
 }
-export const AuthContext = createContext<ContextType | null>(null);
+export const AuthContext = createContext<ContextType>({ user: {} as AuthData, setUser: () => ({}) as AuthData });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AuthData | null>(null);
@@ -27,13 +27,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useAuthContext() {
-    const authContext = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
 
-    if (authContext) {
+    function logOut() {
+        window.localStorage.removeItem("user");
+        setUser(null);
+    }
+
+    return { user, setUser, logOut };
+    /* if (authContext) {
         const { user, setUser } = authContext;
+
+       
 
         return { user, setUser };
     } else {
         throw new Error("You have to wrap your app with AuthProvider");
-    }
+    } */
 }
