@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import { Path, PathParam, GET, POST, DELETE, PUT, Security } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { LoginFilter } from "../filters/login.filter";
-import { JWTAuth } from "../filters/jwtAuth";
+import { JWTAuth, isAdmin } from "../filters/jwtAuth";
 
 @Path("/api/users")
 @Tags("Users")
@@ -265,12 +265,9 @@ export class UserController extends ApiController {
     @Response<UserI[]>(200, "Retrieve a list of all Users.")
     @Response(401, "Unauthorized")
     @Response(404, "Users not found.")
-    @Action({ route: "/", method: HttpMethod.GET, filters: [JWTAuth] })
+    @Action({ route: "/", method: HttpMethod.GET, filters: [JWTAuth, isAdmin] })
     async getAll() {
         try {
-            const { id } = this.httpContext.request.body.decodedToken;
-            const user = await this.userRepo.getById(id);
-            if (user.rol !== "Admin") throw new Error("Unauthorized");
             const users = await this.userRepo.getBy(["name", "lastName", "email", "idDocumentType", "idDocumentNumber", "rol", "status"]);
             return this.httpContext.response.status(200).json({
                 message: "Users found",
