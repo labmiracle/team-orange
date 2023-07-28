@@ -12,6 +12,7 @@ import { StoreController } from "./controllers/store.controller";
 import cookieParser from "cookie-parser";
 import { CartController } from "./controllers/cart.controller";
 import { CheckoutController } from "./controllers/checkout.controller";
+import path from "path";
 
 /**
  * Represents the api server application.
@@ -35,6 +36,8 @@ export class Server extends ApiServer {
             .use(express.json())
             .use(cookieParser())
             .use("/images", express.static("./public"))
+            .use(express.static(path.join(__dirname, "../../client/dist")))
+            .get("/", (req, res) => res.sendFile(path.join(__dirname, "../../client/dist/index.html")))
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
 
         this.registerControllers([HealthController, ProductController, UserController, StoreController, CartController, CheckoutController]);
