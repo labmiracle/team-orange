@@ -5,14 +5,18 @@ import styles from "./index.module.css";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useCheckout } from "../utilities/useCheckout";
+import { useNavigate } from "react-router-dom";
 import Invoice from "./Invoice";
 import Loader from "../Loader";
+import { useAuthContext } from "../../Context/AuthContext";
 export function Cart() {
     const { cart, clearCart } = useCart();
+    const { user } = useAuthContext();
     const [showForm, setShowForm] = useState(false);
     const { submit } = useCheckout();
     const [invoice, setInvoice] = useState(null);
     const [isLoading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     function confirmCartContent() {
         setShowForm(true);
@@ -20,6 +24,10 @@ export function Cart() {
 
     async function confirmPayment(event: React.FormEvent) {
         event.preventDefault();
+        if (!user) {
+            navigate("/login");
+            return;
+        }
         setLoading(true);
         const invoice = await submit();
         setLoading(false);
