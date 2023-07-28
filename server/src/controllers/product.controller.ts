@@ -27,6 +27,46 @@ export class ProductController extends ApiController {
         super();
     }
 
+    // /**
+    //  * Produce an user with a given email
+    //  * @example
+    //  * url/q?email="test@email.com"
+    //  * @returns
+    //  * User {
+    //  *        id: number;
+    //  *        name: string;
+    //  *        lastName: string;
+    //  *        email: string;
+    //  *        password?: string;
+    //  *        idDocumentType: string;
+    //  *        idDocumentNumber: number;
+    //  *        rol: string;
+    //  *        status: number;
+    //  *      }
+    //  */
+    // @GET
+    // @Path("/q")
+    // @Response<UserI>(200, "Retrieve an User.")
+    // @Response(404, "User not found.")
+    @Action({ route: "/q", method: HttpMethod.GET })
+    async getBySizeCategory() {
+        try {
+            const { size, category } = this.httpContext.request.query;
+            const products = await this.productRepo.getFilteredProducts(size as string, category as string);
+            return this.httpContext.response.status(200).json({
+                message: "Products found",
+                data: products,
+                error: false,
+            });
+        } catch (error) {
+            return this.httpContext.response.status(404).json({
+                message: "Product not found",
+                data: null,
+                error: true,
+            });
+        }
+    }
+
     /**
      * GET a specific product from it's id
      * @param productId
