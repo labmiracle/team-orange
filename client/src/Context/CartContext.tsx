@@ -13,7 +13,7 @@ interface ContextType {
 const CartContext = createContext<ContextType | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const [cart, setCart] = useState<CartItem[]>([]);
+    const [cart, setCart] = useState<CartItem[]>(() => JSON.parse(window.localStorage.getItem("cart") || ""));
 
     return <CartContext.Provider value={{ cart: cart, setCart }}>{children}</CartContext.Provider>;
 }
@@ -24,6 +24,10 @@ export function useCart() {
     if (!authContext) throw new Error("You have to wrap your app with cartProvider");
 
     const { cart, setCart } = authContext;
+
+    useEffect(() => {
+        window.localStorage.setItem("cart", JSON.stringify(cart));
+    }, [cart]);
 
     function addProduct(product: ProductType, amount: number) {
         if (isNaN(amount)) return;
@@ -42,5 +46,9 @@ export function useCart() {
         }
     }
 
-    return { cart, addProduct };
+    function clearCart() {
+        setCart([]);
+    }
+
+    return { cart, addProduct, clearCart };
 }

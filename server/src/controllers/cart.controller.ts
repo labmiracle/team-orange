@@ -66,9 +66,11 @@ export class CartController extends ApiController {
     @Response(201, "Add product to cart.")
     @Response(500, "Server error.")
     @Action({ route: "/add", method: HttpMethod.POST, fromBody: true, filters: [JWTAuth] })
-    async add({ entity, decodedToken }: { entity: ProductI; decodedToken: UserI }) {
+    async add({ entity, decodedToken }: { entity: ProductI[]; decodedToken: UserI }) {
         try {
-            await this.cartRepo.insertItem({ userId: decodedToken.id, productId: entity.id });
+            const items = entity.map(item => ({ userId: decodedToken.id, productId: item.id }));
+            await this.cartRepo.insertItem(items);
+
             return this.httpContext.response.status(201).json({
                 message: "Product added to cart",
                 data: undefined,
