@@ -27,7 +27,13 @@ export function Store() {
     }, [data]);
 
     if (navigation.state === "loading") {
-        return <Loader />;
+        return (
+            <div style={{ minHeight: "100%", margin: "auto", position: "relative" }}>
+                <div style={{ height: "80px", top: "calc(50% - 40px)", position: "absolute" }}>
+                    <Loader />
+                </div>
+            </div>
+        );
     }
 
     return (
