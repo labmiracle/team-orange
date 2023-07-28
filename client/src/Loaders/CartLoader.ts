@@ -1,25 +1,18 @@
-import { Params } from "react-router-dom";
+export const CartLoader = {
+    async getCart() {
+        const token = window.localStorage.getItem("user");
 
-export const StoresLoader = {
-    async getStore({ params }: { params: Params }) {
-        const storeUrl = "http://localhost:4000/api/shop";
-
-        const storeId = params.id;
         try {
-            if (storeId) {
-                const response = await fetch(`${storeUrl}/${storeId}`);
-                const store = await response.json();
-                return store;
+            if (token && token !== undefined) {
+                const response = await fetch("http://localhost:4000/api/cart", {
+                    method: "GET",
+                    headers: { "x-auth": token },
+                });
+                const cart = await response.json();
+                return cart.data;
             }
         } catch (e) {
             return console.error((e as Error).message);
         }
-    },
-
-    async getStoresName() {
-        const storeUrl = "http://localhost:4000/api/shop";
-        const response = await fetch(`${storeUrl}/names`);
-        const names = await response.json();
-        return names;
     },
 };
