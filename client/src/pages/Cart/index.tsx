@@ -33,13 +33,13 @@ export function Cart() {
         const invoice = await submit();
         setLoading(false);
         setInvoice(invoice);
-        setSuccessfullPayment(true);
+        // setSuccessfullPayment(true);
         clearCart();
         setShowForm(false);
     }
 
     useEffect(() => {
-        setSuccessfullPayment(false);
+        // setSuccessfullPayment(false);
     }, []);
 
     function backToCart() {
@@ -54,13 +54,14 @@ export function Cart() {
 
     if (!cart || cart.length === 0) {
         if (invoice) return <Invoice {...{ invoice }} />;
-        return (
-            <div className={styles.notificationContainer}>
-                <h1 className={styles.notification}>
-                    {successfullPayment ? "La compra se realizo con exito 🎉" : "Carrito vacio 🛒"}
-                </h1>
-            </div>
-        );
+
+        // return (
+        //     <div className={styles.notificationContainer}>
+        //         <h1 className={styles.notification}>
+        //             {successfullPayment ? "La compra se realizo con exito 🎉" : "Carrito vacio 🛒"}
+        //         </h1>
+        //     </div>
+        // );
     }
 
     //if (isLoading) return <Loader />;
@@ -99,7 +100,7 @@ export function Cart() {
                     ) : (
                         <Button type="submit">Confirmar pago</Button>
                     )}
-                    <Button type="button" variant="ghost" onClick={backToCart}>
+                    <Button type="button" variant="ghost" className={styles.backButton} onClick={backToCart}>
                         Volver
                     </Button>
                 </form>

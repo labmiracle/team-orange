@@ -134,3 +134,7 @@
 	display: grid;
 	place-items: center;
 }
+
+.backButton {
+	color: black;
+}
