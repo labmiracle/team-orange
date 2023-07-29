@@ -4,20 +4,35 @@ import { useLoaderData } from "react-router-dom";
 import { useCart } from "./../../../services/useCart";
 import { formatPrice } from "../../utilities/formatPrice";
 import { Button } from "../../../components/ui/Button";
+import { useEffect, useRef, useState } from "react";
 
 export function Product() {
     const { data: product } = useLoaderData() as LoaderResponse<ProductType>;
     const { addProduct } = useCart();
+    const [showNotification, setShowNotification] = useState(false);
+
+    const timerRef = useRef<NodeJS.Timeout>();
+
+    useEffect(() => {
+        if (showNotification === true) {
+            timerRef.current = setTimeout(() => setShowNotification(false), 1000);
+        }
+        return () => {
+            console.log("Limpieando timeot");
+            clearTimeout(timerRef.current);
+        };
+    }, [showNotification]);
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const { amount } = event.target as HTMLFormElement;
         addProduct(product, Number(amount.value));
+        setShowNotification(true);
     }
 
     return (
         <main className={styles.container}>
-            <img src={`http://localhost:4000/${product.url_img}`} alt="A product image" width={300} height={250} />
+            <img src={`http://localhost:4000/${product.url_img}`} alt="A product image" width={500} />
             <div className={styles.infoContainer}>
                 <div className={styles.content}>
                     <p className={styles.title}>{product.name}</p>
@@ -31,12 +46,18 @@ export function Product() {
                     )}
                     <p className={styles.description}>{product.description}</p>
                 </div>
+
                 <form className={styles.footer} onSubmit={handleSubmit}>
                     <div className={styles.field}>
                         <label htmlFor="amount">Cantidad</label>
                         <input id="amount" type="number" defaultValue={1} />
                     </div>
-                    <Button type="submit">Agregar al carrito</Button>
+                    <Button
+                        type="submit"
+                        className={`${styles.addToCart} ${showNotification ? styles.notification : ""}`}
+                        disabled={showNotification}>
+                        {showNotification ? "Agregado!" : "Agregar al carrito"}
+                    </Button>
                 </form>
             </div>
         </main>
