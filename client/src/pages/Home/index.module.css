@@ -1,0 +1,38 @@
+.container {
+	height: 100%;
+	display: grid;
+	/* align-content: start; */
+	place-items: center;
+}
+
+.container>section {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	justify-content: space-between;
+	padding-inline: 50px;
+}
+
+.container>section>img {
+	border-radius: 8px;
+}
+
+.copy {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	width: 100%;
+}
+
+.title {
+	font-size: 2rem;
+}
+
+.subtitle {
+	font-size: 1.5rem;
+}
+
+.paragraph {
+	font-size: 1.2rem;
+	max-inline-size: 60ch;
+}

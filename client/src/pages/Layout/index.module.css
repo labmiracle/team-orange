@@ -1,0 +1,119 @@
+.container {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: 70px 1fr auto;
+}
+
+.nav {
+    background-color: var(--tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    background: white;
+    min-width: 768px;
+}
+
+.row {
+    width: 100%;
+    height: 100%;
+}
+
+.firstRow {
+    background: white;
+    display: flex;
+    max-width: 1280px;
+    justify-content: space-around;
+    color: black;
+    padding-block: 8px;
+    margin-inline: auto;
+}
+
+.firstRow h1 {
+    flex-basis: 4;
+}
+
+.firstRow ul {
+    justify-content: center;
+}
+
+.secondRow {
+    display: flex;
+    justify-content: space-between;
+    padding-inline: 32px;
+    align-items: center;
+}
+
+ul {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    padding: 0;
+    gap: 1em;
+}
+
+/*user buttons*/
+.buttons_container {
+    display: flex;
+    gap: 1em;
+    justify-self: end;
+    align-items: center;
+}
+
+.button_cart,
+.button_signup {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 100ms ease-in-out;
+}
+
+.logout {
+    all: unset;
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+}
+
+.button_cart:hover,
+.button_signup:hover {
+    border-radius: 4px;
+}
+
+.button_cart svg {
+    color: var(--text-primary);
+    fill: none;
+}
+
+.button_signup svg {
+    color: var(--text-primary);
+    padding: 4px;
+}
+
+@media (min-width: 500px) {
+    .stores {
+        height: 100%;
+        justify-content: space-between;
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .logo {
+        padding-left: 0;
+        grid-column: 2;
+    }
+
+    .buttons_container {
+        justify-self: end;
+        grid-column: 3;
+        grid-row: 1;
+    }
+}
+
+.home {
+    background-color: transparent;
+}

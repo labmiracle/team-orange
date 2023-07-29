@@ -1,0 +1,22 @@
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.input {
+	border: 1px solid #828282;
+	border-radius: 4px;
+	background-color: #E3E3E3;
+	height: 30px;
+	padding-inline: 8px;
+	transition: all 200ms ease-in-out;
+}
+
+.inputError {
+	border: 1px solid crimson;
+}
+
+.error {
+	color: crimson;
+}

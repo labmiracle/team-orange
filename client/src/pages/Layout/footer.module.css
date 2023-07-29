@@ -1,0 +1,19 @@
+.footer {
+    min-height: 120px;
+    background: var(--primary);
+    color: var(--text-primary);
+}
+
+.img {
+    padding: 5px;
+    width: 80px;
+    filter: var(--logo-color-filter);
+}
+
+.logos {
+    display: flex;
+    flex-flow: row wrap;
+    max-width: 600px;
+    place-items: center;
+    margin: auto;
+}
