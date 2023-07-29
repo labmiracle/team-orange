@@ -219,7 +219,7 @@ CREATE OR REPLACE VIEW cart_view AS
     pv.sizes
 	FROM Item i
 	JOIN
-	  product_view pv ON pv.id = c.productId
+	  product_view pv ON pv.id = i.productId
   JOIN
     invoice inv ON i.invoiceId = inv.id;
 
@@ -574,3 +574,6 @@ VALUES
 --   ('Sandalias de plataforma', 'Sandalias de plataforma para mujeres', 39.99, 0.05, 80, 20, 10, 3, 'https://ejemplo.com/imagen131.jpg', 2),
 --   ('Vestido corto de fiesta', 'Vestido corto de fiesta para ocasiones especiales', 99.99, 1, 30, 5, 3, 4, 'https://ejemplo.com/imagen132.jpg', 2),
 --   ('Jersey de punto con cuello redondo', 'Jersey de punto con cuello redondo para hombres', 49.99, 0.1, 50, 10, 5, 5, 'https://ejemplo.com/imagen133.jpg', 1);
+
+
+
