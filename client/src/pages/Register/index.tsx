@@ -87,7 +87,11 @@ export function Register() {
                             <div className={styles.documentContainer}>
                                 <div className={styles.docTypeContainer}>
                                     <label htmlFor="">Tipo de documento</label>
-                                    <select className={styles.docType} name="docType" id="">
+                                    <select
+                                        className={styles.docType}
+                                        style={{ background: "#e3e3e3" }}
+                                        name="docType"
+                                        id="">
                                         <option value="DNI">DNI</option>
                                         <option value="LE">LE</option>
                                         <option value="LC">LC</option>
@@ -100,7 +104,9 @@ export function Register() {
                         </div>
                     </div>
                     <div className={styles.buttonContainer}>
-                        <Button type="submit">Crear cuenta</Button>
+                        <Button type="submit" style={{ color: "white " }}>
+                            Crear cuenta
+                        </Button>
                         <Button variant="ghost" type="button" onClick={() => navigate("/login")}>
                             Iniciar sesion
                         </Button>

@@ -31,8 +31,14 @@ export function Login() {
                         Clave
                     </Input>
                     <div className={styles.buttonContainer}>
-                        <Button type="submit">Acceder</Button>
-                        <Button variant="ghost" type="button" onClick={() => navigate("/register")}>
+                        <Button type="submit" style={{ color: "white" }}>
+                            Acceder
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            type="button"
+                            style={{ color: "black" }}
+                            onClick={() => navigate("/register")}>
                             Registrarse
                         </Button>
                     </div>

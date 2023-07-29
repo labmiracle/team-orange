@@ -12,7 +12,7 @@ export function Input({
             <label htmlFor={id} className={styles.label}>
                 {children}
             </label>
-            <input {...props} className={`${styles.input} ${error && styles.inputError}`} id={id} />
+            <input {...props} className={`${styles.input} ${error && styles.inputError}`} id={id} autoComplete="off" />
             <small className={styles.error}>{error}</small>
         </div>
     );
