@@ -16,7 +16,38 @@ export class JWTAuth implements IFilter {
                 decodedToken: decodedToken,
             };
         } catch (error) {
-            httpContext.response.clearCookie("token");
+            httpContext.response.status(401).json({
+                message: error.message,
+                data: null,
+                error: true,
+            });
+        }
+    }
+}
+
+@Injectable({ lifeTime: DependencyLifeTime.Scoped })
+export class isAdmin implements IFilter {
+    async beforeExecute(httpContext: HttpContext) {
+        try {
+            const userLogged = httpContext.request.body.decodedToken;
+            if (userLogged.rol !== "Admin") throw new Error("Unauthorized");
+        } catch (error) {
+            httpContext.response.status(401).json({
+                message: error.message,
+                data: null,
+                error: true,
+            });
+        }
+    }
+}
+
+@Injectable({ lifeTime: DependencyLifeTime.Scoped })
+export class isManager implements IFilter {
+    async beforeExecute(httpContext: HttpContext) {
+        try {
+            const userLogged = httpContext.request.body.decodedToken;
+            if (userLogged.rol !== "Manager") throw new Error("Unauthorized");
+        } catch (error) {
             httpContext.response.status(401).json({
                 message: error.message,
                 data: null,

@@ -8,9 +8,22 @@ interface ContextType {
 }
 export const AuthContext = createContext<ContextType>({ user: {} as AuthData, setUser: () => ({}) as AuthData });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<AuthData | null>(null);
+function decodeUser() {
+    try {
+        const token = window.localStorage.getItem("user");
+        if (token) {
+            const payload = decodeJwt(token) as User;
+            return { token, rol: payload.rol, name: payload.name, lastname: payload.lastName };
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
 
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [user, setUser] = useState<AuthData | null>(decodeUser() || null);
+
+    /* 
     useEffect(() => {
         try {
             const token = window.localStorage.getItem("user");
@@ -21,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (err) {
             console.error(err);
         }
-    }, []);
+    }, []); */
 
     return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 }

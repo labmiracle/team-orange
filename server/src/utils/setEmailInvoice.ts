@@ -16,20 +16,40 @@ export default function setEmail(invoice: InvoiceViewI) {
           <p>Email: ${invoice.email}</p>
           <p>${invoice.idDocumentType}: ${invoice.idDocumentNumber}</p>
           <table style="width: 100%; text-align: left;">
-          <th><b>name</b></th><th><b>store</b></th><th><b>price</b></th><th><b>quantity</b></th><th><b>total</b></th>
-          ${invoice.products
-              .map((product, i) => {
-                  const num = odd(i);
-                  return `
-                    <tr>
-                      <td style=${num}>${product.name}</td>
-                      <td style=${num}>${product.store}</td>
-                      <td style=${num}>${product.price}</td>
-                      <td style=${num}>${product.quantity}</td>
-                      <td style=${num}>${product.total}</td>
-                    </tr>`;
-              })
-              .join("")}
+            <thead>
+              <tr>
+                  <th>
+                      <b>name</b>
+                  </th>
+                  <th>
+                      <b>store</b>
+                  </th>
+                  <th>
+                      <b>price</b>
+                  </th>
+                  <th>
+                      <b>quantity</b>
+                  </th>
+                  <th>
+                      <b>total</b>
+                  </th>
+              </tr>
+            </thead>
+            <tbody>
+            ${invoice.products
+                .map((product, i) => {
+                    const num = odd(i);
+                    return `
+                      <tr>
+                        <td style=${num}>${product.name}</td>
+                        <td style=${num}>${product.store}</td>
+                        <td style=${num}>${product.price}</td>
+                        <td style=${num}>${product.quantity}</td>
+                        <td style=${num}>${product.total}</td>
+                      </tr>`;
+                })
+                .join("")}
+            </tbody>
           </table>
           <h2>Grand Total: ${invoice.total}</h2>
         </div>`;

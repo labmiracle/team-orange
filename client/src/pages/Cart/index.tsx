@@ -5,13 +5,19 @@ import styles from "./index.module.css";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useCheckout } from "../utilities/useCheckout";
+import { useNavigate } from "react-router-dom";
 import Invoice from "./Invoice";
+import Loader from "../Loader";
+import { useAuthContext } from "../../Context/AuthContext";
 export function Cart() {
     const { cart, clearCart } = useCart();
+    const { user } = useAuthContext();
     const [showForm, setShowForm] = useState(false);
     const { submit } = useCheckout();
     const [successfullPayment, setSuccessfullPayment] = useState(false);
     const [invoice, setInvoice] = useState(null);
+    const [isLoading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     function confirmCartContent() {
         setShowForm(true);
@@ -19,8 +25,13 @@ export function Cart() {
 
     async function confirmPayment(event: React.FormEvent) {
         event.preventDefault();
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+        setLoading(true);
         const invoice = await submit();
-        console.log(invoice);
+        setLoading(false);
         setInvoice(invoice);
         setSuccessfullPayment(true);
         clearCart();
@@ -51,6 +62,9 @@ export function Cart() {
             </div>
         );
     }
+
+    //if (isLoading) return <Loader />;
+
     return (
         <main className={styles.container}>
             {showForm ? (
@@ -78,7 +92,13 @@ export function Cart() {
                             </Input>
                         </div>
                     </div>
-                    <Button type="submit">Confirmar pago</Button>
+                    {isLoading ? (
+                        <div style={{ height: 35, margin: "auto" }}>
+                            <Loader />
+                        </div>
+                    ) : (
+                        <Button type="submit">Confirmar pago</Button>
+                    )}
                     <Button type="button" variant="ghost" onClick={backToCart}>
                         Volver
                     </Button>

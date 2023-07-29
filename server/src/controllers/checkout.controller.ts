@@ -4,9 +4,7 @@ import { JWTAuth } from "../filters/jwtAuth";
 import { Path, POST } from "typescript-rest";
 import { InvoiceRepository } from "../repositories/invoice.repository";
 import { ItemRepository } from "../repositories/item.repository";
-import { CartViewRepository } from "../repositories/cartView.repository";
 import { InvoiceViewRepository } from "../repositories/invoiceView.repository";
-import { CartRepository } from "../repositories/cart.repository";
 import { Tags, Response } from "typescript-rest-swagger";
 import { InvoiceViewI } from "../models/invoiceView";
 import nodemailer from "nodemailer";
@@ -35,13 +33,7 @@ const message = {
 @Tags("Cart")
 @Controller({ route: "/api/checkout" })
 export class CheckoutController extends ApiController {
-    constructor(
-        private invoiceRepo: InvoiceRepository,
-        private itemRepo: ItemRepository,
-        private cartViewRepo: CartViewRepository,
-        private invoiceViewRepo: InvoiceViewRepository,
-        private cartRepo: CartRepository
-    ) {
+    constructor(private invoiceRepo: InvoiceRepository, private itemRepo: ItemRepository, private invoiceViewRepo: InvoiceViewRepository) {
         super();
     }
 
@@ -80,23 +72,16 @@ export class CheckoutController extends ApiController {
     async produceInvoice({ entity, decodedToken }: { entity: ProductI[]; decodedToken: UserI }) {
         try {
             const date = new Date();
-            const items = entity.map(item => ({ userId: decodedToken.id, productId: item.id }));
-            await this.cartRepo.insertItem(items);
-            const cart = await this.cartViewRepo.find({ userId: decodedToken.id });
-            if (cart.length === 0) throw new Error("No items in cart");
-            const grandTotal = [...cart].reduce((acc, c) => acc + c.total, 0);
+            const grandTotal = [...entity].reduce((acc, c) => acc + c.price * c.discountPercentage * c.quantity, 0);
             const invoice = await this.invoiceRepo.insertOne({ userId: decodedToken.id, date: date, total: grandTotal });
-            for (const item of cart) {
-                const price = item.price * item.discountPercentage;
-                await this.itemRepo.insertOne({
-                    total: item.total,
-                    quantity: item.quantity,
-                    productId: item.productId,
-                    unitPrice: price,
-                    invoiceId: invoice.insertId,
-                });
-            }
-            await this.cartRepo.delete({ userId: decodedToken.id });
+            const items = entity.map(item => ({
+                invoiceId: invoice.insertId,
+                productId: item.id,
+                unitPrice: item.price,
+                quantity: item.quantity,
+                total: item.price * item.discountPercentage * item.quantity,
+            }));
+            await this.itemRepo.insertItem(items);
             const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
             message.html = setEmail(invoiceView);
             const info = await transport.sendMail(message);
