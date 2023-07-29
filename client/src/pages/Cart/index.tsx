@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "../../services/useCart";
 import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
@@ -10,6 +10,7 @@ export function Cart() {
     const { cart, clearCart } = useCart();
     const [showForm, setShowForm] = useState(false);
     const { submit } = useCheckout();
+    const [successfullPayment, setSuccessfullPayment] = useState(false);
     const [invoice, setInvoice] = useState(null);
 
     function confirmCartContent() {
@@ -21,9 +22,14 @@ export function Cart() {
         const invoice = await submit();
         console.log(invoice);
         setInvoice(invoice);
+        setSuccessfullPayment(true);
         clearCart();
         setShowForm(false);
     }
+
+    useEffect(() => {
+        setSuccessfullPayment(false);
+    }, []);
 
     function backToCart() {
         setShowForm(false);
@@ -37,7 +43,13 @@ export function Cart() {
 
     if (!cart || cart.length === 0) {
         if (invoice) return <Invoice {...{ invoice }} />;
-        return <h1 className={styles.message}>No hay nada en el carrito</h1>;
+        return (
+            <div className={styles.notificationContainer}>
+                <h1 className={styles.notification}>
+                    {successfullPayment ? "La compra se realizo con exito 🎉" : "Carrito vacio 🛒"}
+                </h1>
+            </div>
+        );
     }
     return (
         <main className={styles.container}>

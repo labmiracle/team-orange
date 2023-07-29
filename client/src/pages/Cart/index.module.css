@@ -129,3 +129,8 @@
 .continueButton {
 	width: 100%;
 }
+
+.notificationContainer {
+	display: grid;
+	place-items: center;
+}
