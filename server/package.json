@@ -15,7 +15,7 @@
         "watch:coverage": "jest ./tests/ --coverage --watch",
         "watch:typescript": "tsc --project ./src --incremental --watch",
         "build:back": "npm install && npm run build:doc && npm run build:typescript",
-        "build:front": "cd ../client && npm install && npm run build --dist-dir ../client/dist",
+        "build:front": "cd ../client && npm install && npm run build",
         "build": "npm run build:back && npm run build:front",
         "build:typescript": "tsc --project ./src",
         "build:doc": "swaggerGen -c swagger.config.json",

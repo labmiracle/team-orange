@@ -81,8 +81,6 @@ export class CheckoutController extends ApiController {
                 quantity: item.quantity,
                 total: item.price * item.discountPercentage * item.quantity,
             }));
-            console.log("invoice", invoice);
-            console.log("items", items);
             await this.itemRepo.insertItem(items);
             const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
             message.html = setEmail(invoiceView);
