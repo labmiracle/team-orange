@@ -80,15 +80,18 @@ export class ProductController extends ApiController {
     async getById(@PathParam("productId") productId: number) {
         try {
             const product = await this.productRepo.getById(Number(productId));
+            if (!product) throw new Error("Product not found");
             return this.httpContext.response.status(200).json({
                 message: "Product found",
                 data: product,
                 error: false,
             });
         } catch (error) {
-            console.error("Product" + error.message);
-            return this.httpContext.response.status(500).json({
-                message: "Product" + error.message,
+            console.error("Product " + error.message);
+            if (error.message === "Unable to retrieve the entity.") this.httpContext.response.status(404);
+            else this.httpContext.response.status(500);
+            return this.httpContext.response.json({
+                message: "Product " + error.message,
                 data: null,
                 error: true,
             });

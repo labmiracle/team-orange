@@ -2,9 +2,9 @@ import Joi from "joi";
 
 export const productSchema = Joi.object({
     id: Joi.number().optional(),
-    name: Joi.string().alphanum().min(3).max(30).required().messages({
-        "string.min": "Invalid name, it must contain more than 3 letters",
-        "string.max": "Invalid name, it must not contain more than 30 letters",
+    name: Joi.string().min(3).max(50).required().messages({
+        //"string.min": "Invalid name, it must contain more than 3 letters",
+        //"string.max": "Invalid name, it must not contain more than 30 letters",
         "any.required": "Name is a required field",
     }),
     description: Joi.string().min(10).optional().required().messages({

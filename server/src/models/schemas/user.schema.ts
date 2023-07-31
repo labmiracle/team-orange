@@ -35,7 +35,6 @@ export const userSchema = Joi.object({
             "string.pattern.base": "Invalid password, it must contain both letters and numbers",
             "any.required": "Password is a required field",
         }),
-    repeat_password: Joi.ref("password"),
     idDocumentNumber: Joi.number().integer().min(10000000).max(99999999).messages({
         "number.integer": "Invalid document number, it must be an integer",
         "number.min": "Invalid document number, it must be contain 8 digits",
@@ -65,4 +64,13 @@ export const userLogin = Joi.object({
         "string.min": "Invalid password, it must contain more than 8 letters",
         "any.required": "Password is a required field",
     }),
+});
+
+export const userDBSchema = Joi.object({
+    id: Joi.number(),
+    email: Joi.string().email({ minDomainSegments: 2 }),
+    name: Joi.string(),
+    lastName: Joi.string(),
+    idDocumentType: Joi.string().default("DNI").valid("DNI"),
+    idDocumentNumber: Joi.number().integer(),
 });

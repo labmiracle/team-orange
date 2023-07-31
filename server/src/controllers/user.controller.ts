@@ -185,11 +185,11 @@ export class UserController extends ApiController {
      * @returns
      */
     @DELETE
-    @Path("/")
+    @Path("/disable")
     @Response<UserI>(200, "User deleted.")
     @Response(404, "User not found.")
-    @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth] })
-    async delete({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
+    @Action({ route: "/disable", method: HttpMethod.DELETE, fromBody: true, filters: [UserFilter, JWTAuth] })
+    async disable({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
         try {
             if (entity.id !== decodedToken.id && decodedToken.rol !== "Admin") throw new Error("Unauthorized");
             const [userdb] = await this.userRepo.find({ id: Number(entity.id), status: 1 });
@@ -198,6 +198,47 @@ export class UserController extends ApiController {
             userdb.status = 0;
             const userDeleted = await this.userRepo.update(userdb);
             delete userDeleted.password;
+            return this.httpContext.response.status(200).json({
+                message: "User deleted",
+                data: userDeleted,
+                error: false,
+            });
+        } catch (error) {
+            if (error.message === "Unauthorized" || error.message === "data and hash arguments required") {
+                return this.httpContext.response.status(401).json({
+                    message: "Unauthorized",
+                    data: null,
+                    error: true,
+                });
+            }
+            if (error.message === "User not found") {
+                return this.httpContext.response.status(404).json({
+                    message: error.message,
+                    data: null,
+                    error: true,
+                });
+            }
+            return this.httpContext.response.status(500).json({
+                message: error.message,
+                data: null,
+                error: true,
+            });
+        }
+    }
+
+    @DELETE
+    @Path("/delete")
+    @Response<UserI>(200, "User deleted.")
+    @Response(404, "User not found.")
+    @Action({ route: "/delete", method: HttpMethod.DELETE, fromBody: true, filters: [UserFilter, JWTAuth] })
+    async delete({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
+        try {
+            if (entity.id !== decodedToken.id && decodedToken.rol !== "Admin") throw new Error("Unauthorized");
+            const [userdb] = await this.userRepo.find({ id: Number(entity.id) });
+            if (!userdb) throw new Error("User not found");
+            if (decodedToken.rol !== "Admin" && !(await bcrypt.compare(entity.password, userdb.password))) throw new Error("Unauthorized");
+            delete entity.password;
+            const userDeleted = await this.userRepo.delete(entity);
             return this.httpContext.response.status(200).json({
                 message: "User deleted",
                 data: userDeleted,

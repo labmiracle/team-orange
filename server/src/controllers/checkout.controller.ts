@@ -1,7 +1,7 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { UserI } from "../models/user";
 import { JWTAuth } from "../filters/jwtAuth";
-import { Path, POST } from "typescript-rest";
+import { Path, POST, GET } from "typescript-rest";
 import { InvoiceRepository } from "../repositories/invoice.repository";
 import { ItemRepository } from "../repositories/item.repository";
 import { InvoiceViewRepository } from "../repositories/invoiceView.repository";
@@ -29,7 +29,7 @@ const message = {
     html: "",
 };
 
-@Path("/api/cart")
+@Path("/api/checkout")
 @Tags("Cart")
 @Controller({ route: "/api/checkout" })
 export class CheckoutController extends ApiController {
@@ -37,15 +37,16 @@ export class CheckoutController extends ApiController {
         super();
     }
 
-    @POST
+    @GET
     @Path("/get")
     @Response<InvoiceViewI[]>(200, "Retrieve an invoice.")
     @Response(404, "Invoice not found.")
     @Response(500, "Server error.")
-    @Action({ route: "/get", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
-    async getInvoice({ decodedToken }: { decodedToken: UserI }) {
+    @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuth], fromBody: true })
+    async getInvoice() {
         try {
-            const invoiceView = await this.invoiceViewRepo.find({ userId: decodedToken.id });
+            const { id } = this.httpContext.request.body.decodedToken;
+            const invoiceView = await this.invoiceViewRepo.find({ userId: id });
             if (invoiceView.length === 0) throw new Error("No Invoice found");
             return this.httpContext.response.status(200).json({
                 message: "Invoice found",
