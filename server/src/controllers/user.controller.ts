@@ -258,30 +258,6 @@ export class UserController extends ApiController {
     /******************
     ADMIN ONLY ROUTES
     ******************/
-    @POST
-    @Path("/admin/signup")
-    @Tags("admin")
-    @Action({ route: "/admin/signup", method: HttpMethod.POST, fromBody: true, filters: [UserFilter] })
-    async createAdmin(admin: AdminI) {
-        try {
-            admin.password = await bcrypt.hash(admin.password, 10);
-            const roleSecret = this.httpContext.request.header("x-auth-role");
-            if (roleSecret !== process.env.ADMIN_KEY) throw new Error("Unauthorized");
-            admin.rol = "Admin";
-            const { insertId } = await this.userRepo.insertOne(admin);
-            delete admin.password;
-            const userCreated = { id: insertId, ...admin };
-            const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
-            this.httpContext.response.setHeader("x-auth", token);
-        } catch (error) {
-            return this.httpContext.response.json({
-                message: error.message,
-                data: null,
-                error: true,
-            });
-        }
-    }
-
     /**
      * Produce a list of all users
      * decodedToken: UserI - It's the token each user get when they login or signup
