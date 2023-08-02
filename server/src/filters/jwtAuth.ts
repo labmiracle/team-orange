@@ -29,9 +29,8 @@ export class JWTAuth implements IFilter {
 export class isAdmin implements IFilter {
     async beforeExecute(httpContext: HttpContext) {
         try {
-            const token = httpContext.request.header("x-auth-role");
-            //const userLogged = httpContext.request.body.decodedToken;
-            if (token !== "Admin") throw new Error("Unauthorized");
+            const rol = httpContext.request.body.decodedToken.rol;
+            if (rol !== "Admin") throw new Error("Unauthorized");
         } catch (error) {
             httpContext.response.status(401).json({
                 message: error.message,
@@ -46,9 +45,8 @@ export class isAdmin implements IFilter {
 export class isManager implements IFilter {
     async beforeExecute(httpContext: HttpContext) {
         try {
-            const token = httpContext.request.header("x-auth-role");
-            //const userLogged = httpContext.request.body.decodedToken;
-            if (token !== "Manager") throw new Error("Unauthorized");
+            const rol = httpContext.request.body.decodedToken.rol;
+            if (rol !== "Manager") throw new Error("Unauthorized");
         } catch (error) {
             httpContext.response.status(401).json({
                 message: error.message,

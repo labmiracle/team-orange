@@ -42,7 +42,7 @@ export class UserController extends ApiController {
     @Path("/update")
     @Response<UserI>(200, "Updates an User.")
     @Response(404, "User not found.")
-    @Action({ route: "/update", filters: [UserFilter, JWTAuth], fromBody: true, method: HttpMethod.PUT })
+    @Action({ route: "/update", filters: [JWTAuth, UserFilter], fromBody: true, method: HttpMethod.PUT })
     async update({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
         try {
             if (entity.id !== decodedToken.id) throw new Error("Unauthorized");
@@ -107,9 +107,7 @@ export class UserController extends ApiController {
     async post(user: UserI) {
         try {
             user.password = await bcrypt.hash(user.password, 10);
-
             const { insertId } = await this.userRepo.insertOne(user);
-
             delete user.password;
             const userCreated = { id: insertId, ...user };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
@@ -191,7 +189,7 @@ export class UserController extends ApiController {
     @Path("/disable")
     @Response<UserI>(200, "User deleted.")
     @Response(404, "User not found.")
-    @Action({ route: "/disable", method: HttpMethod.DELETE, fromBody: true, filters: [UserFilter, JWTAuth] })
+    @Action({ route: "/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth, UserFilter] })
     async disable({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
         try {
             if (entity.id !== decodedToken.id) throw new Error("Unauthorized");
@@ -271,13 +269,11 @@ export class UserController extends ApiController {
             if (roleSecret !== process.env.ADMIN_KEY) throw new Error("Unauthorized");
             admin.rol = "Admin";
             const { insertId } = await this.userRepo.insertOne(admin);
-
             delete admin.password;
             const userCreated = { id: insertId, ...admin };
             const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
             this.httpContext.response.setHeader("x-auth", token);
         } catch (error) {
-            console.error(error);
             return this.httpContext.response.json({
                 message: error.message,
                 data: null,
@@ -333,16 +329,18 @@ export class UserController extends ApiController {
     @Tags("admin")
     @Response<UserI>(200, "User disabled.")
     @Response(404, "User not found.")
-    @Action({ route: "/admin/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth] })
+    @Action({ route: "/admin/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth, isAdmin] })
     async adminDisable({ entity, decodedToken }: { entity: UserI; decodedToken: AdminI }) {
         try {
-            const [admin] = await this.userRepo.find({ id: Number(decodedToken.id) });
-            if (!admin) throw new Error("User not found");
-            if (admin.rol !== "Admin" && !(await bcrypt.compare(decodedToken.password, admin.password))) throw new Error("Unauthorized");
-            const userDisabled = await this.userRepo.update({ ...entity, status: 0 });
+            const admin = await this.userRepo.getById(decodedToken.id);
+            if (entity.id === decodedToken.id && !(await bcrypt.compare(entity.password, admin.password))) throw new Error("Unauthorized");
+            const userToDisable = await this.userRepo.getById(entity.id);
+            if (!userToDisable) throw new Error("User not found");
+            if (userToDisable.rol === "Admin" && entity.id !== decodedToken.id) throw new Error("Unauthorized");
+            const userDisabled = await this.userRepo.update({ ...userToDisable, status: 0 });
             delete userDisabled.password;
             return this.httpContext.response.status(200).json({
-                message: "User deleted",
+                message: "User disabled",
                 data: userDisabled,
                 error: false,
             });
@@ -354,9 +352,9 @@ export class UserController extends ApiController {
                     error: true,
                 });
             }
-            if (error.message === "User not found") {
+            if (error.message === "User not found" || error.message === "Unable to retrieve the entity.") {
                 return this.httpContext.response.status(404).json({
-                    message: error.message,
+                    message: "User not found",
                     data: null,
                     error: true,
                 });
@@ -374,18 +372,17 @@ export class UserController extends ApiController {
     @Tags("admin")
     @Response<UserI>(200, "User deleted.")
     @Response(404, "User not found.")
-    @Action({ route: "/admin/delete", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth] })
-    async adminDelete({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
+    @Action({ route: "/admin/delete", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuth, isAdmin] })
+    async adminDelete({ entity, decodedToken }: { entity: UserI; decodedToken: AdminI }) {
         try {
-            if (decodedToken.rol !== "Admin") throw new Error("Unauthorized");
-            const [admin] = await this.userRepo.find({ id: Number(decodedToken.id) });
-            if (!admin) throw new Error("User not found");
-            if (admin.rol !== "Admin" && !(await bcrypt.compare(decodedToken.password, admin.password))) throw new Error("Unauthorized");
-            delete entity.password;
-            const userDeleted = await this.userRepo.delete(entity);
+            const admin = await this.userRepo.getById(decodedToken.id);
+            if (entity.id === decodedToken.id && !(await bcrypt.compare(entity.password, admin.password))) throw new Error("Unauthorized");
+            const userToDelete = await this.userRepo.getById(entity.id);
+            if (userToDelete.rol === "Admin" && entity.id !== decodedToken.id) throw new Error("Unauthorized");
+            await this.userRepo.delete(userToDelete);
             return this.httpContext.response.status(200).json({
                 message: "User deleted",
-                data: userDeleted,
+                data: null,
                 error: false,
             });
         } catch (error) {
@@ -396,9 +393,9 @@ export class UserController extends ApiController {
                     error: true,
                 });
             }
-            if (error.message === "User not found") {
+            if (error.message === "User not found" || error.message === "Unable to retrieve the entity.") {
                 return this.httpContext.response.status(404).json({
-                    message: error.message,
+                    message: "User not found",
                     data: null,
                     error: true,
                 });
@@ -425,13 +422,13 @@ export class UserController extends ApiController {
     @Response(401, "Unauthorized")
     @Response(404, "User not found.")
     @Action({ route: "/admin/restore", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuth, isAdmin] })
-    async restore({ entity, decodedToken }: { entity: UserI; decodedToken: UserI }) {
+    async restore({ entity, decodedToken }: { entity: UserI; decodedToken: AdminI }) {
         try {
-            if (entity.id === decodedToken.id || decodedToken.rol !== "Admin") throw new Error("Unauthorized");
-            const [userdb] = await this.userRepo.find({ id: Number(entity.id), status: 0 });
-            if (!userdb) throw new Error("User not found");
-            userdb.status = 1;
-            const userRestored = await this.userRepo.update(userdb);
+            if (entity.id === decodedToken.id) throw new Error("Unauthorized");
+            const userToRestore = await this.userRepo.getById(entity.id);
+            if (!userToRestore) throw new Error("User not found");
+            if (userToRestore.rol === "Admin" && entity.id !== decodedToken.id) throw new Error("Unauthorized");
+            const userRestored = await this.userRepo.update({ ...userToRestore, status: 1 });
             delete userRestored.password;
             return this.httpContext.response.status(200).json({
                 message: "User restored",
@@ -439,16 +436,16 @@ export class UserController extends ApiController {
                 error: false,
             });
         } catch (error) {
-            if (error.message === "Unauthorized") {
+            if (error.message === "Unauthorized" || error.message === "data and hash arguments required") {
                 return this.httpContext.response.status(401).json({
-                    message: error.message,
+                    message: "Unauthorized",
                     data: null,
                     error: true,
                 });
             }
-            if (error.message === "User not found") {
+            if (error.message === "User not found" || error.message === "Unable to retrieve the entity.") {
                 return this.httpContext.response.status(404).json({
-                    message: error.message,
+                    message: "User not found",
                     data: null,
                     error: true,
                 });

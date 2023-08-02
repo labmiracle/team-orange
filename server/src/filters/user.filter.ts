@@ -6,7 +6,8 @@ import { userSchema } from "../models/schemas/user.schema";
 export class UserFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         try {
-            const { error } = userSchema.validate(httpContext.request.body);
+            const entity = httpContext.request.body.entity ? httpContext.request.body.entity : httpContext.request.body;
+            const { error } = userSchema.validate(entity);
             if (error) throw new Error(error.details[0].message);
         } catch (err) {
             httpContext.response.status(400).json({
