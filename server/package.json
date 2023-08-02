@@ -9,7 +9,7 @@
         "dev": "npm-run-all --parallel dev:front dev:back",
         "start": "node ./dist/app.js",
         "start:server": "nodemon ./dist/app.js",
-        "test": "jest ./tests/",
+        "test": "jest ./tests/ --detectOpenHandles",
         "coverage": "jest ./tests/ --coverage",
         "watch:test": "jest ./tests/ --watch",
         "watch:coverage": "jest ./tests/ --coverage --watch",

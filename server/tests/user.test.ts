@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { userDBSchema, userSchema } from "../src/models/schemas/user.schema";
-import { ApiClient } from "../src/core/http/api.client";
+import dotenv from "dotenv";
+dotenv.config();
+import bcrypt from "bcrypt";
+import mysql, { RowDataPacket, format } from "mysql2/promise";
+import { UserI } from "../src/models/user";
 
 const base_url = "http://localhost:4000/api/users";
 
-type User = {
+/* type User = {
     id?: number;
     email: string;
     password: string;
@@ -12,17 +16,55 @@ type User = {
     lastName: string;
     idDocumentType: string;
     idDocumentNumber: number;
-};
+    rol?: string;
+}; */
 
-const user: User = {
+const user: UserI = {
     email: "test@email.com",
     password: "test12345",
     name: "test",
     lastName: "test",
     idDocumentType: "DNI",
-    idDocumentNumber: 12312312,
+    idDocumentNumber: 12322312,
 };
 let token: string;
+
+//const adminHashedPassword = hashPassword();
+
+//const adminHashedPassword = await bcrypt.hash("test1234", 10);
+const admin: UserI = {
+    email: "testadmin@example.com",
+    password: "",
+    name: "Test",
+    lastName: "Admin",
+    idDocumentType: "DNI",
+    idDocumentNumber: 12312312,
+    rol: "Admin",
+};
+const hashPassword = async () => {
+    admin.password = await bcrypt.hash("test1234", 10);
+};
+
+const pool = mysql.createPool({
+    host: process.env.SHOPPY__MYSQLHOST,
+    port: Number(process.env.SHOPPY__MYSQLPORT),
+    database: process.env.SHOPPY__MYSQLDATABASE,
+    user: process.env.SHOPPY__MYSQLUSER,
+    decimalNumbers: true,
+    password: process.env.SHOPPY__MYSQLPASSWORD,
+});
+//
+describe("Admin", () => {
+    it("create admin", async () => {
+        await hashPassword();
+        const query = format("INSERT INTO user SET ?", [admin]);
+        const [rows] = await pool.execute<RowDataPacket[]>(query);
+        //expect(typeof rows[0].insertId).toBe("number");
+        pool.end();
+    });
+});
+
+// --detectOpenHandles
 
 describe("/api/users/signup", () => {
     it("should create an user", async () => {
@@ -34,7 +76,7 @@ describe("/api/users/signup", () => {
         //expect(response.status).toBe(201);
 
         const responseObj = await response.json();
-        const { error } = userDBSchema.validate(responseObj.data);
+        const { error, value } = userDBSchema.validate(responseObj.data);
         expect(error).toBe(undefined);
         expect(responseObj.message).toMatch(/User created/);
     });
@@ -97,7 +139,6 @@ describe("/update", () => {
             body: JSON.stringify({ ...user, name: "testdos" }),
         });
         const responseObj = await response.json();
-        console.log("update", responseObj.message);
         expect(responseObj.data.name).toBe("testdos");
         user.name = responseObj.data.name;
     });
@@ -115,17 +156,44 @@ describe("/disable", () => {
             headers: { "Content-Type": "application/json", "x-auth": token },
         });
         const responseObj = await response.json();
-        console.log("disable", responseObj);
         expect(responseObj.data.status).toBe(0);
+    });
+});
+
+describe("/login", () => {
+    it("should login admin", async () => {
+        const response = await fetch(base_url + "/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: admin.email, password: "test1234" }),
+        });
+        //expect(response.status).toBe(200);
+        token = response.headers.get("x-auth");
+        const responseObj = await response.json();
+        expect(responseObj.error).toBe(false);
+        expect(responseObj.message).toMatch(/Login successful/);
+        admin.id = responseObj.data.id;
     });
 });
 
 describe("/delete", () => {
     it("should delete user", async () => {
-        const response = await fetch(base_url + "/delete", {
+        const response = await fetch(base_url + "/admin/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json", "x-auth": token },
-            body: JSON.stringify(user),
+            body: JSON.stringify({ id: user.id }),
+        });
+        const responseObj = await response.json();
+        expect(responseObj.message).toMatch(/User deleted/);
+    });
+});
+
+describe("/delete", () => {
+    it("should auto delete", async () => {
+        const response = await fetch(base_url + "/admin/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", "x-auth": token },
+            body: JSON.stringify({ id: admin.id }),
         });
         const responseObj = await response.json();
         expect(responseObj.message).toMatch(/User deleted/);

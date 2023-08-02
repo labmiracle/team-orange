@@ -48,9 +48,8 @@ export const userSchema = Joi.object({
             "string.email": "Invalid email format",
             "any.required": "Email is a required field",
         }),
-    rol: Joi.string().optional().valid("client", "manager", "admin").messages({
-        "any.required": "Rol is a required field",
-        "any.only": "Invalid rol, it must be 'client', 'manager' or 'admin'",
+    rol: Joi.any().forbidden().messages({
+        "any.forbidden": "role is forbidden",
     }),
     status: Joi.number().optional(),
 });
@@ -73,4 +72,5 @@ export const userDBSchema = Joi.object({
     lastName: Joi.string(),
     idDocumentType: Joi.string().default("DNI").valid("DNI"),
     idDocumentNumber: Joi.number().integer(),
+    rol: Joi.string().optional(),
 });

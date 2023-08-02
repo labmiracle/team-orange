@@ -38,7 +38,7 @@ export abstract class EditRepositoryBase<TEntity, TId = number> extends Readonly
         }
     }
 
-    async update(entity: TEntity): Promise<TEntity> {
+    async update(entity: Partial<TEntity>): Promise<Partial<TEntity>> {
         const [result] = await this.connection.connection.query<ResultSetHeader>(`UPDATE \`${this.tableName}\` SET ? WHERE \`${this.idColumn}\`=?`, [
             entity,
             (entity as any)[this.idColumn],
