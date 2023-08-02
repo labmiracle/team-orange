@@ -53,18 +53,15 @@ const pool = mysql.createPool({
     decimalNumbers: true,
     password: process.env.SHOPPY__MYSQLPASSWORD,
 });
-//
+
 describe("Admin", () => {
     it("create admin", async () => {
         await hashPassword();
         const query = format("INSERT INTO user SET ?", [admin]);
         const [rows] = await pool.execute<RowDataPacket[]>(query);
-        //expect(typeof rows[0].insertId).toBe("number");
         pool.end();
     });
 });
-
-// --detectOpenHandles
 
 describe("/api/users/signup", () => {
     it("should create an user", async () => {
@@ -73,11 +70,10 @@ describe("/api/users/signup", () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(user),
         });
-        //expect(response.status).toBe(201);
 
         const responseObj = await response.json();
-        const { error, value } = userDBSchema.validate(responseObj.data);
-        expect(error).toBe(undefined);
+        expect(response.status).toBe(201);
+        expect(responseObj.error).toBe(false);
         expect(responseObj.message).toMatch(/User created/);
     });
     it("should fail on duplicate email", async () => {
@@ -86,8 +82,8 @@ describe("/api/users/signup", () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...user, idDocumentNumber: 12312313 }),
         });
-        expect(response.status).toBe(500);
         const responseObj = await response.json();
+        expect(response.status).toBe(500);
         expect(responseObj.error).toBe(true);
         expect(responseObj.message).toMatch(/Email already exists/);
     });
@@ -97,8 +93,8 @@ describe("/api/users/signup", () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...user, email: "test2@email.com" }),
         });
-        expect(response.status).toBe(500);
         const responseObj = await response.json();
+        expect(response.status).toBe(500);
         expect(responseObj.error).toBe(true);
         expect(responseObj.message).toMatch(/ID document number already exists/);
     });
@@ -114,9 +110,32 @@ describe("/login", () => {
         //expect(response.status).toBe(200);
         token = response.headers.get("x-auth");
         const responseObj = await response.json();
+        expect(response.status).toBe(200);
         expect(responseObj.error).toBe(false);
         expect(responseObj.message).toMatch(/Login successful/);
         user.id = responseObj.data.id;
+    });
+    it("should fail on password", async () => {
+        const response = await fetch(base_url + "/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: user.email, password: "incorrectPW" }),
+        });
+        const responseObj = await response.json();
+        expect(response.status).toBe(401);
+        expect(responseObj.error).toBe(true);
+        expect(responseObj.message).toMatch(/Incorrect username or password/);
+    });
+    it("should fail on email", async () => {
+        const response = await fetch(base_url + "/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: "user@example", password: user.password }),
+        });
+        const responseObj = await response.json();
+        expect(response.status).toBe(400);
+        expect(responseObj.error).toBe(true);
+        expect(responseObj.message).toMatch(/Invalid email format/);
     });
 });
 
@@ -127,6 +146,8 @@ describe("/:id", () => {
             headers: { "Content-Type": "application/json", "x-auth": token },
         });
         const responseObj = await response.json();
+        expect(response.status).toBe(200);
+        expect(responseObj.error).toBe(false);
         expect(responseObj.data.email).toBe(user.email);
     });
 });
@@ -139,6 +160,8 @@ describe("/update", () => {
             body: JSON.stringify({ ...user, name: "testdos" }),
         });
         const responseObj = await response.json();
+        expect(response.status).toBe(201);
+        expect(responseObj.error).toBe(false);
         expect(responseObj.data.name).toBe("testdos");
         user.name = responseObj.data.name;
     });
@@ -146,16 +169,15 @@ describe("/update", () => {
 
 describe("/disable", () => {
     it("should disable user", async () => {
-        await fetch(base_url + "/disable", {
+        const response = await fetch(base_url + "/disable", {
             method: "DELETE",
             headers: { "Content-Type": "application/json", "x-auth": token },
             body: JSON.stringify(user),
         });
-        const response = await fetch(base_url + `/${user.id}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json", "x-auth": token },
-        });
         const responseObj = await response.json();
+        expect(response.status).toBe(200);
+        expect(responseObj.error).toBe(false);
+        expect(responseObj.message).toBe("User deleted");
         expect(responseObj.data.status).toBe(0);
     });
 });
@@ -167,16 +189,60 @@ describe("/login", () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: admin.email, password: "test1234" }),
         });
-        //expect(response.status).toBe(200);
         token = response.headers.get("x-auth");
         const responseObj = await response.json();
+        expect(response.status).toBe(200);
         expect(responseObj.error).toBe(false);
         expect(responseObj.message).toMatch(/Login successful/);
+        expect(responseObj.data.rol).toBe("Admin");
         admin.id = responseObj.data.id;
     });
 });
 
-describe("/delete", () => {
+describe("/", () => {
+    it("should get all users", async () => {
+        const response = await fetch(base_url, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", "x-auth": token },
+        });
+        const responseObj = await response.json();
+        expect(response.status).toBe(200);
+        expect(responseObj.message).toMatch(/Users found/);
+        expect(responseObj.error).toBe(false);
+    });
+});
+
+describe("/admin/restore", () => {
+    it("should restore an user", async () => {
+        const response = await fetch(base_url + "/admin/restore", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", "x-auth": token },
+            body: JSON.stringify({ id: user.id }),
+        });
+        const responseObj = await response.json();
+        expect(response.status).toBe(200);
+        expect(responseObj.error).toBe(false);
+        expect(responseObj.message).toMatch(/User restored/);
+        expect(responseObj.data.status).toBe(1);
+    });
+});
+
+describe("/admin/disable", () => {
+    it("should disable an user", async () => {
+        const response = await fetch(base_url + "/admin/disable", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", "x-auth": token },
+            body: JSON.stringify({ id: user.id }),
+        });
+        const responseObj = await response.json();
+        expect(response.status).toBe(200);
+        expect(responseObj.error).toBe(false);
+        expect(responseObj.message).toMatch(/User disabled/);
+        expect(responseObj.data.status).toBe(0);
+    });
+});
+
+describe("/admin/delete", () => {
     it("should delete user", async () => {
         const response = await fetch(base_url + "/admin/delete", {
             method: "DELETE",
@@ -184,18 +250,19 @@ describe("/delete", () => {
             body: JSON.stringify({ id: user.id }),
         });
         const responseObj = await response.json();
+        expect(response.status).toBe(200);
+        expect(responseObj.error).toBe(false);
         expect(responseObj.message).toMatch(/User deleted/);
     });
-});
-
-describe("/delete", () => {
     it("should auto delete", async () => {
         const response = await fetch(base_url + "/admin/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json", "x-auth": token },
-            body: JSON.stringify({ id: admin.id }),
+            body: JSON.stringify({ id: admin.id, password: "test1234" }),
         });
         const responseObj = await response.json();
+        expect(response.status).toBe(200);
+        expect(responseObj.error).toBe(false);
         expect(responseObj.message).toMatch(/User deleted/);
     });
 });
