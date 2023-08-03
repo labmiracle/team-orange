@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCart } from "../../services/useCart";
 import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
-import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
-import { useNavigate } from "react-router-dom";
 import Invoice from "./Invoice";
-import Loader from "../Loader";
 import { useAuthContext } from "../../Context/AuthContext";
+import { PaymentForm } from "./components/PaymentForm";
 export function Cart() {
     const { cart, clearCart, checkout } = useCart();
     const { user } = useAuthContext();
@@ -34,8 +32,12 @@ export function Cart() {
         setShowForm(false);
     }
 
-    function calculateTotal() {
+    function calculateTotalPrice() {
         return cart.reduce((acc, element) => acc + element.price * element.discountPercentage * element.quantity, 0);
+    }
+
+    function calculateTotalItems() {
+        return cart.reduce((acc, element) => acc + element.quantity, 0);
     }
 
     if (cart === null) return null;
@@ -47,41 +49,7 @@ export function Cart() {
     return (
         <main className={styles.container}>
             {showForm ? (
-                <form onSubmit={confirmPayment} className={styles.paymentForm}>
-                    <h3>Informacion personal</h3>
-                    <div className={styles.personalInfo}>
-                        <Input className={styles.name} required>
-                            Nombre y apellido
-                        </Input>
-                        <Input className={styles.documentNumber} type="number" required>
-                            Documento
-                        </Input>
-                    </div>
-                    <h3>Medio de pago</h3>
-                    <div className={styles.cardInfo}>
-                        <Input required type="number">
-                            Numero de la tarjeta
-                        </Input>
-                        <div className={styles.thirdRow}>
-                            <Input type="month" required className={styles.expireDate}>
-                                Vencimiento
-                            </Input>
-                            <Input type="number" required className={styles.securityCode}>
-                                CVV
-                            </Input>
-                        </div>
-                    </div>
-                    {isLoading ? (
-                        <div style={{ height: 35, margin: "auto" }}>
-                            <Loader />
-                        </div>
-                    ) : (
-                        <Button type="submit">Confirmar pago</Button>
-                    )}
-                    <Button type="button" variant="ghost" className={styles.backButton} onClick={backToCart}>
-                        Volver
-                    </Button>
-                </form>
+                <PaymentForm submitAction={confirmPayment} isLoading={isLoading} backAction={backToCart} />
             ) : (
                 <>
                     <ul className={styles.cartContainer}>
@@ -111,8 +79,8 @@ export function Cart() {
                             <h2>Resumen de compra</h2>
                             <div className={styles.summary}>
                                 <div className={styles.detail}>
-                                    <p>Productos ({cart.reduce((acc, element) => acc + element.quantity, 0)})</p>
-                                    {formatPrice(calculateTotal())}
+                                    <p>Productos ({calculateTotalItems()})</p>
+                                    {formatPrice(calculateTotalPrice())}
                                 </div>
                             </div>
                         </div>
@@ -120,15 +88,7 @@ export function Cart() {
                             <hr />
                             <div className={styles.detail}>
                                 <h3>Total</h3>
-                                <p>
-                                    {formatPrice(
-                                        cart.reduce(
-                                            (acc, element) =>
-                                                acc + element.price * element.discountPercentage * element.quantity,
-                                            0
-                                        )
-                                    )}
-                                </p>
+                                <p>{calculateTotalPrice()}</p>
                             </div>
                             <Button onClick={confirmCartContent} className={styles.continueButton}>
                                 Continuar
