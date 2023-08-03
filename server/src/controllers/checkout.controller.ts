@@ -7,27 +7,10 @@ import { ItemRepository } from "../repositories/item.repository";
 import { InvoiceViewRepository } from "../repositories/invoiceView.repository";
 import { Tags, Response } from "typescript-rest-swagger";
 import { InvoiceViewI } from "../models/invoiceView";
-import nodemailer from "nodemailer";
-import setEmail from "../utils/setEmailInvoice";
-import dotenv from "dotenv";
+import sendEmail from "../utils/sendEmail";
 import { ProductI } from "../models/product";
+import dotenv from "dotenv";
 dotenv.config();
-
-const transport = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    auth: {
-        user: process.env.NODEMAILER_USER,
-        pass: process.env.NODEMAILER_PASSWORD,
-    },
-});
-
-const message = {
-    from: "shoppy@email.com",
-    to: "to@email.com",
-    subject: "Invoice",
-    html: "",
-};
 
 @Path("/api/checkout")
 @Tags("Cart")
@@ -84,12 +67,11 @@ export class CheckoutController extends ApiController {
             }));
             await this.itemRepo.insertItem(items);
             const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
-            message.html = setEmail(invoiceView);
-            const info = await transport.sendMail(message);
-            const url = nodemailer.getTestMessageUrl(info);
+            const urlInfo = await sendEmail(invoiceView);
+
             return this.httpContext.response.status(200).json({
                 message: "Invoice produced",
-                data: { ...invoiceView, messageUrl: url },
+                data: { ...invoiceView, messageUrl: urlInfo },
                 error: false,
             });
         } catch (error) {

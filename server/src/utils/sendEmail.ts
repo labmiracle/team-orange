@@ -1,9 +1,19 @@
 /* eslint-disable indent */
+import nodemailer from "nodemailer";
 import { InvoiceViewI } from "../models/invoiceView";
 
-export default function setEmail(invoice: InvoiceViewI) {
+export default async function sendEmail(invoice: InvoiceViewI) {
+    const transport = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        auth: {
+            user: process.env.NODEMAILER_USER,
+            pass: process.env.NODEMAILER_PASSWORD,
+        },
+    });
+
     const odd = (number: number) => (number % 2 === 0 ? "background-color:silver;padding-right:5px;" : "background-color:white;padding-right:5px;");
-    return `
+    const html = `
         <div style="display: block; background-color: white; max-width: 600px;">
           <header class="header">
             <h1 style="margin:5px; font-size: 36px;">INVOICE</h1>
@@ -53,4 +63,15 @@ export default function setEmail(invoice: InvoiceViewI) {
           </table>
           <h2>Grand Total: ${invoice.total}</h2>
         </div>`;
+
+    const message = {
+        from: "shoppy@email.com",
+        to: invoice.email,
+        subject: "Invoice",
+        html: html,
+    };
+
+    const info = await transport.sendMail(message);
+    const url = nodemailer.getTestMessageUrl(info);
+    return url;
 }
