@@ -21,20 +21,7 @@ function decodeUser() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<AuthData | null>(decodeUser() || null);
-
-    /* 
-    useEffect(() => {
-        try {
-            const token = window.localStorage.getItem("user");
-            if (token && token !== "undefined") {
-                const payload = decodeJwt(token) as User;
-                setUser({ token, rol: payload.rol, name: payload.name, lastname: payload.lastName });
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }, []); */
+    const [user, setUser] = useState<AuthData | null>(() => decodeUser() || null);
 
     return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 }
@@ -48,13 +35,4 @@ export function useAuthContext() {
     }
 
     return { user, setUser, logOut };
-    /* if (authContext) {
-        const { user, setUser } = authContext;
-
-       
-
-        return { user, setUser };
-    } else {
-        throw new Error("You have to wrap your app with AuthProvider");
-    } */
 }
