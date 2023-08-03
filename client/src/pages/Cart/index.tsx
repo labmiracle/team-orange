@@ -4,43 +4,31 @@ import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
-import { useCheckout } from "../utilities/useCheckout";
 import { useNavigate } from "react-router-dom";
 import Invoice from "./Invoice";
 import Loader from "../Loader";
 import { useAuthContext } from "../../Context/AuthContext";
 export function Cart() {
-    const { cart, clearCart } = useCart();
+    const { cart, clearCart, checkout } = useCart();
     const { user } = useAuthContext();
     const [showForm, setShowForm] = useState(false);
-    const { submit } = useCheckout();
-    const [successfullPayment, setSuccessfullPayment] = useState(false);
     const [invoice, setInvoice] = useState(null);
     const [isLoading, setLoading] = useState(false);
-    const navigate = useNavigate();
 
     function confirmCartContent() {
         setShowForm(true);
     }
 
-    async function confirmPayment(event: React.FormEvent) {
+    function confirmPayment(event: React.FormEvent) {
         event.preventDefault();
-        if (!user) {
-            navigate("/login");
-            return;
-        }
         setLoading(true);
-        const invoice = await submit();
-        setLoading(false);
-        setInvoice(invoice);
-        // setSuccessfullPayment(true);
+        checkout().then(data => {
+            setLoading(false);
+            setInvoice(data);
+        });
         clearCart();
         setShowForm(false);
     }
-
-    useEffect(() => {
-        // setSuccessfullPayment(false);
-    }, []);
 
     function backToCart() {
         setShowForm(false);
@@ -54,17 +42,7 @@ export function Cart() {
 
     if (!cart || cart.length === 0) {
         if (invoice) return <Invoice {...{ invoice }} />;
-
-        // return (
-        //     <div className={styles.notificationContainer}>
-        //         <h1 className={styles.notification}>
-        //             {successfullPayment ? "La compra se realizo con exito 🎉" : "Carrito vacio 🛒"}
-        //         </h1>
-        //     </div>
-        // );
     }
-
-    //if (isLoading) return <Loader />;
 
     return (
         <main className={styles.container}>

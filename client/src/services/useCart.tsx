@@ -29,5 +29,30 @@ export function useCart() {
         setCart([]);
     }
 
-    return { cart, addProduct, clearCart };
+    function checkout() {
+        const user = window.localStorage.getItem("user");
+        if (user) {
+            return fetch("http://localhost:4000/api/checkout/produce", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "x-auth": user },
+                body: JSON.stringify(cart),
+            })
+                .then(response => response.json())
+                .then(invoice => {
+                    return invoice.data;
+                });
+        } else {
+            return fetch("http://localhost:4000/api/checkout/produce", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(cart),
+            })
+                .then(response => response.json())
+                .then(invoice => {
+                    return invoice.data;
+                });
+        }
+    }
+
+    return { cart, addProduct, clearCart, checkout };
 }
