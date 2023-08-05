@@ -12,6 +12,7 @@ import { StoreController } from "./controllers/store.controller";
 import cookieParser from "cookie-parser";
 import { CartController } from "./controllers/cart.controller";
 import { CheckoutController } from "./controllers/checkout.controller";
+import { ErrorFilter } from "./filters/error.filter";
 import path from "path";
 
 /**
@@ -41,6 +42,6 @@ export class Server extends ApiServer {
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
         this.registerControllers([HealthController, ProductController, UserController, StoreController, CartController, CheckoutController]);
         this.routing.ignoreClosedResponseOnFilters();
-        this.routing.registerGlobalFilters([MySqlConnectionFilter]);
+        this.routing.registerGlobalFilters([MySqlConnectionFilter, ErrorFilter]);
     }
 }

@@ -50,21 +50,9 @@ export class ProductController extends ApiController {
     // @Response(404, "User not found.")
     @Action({ route: "/q", method: HttpMethod.GET })
     async getBySizeCategory() {
-        try {
-            const { size, category } = this.httpContext.request.query;
-            const products = await this.productRepo.getFilteredProducts(size as string, category as string);
-            return this.httpContext.response.status(200).json({
-                message: "Products found",
-                data: products,
-                error: false,
-            });
-        } catch (error) {
-            return this.httpContext.response.status(404).json({
-                message: "Product not found",
-                data: null,
-                error: true,
-            });
-        }
+        const { size, category } = this.httpContext.request.query;
+        const products = await this.productRepo.getFilteredProducts(size as string, category as string);
+        return products;
     }
 
     /**

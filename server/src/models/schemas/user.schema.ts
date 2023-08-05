@@ -73,4 +73,5 @@ export const userDBSchema = Joi.object({
     idDocumentType: Joi.string().default("DNI").valid("DNI"),
     idDocumentNumber: Joi.number().integer(),
     rol: Joi.string().optional(),
+    status: Joi.number().optional(),
 });

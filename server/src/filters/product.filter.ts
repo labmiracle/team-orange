@@ -8,31 +8,15 @@ import { productSchema, productArray } from "../models/schemas/product.schema";
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class ProductFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        try {
-            const { error } = productSchema.validate(httpContext.request.body);
-            if (error) throw new Error(error.details[0].message);
-        } catch (err) {
-            httpContext.response.status(400).json({
-                message: err.message,
-                data: undefined,
-                error: true,
-            });
-        }
+        const { error } = productSchema.validate(httpContext.request.body);
+        if (error) throw new Error(error.details[0].message);
     }
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
-export class ProductsFilter implements IFilter {
+export class ProductArrayFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        try {
-            const { error } = productArray.validate(httpContext.request.body);
-            if (error) throw new Error(error.details[0].message);
-        } catch (err) {
-            httpContext.response.status(400).json({
-                message: err.message,
-                data: undefined,
-                error: true,
-            });
-        }
+        const { error } = productArray.validate(httpContext.request.body);
+        if (error) throw new Error(error.details[0].message);
     }
 }
