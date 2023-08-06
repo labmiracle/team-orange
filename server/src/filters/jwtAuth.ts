@@ -6,7 +6,7 @@ import { BatchDbCommand } from "../core/repositories/commands/batch.command";
 import { RowDataPacket } from "mysql2/promise";
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
-export class JWTAuth implements IFilter {
+export class JWTAuthFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext) {
         const token = httpContext.request.header("x-auth");
         if (!token) throw new Error("Token not found");
@@ -19,9 +19,10 @@ export class JWTAuth implements IFilter {
         };
     }
 }
+//hacer un afterexecute
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
-export class isAdmin implements IFilter {
+export class isAdminFilter implements IFilter {
     protected batch: BatchDbCommand;
     constructor(protected readonly connection: MySqlConnection) {
         this.batch = new BatchDbCommand(connection);
@@ -35,7 +36,7 @@ export class isAdmin implements IFilter {
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
-export class isManager implements IFilter {
+export class isManagerFilter implements IFilter {
     protected batch: BatchDbCommand;
     constructor(protected readonly connection: MySqlConnection) {
         this.batch = new BatchDbCommand(connection);

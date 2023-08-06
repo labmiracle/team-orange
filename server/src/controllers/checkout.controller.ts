@@ -1,6 +1,6 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { UserI } from "../models/user";
-import { JWTAuth } from "../filters/jwtAuth";
+import { JWTAuthFilter } from "../filters/jwtAuth";
 import { Path, POST, GET } from "typescript-rest";
 import { InvoiceRepository } from "../repositories/invoice.repository";
 import { ItemRepository } from "../repositories/item.repository";
@@ -25,7 +25,7 @@ export class CheckoutController extends ApiController {
     @Response<InvoiceViewI[]>(200, "Retrieve an invoice.")
     @Response(404, "Invoice not found.")
     @Response(500, "Server error.")
-    @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuth], fromBody: true })
+    @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuthFilter], fromBody: true })
     async getInvoice() {
         try {
             const { id } = this.httpContext.request.body.decodedToken;
@@ -52,7 +52,7 @@ export class CheckoutController extends ApiController {
     //refactorizar produce
     @POST
     @Path("/produce")
-    @Action({ route: "/produce", method: HttpMethod.POST, filters: [JWTAuth], fromBody: true })
+    @Action({ route: "/produce", method: HttpMethod.POST, filters: [JWTAuthFilter], fromBody: true })
     async produceInvoice({ entity, decodedToken }: { entity: ProductI[]; decodedToken: UserI }) {
         try {
             const date = new Date();

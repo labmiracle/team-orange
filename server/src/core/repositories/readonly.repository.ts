@@ -32,7 +32,9 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
         const query = format(`SELECT * FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [rows] = await this.connection.connection.execute(query);
-        return this.map(rows, this.entityType);
+        const entities = this.map(rows, this.entityType);
+        if (!entities || entities.length === 0) throw new Error("Unable to retrieve the entity.");
+        return entities;
     }
     /**
      * SELECT id, args[0], args[1], ... FROM {this.tableName} WHERE status = 1

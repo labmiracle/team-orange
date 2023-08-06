@@ -10,10 +10,9 @@ import { ProductController } from "./controllers/product.controller";
 import { UserController } from "./controllers/user.controller";
 import { StoreController } from "./controllers/store.controller";
 import cookieParser from "cookie-parser";
-import { CartController } from "./controllers/cart.controller";
 import { CheckoutController } from "./controllers/checkout.controller";
-import { ErrorFilter } from "./filters/error.filter";
 import path from "path";
+import { ResponseFilter } from "./filters/response.filter";
 
 /**
  * Represents the api server application.
@@ -40,8 +39,8 @@ export class Server extends ApiServer {
             .use(express.static(path.join(__dirname, "../../client/dist")))
             .get("/", (req, res) => res.sendFile(path.join(__dirname, "../../client/dist/index.html")))
             .listen(port, () => this.logger.debug(`Listening on: http://localhost:${port}`));
-        this.registerControllers([HealthController, ProductController, UserController, StoreController, CartController, CheckoutController]);
+        this.registerControllers([HealthController, ProductController, UserController, StoreController, CheckoutController]);
         this.routing.ignoreClosedResponseOnFilters();
-        this.routing.registerGlobalFilters([MySqlConnectionFilter, ErrorFilter]);
+        this.routing.registerGlobalFilters([MySqlConnectionFilter, ResponseFilter]);
     }
 }
