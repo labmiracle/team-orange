@@ -1,6 +1,8 @@
 import { useContext, useEffect } from "react";
 import { CartContext } from "../Context/CartContext";
-import { ProductType } from "../types/types";
+import { Product } from "../types";
+import { ProductService } from "./Product.service";
+
 
 export function useCart() {
     const cartContext = useContext(CartContext);
@@ -13,7 +15,7 @@ export function useCart() {
         window.localStorage.setItem("cart", JSON.stringify(cart));
     }, [cart]);
 
-    function addProduct(product: ProductType, amount: number) {
+    function addProduct(product: Product, amount: number) {
         if (cart.some(item => item.id === product.id)) {
             const updatedCart = cart.map(item => {
                 if (item.id === product.id) return { ...item, quantity: (item.quantity ??= 0) + amount };

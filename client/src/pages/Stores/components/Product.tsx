@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { ProductType } from "../../../types/types";
+import type { Product } from "../../../types";
 import styles from "./product.module.css";
 import { Link } from "react-router-dom";
 
 type ProductProps = {
-    product: ProductType;
+    product: Product;
     sequencer: number[];
     setSequencer: React.Dispatch<React.SetStateAction<number[]>>;
 };

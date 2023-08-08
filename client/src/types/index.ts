@@ -1,4 +1,4 @@
-export type ProductType = {
+export type Product = {
     id: number;
     name: string;
     brand: string;
@@ -26,7 +26,7 @@ export type ColorsType = {
 export type StoreType = {
     name: string;
     colors: ColorsType;
-    products: ProductType[];
+    products: Product[];
 };
 
 export type setFilterType = ({ type, size }: { type?: string; size?: string }) => void;

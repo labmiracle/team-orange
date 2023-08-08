@@ -4,7 +4,7 @@ import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
-import { StoreName } from "../../types/types";
+import { StoreName } from "../../types";
 import { useAuthContext } from "../../Context/AuthContext";
 
 export function Layout() {

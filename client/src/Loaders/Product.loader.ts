@@ -1,5 +1,6 @@
 import { Params } from "react-router-dom";
-// import { HttpClient } from "@miracledevs/paradigm-web-fetch";
+import { ProductService } from "../services/Product.service";
+
 /**
  * Fetch the store products, colors, managers
  * @param params url params
@@ -10,15 +11,14 @@ import { Params } from "react-router-dom";
 
 export const ProductsLoader = {
     async getProduct({ params }: { params: Params }) {
-        const productUrl = "http://localhost:4000/api/product";
         const { productId } = params;
-
-        try {
-            const response = await fetch(`${productUrl}/${productId}`);
-            const product = await response.json();
-            return product;
-        } catch (e) {
-            console.error(e);
+        if (Number(productId)) {
+            try {
+                const product = await ProductService.getProduct(Number(productId));
+                return product;
+            } catch (error) {
+                console.log(error);
+            }
         }
     },
 };

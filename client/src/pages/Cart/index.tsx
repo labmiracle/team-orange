@@ -8,7 +8,6 @@ import { useAuthContext } from "../../Context/AuthContext";
 import { PaymentForm } from "./components/PaymentForm";
 export function Cart() {
     const { cart, clearCart, checkout } = useCart();
-    const { user } = useAuthContext();
     const [showForm, setShowForm] = useState(false);
     const [invoice, setInvoice] = useState(null);
     const [isLoading, setLoading] = useState(false);

@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
-import { ProductType, setFilterType } from "../../types/types";
+import { Product, setFilterType } from "../../types";
 
 type Props = [
-    ProductType[],
-    React.Dispatch<React.SetStateAction<ProductType[]>>,
+    Product[],
+    React.Dispatch<React.SetStateAction<Product[]>>,
     React.MutableRefObject<{
         type: string;
         size: string;
@@ -16,7 +16,7 @@ type Props = [
  * @param productsArray - {@link Types.ProductType}
  * @returns - {@link Props}
  */
-export function useProducts(productsArray: ProductType[]): Props {
+export function useProducts(productsArray: Product[]): Props {
     const [products, setProducts] = useState(productsArray);
 
     const filter = useRef({

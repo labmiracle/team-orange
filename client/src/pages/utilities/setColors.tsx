@@ -1,4 +1,4 @@
-import { ColorsType } from "../../types/types";
+import { ColorsType } from "../../types";
 /**
  * Set the text color depending on the brightness of the background color
  * @param light lightness of color

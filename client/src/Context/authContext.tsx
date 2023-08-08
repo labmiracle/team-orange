@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { AuthData, User } from "../types/types";
+import { AuthData, User } from "../types";
 import { decodeJwt } from "jose";
 
 interface ContextType {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { JWTPayload, decodeJwt } from "jose";
-import { AuthData, User } from "../types/types";
+import { AuthData, User } from "../types";
 import { useAuthContext } from "../Context/AuthContext";
 
 // import { WebFetcher, HttpClient } from "@miracledevs/paradigm-web-fetch";
