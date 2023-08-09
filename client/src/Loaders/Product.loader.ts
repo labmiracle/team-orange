@@ -11,10 +11,11 @@ import { ProductService } from "../services/Product.service";
 
 export const ProductsLoader = {
     async getProduct({ params }: { params: Params }) {
+        const productService = new ProductService();
         const { productId } = params;
         if (Number(productId)) {
             try {
-                const product = await ProductService.getProduct(Number(productId));
+                const product = await productService.getProduct(Number(productId));
                 return product;
             } catch (error) {
                 console.log(error);

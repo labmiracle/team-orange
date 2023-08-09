@@ -1,11 +1,11 @@
 import { baseEndpoints } from "../endpoints";
 import { Product } from "../types";
-import axios from "axios";
-
+import fetcher from "./Fetcher";
 export class ProductService {
-    static async getProduct(id: Product["id"]) {
+    async getProduct(id: Product["id"]) {
         try {
-            const product = await axios.get(`${baseEndpoints.products}/${id}`);
+            const product = await fetcher.query(`${baseEndpoints.products}/${id}`);
+            console.log(product);
             return product.data;
         } catch (e) {
             console.log(e);

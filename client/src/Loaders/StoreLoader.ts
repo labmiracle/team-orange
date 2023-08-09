@@ -17,7 +17,7 @@ export const StoresLoader = {
             if (storeId) {
                 const response = await fetch(`${storeUrl}/${storeId}`);
                 const store = await response.json();
-                return store;
+                return store.data;
             }
         } catch (e) {
             return console.error((e as Error).message);
@@ -28,6 +28,6 @@ export const StoresLoader = {
         const storeUrl = "http://localhost:4000/api/shop";
         const response = await fetch(`${storeUrl}/names`);
         const names = await response.json();
-        return names;
+        return names.data;
     },
 };
