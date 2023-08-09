@@ -6,11 +6,22 @@ import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
 import { StoreName } from "../../types";
 import { useAuthContext } from "../../Context/AuthContext";
+import Fetcher from "../../services/Fetcher";
+import { useEffect } from "react";
 
 export function Layout() {
     const { user, logOut } = useAuthContext();
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user?.token) {
+            Fetcher.addInterceptor(config => {
+                config.headers.set("x-auth", user.token);
+                return config;
+            });
+        }
+    }, [user]);
 
     return (
         <div className={styles.container}>

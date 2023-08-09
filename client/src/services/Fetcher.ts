@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosRequestConfig } from "axios";
+import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 import axios from "axios";
 
 class Fetcher {
@@ -8,6 +8,7 @@ class Fetcher {
     constructor() {
         this.fetcher = axios.create({
             baseURL: "http:/localhost:4000/api",
+            headers: { "Content-Type": "application/json" },
         });
 
         if (!Fetcher.instance) {
@@ -21,6 +22,10 @@ class Fetcher {
         if (url) return await this.fetcher(url);
 
         throw new Error("");
+    }
+
+    addInterceptor(callback: (config: InternalAxiosRequestConfig<any>) => InternalAxiosRequestConfig<any>) {
+        this.fetcher.interceptors.request.use(callback);
     }
 }
 
