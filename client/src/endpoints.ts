@@ -1,5 +1,11 @@
-const baseUrl = "http://localhost:4000";
+const baseUrl = "http://localhost:4000/api";
 
 export const baseEndpoints = {
-    products: `${baseUrl}/api/product`,
+    products: {
+        product: `${baseUrl}/product`,
+    },
+    stores: {
+        store: `${baseUrl}/shop`,
+        names: `${baseUrl}/shop/names`,
+    },
 };

@@ -3,7 +3,6 @@ import { JWTPayload, decodeJwt } from "jose";
 import { AuthData, User } from "../types";
 import { useAuthContext } from "../Context/AuthContext";
 
-// import { WebFetcher, HttpClient } from "@miracledevs/paradigm-web-fetch";
 // const paradigm = new HttpClient();
 // const fetcher = new WebFetcher();
 
@@ -13,7 +12,7 @@ type RegisterData = {
     email: string;
     password: string;
     name: string;
-    lastname: string;
+    lastName: string;
     docType: string;
     docNumber: number;
 };
@@ -40,7 +39,7 @@ export function useLoginFetch() {
         });
     }
 
-    function register({ email, password, name, lastname, docType, docNumber }: RegisterData) {
+    function register({ email, password, name, lastName, docType, docNumber }: RegisterData) {
         fetch("http://localhost:4000/api/users/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -48,7 +47,7 @@ export function useLoginFetch() {
                 email,
                 password,
                 name,
-                lastName: lastname,
+                lastName,
                 idDocumentType: docType,
                 idDocumentNumber: docNumber,
             }),

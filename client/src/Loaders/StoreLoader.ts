@@ -1,5 +1,5 @@
 import { Params } from "react-router-dom";
-// import { HttpClient } from "@miracledevs/paradigm-web-fetch";
+import { StoreService } from "../services/Store.service";
 /**
  * Fetch the store products, colors, managers
  * @param params url params
@@ -10,14 +10,12 @@ import { Params } from "react-router-dom";
 
 export const StoresLoader = {
     async getStore({ params }: { params: Params }) {
-        const storeUrl = "http://localhost:4000/api/shop";
-
         const storeId = params.id;
         try {
-            if (storeId) {
-                const response = await fetch(`${storeUrl}/${storeId}`);
-                const store = await response.json();
-                return store.data;
+            if (Number(storeId)) {
+                const storeService = new StoreService();
+                const store = await storeService.getStore(Number(storeId));
+                return store;
             }
         } catch (e) {
             return console.error((e as Error).message);
@@ -25,9 +23,8 @@ export const StoresLoader = {
     },
 
     async getStoresName() {
-        const storeUrl = "http://localhost:4000/api/shop";
-        const response = await fetch(`${storeUrl}/names`);
-        const names = await response.json();
-        return names.data;
+        const storeService = new StoreService();
+        const names = await storeService.getStoreNames();
+        return names;
     },
 };
