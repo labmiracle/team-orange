@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { productArray } from "./product.schema";
+// import { productArray } from "./product.schema";
 
 export const storeSchema = Joi.object({
     id: Joi.number().optional(),
@@ -19,5 +19,5 @@ export const storeSchema = Joi.object({
             light: Joi.number(),
         }),
     }),
-    products: productArray,
+    //products: productArray,
 });

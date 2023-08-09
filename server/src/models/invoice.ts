@@ -1,6 +1,6 @@
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 
-export interface InvoiceI {
+export interface InvoiceInterface {
     /**@IsInt */
     id?: number;
     date: Date;
@@ -10,7 +10,7 @@ export interface InvoiceI {
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class Invoice implements InvoiceI {
+export class Invoice implements InvoiceInterface {
     id? = 0;
     date: Date = undefined;
     total = 0;

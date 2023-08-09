@@ -16,7 +16,7 @@ export class ResponseFilter implements IFilter {
         };
     }
 
-    async onError(httpContext: HttpContext, _: any, error: Error): Promise<void> {
+    async onError(httpContext: HttpContext, _: undefined, error: Error): Promise<void> {
         httpContext.response.status(500).send({
             message: error.message,
             error: true,

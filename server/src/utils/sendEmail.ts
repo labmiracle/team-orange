@@ -1,8 +1,8 @@
 /* eslint-disable indent */
 import nodemailer from "nodemailer";
-import { InvoiceViewI } from "../models/invoiceView";
+import { InvoiceViewInterface } from "../models/invoiceView";
 
-export default async function sendEmail(invoice: InvoiceViewI) {
+export default async function sendEmail(invoice: InvoiceViewInterface) {
     const transport = nodemailer.createTransport({
         host: "smtp.ethereal.email",
         port: 587,

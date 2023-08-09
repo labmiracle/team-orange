@@ -76,13 +76,13 @@ CREATE TABLE IF NOT EXISTS Product(
 	name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
-    discountPercentage DECIMAL(3,2),
+    discountPercentage DECIMAL(3,2) DEFAULT 1,
     currentStock INT NOT NULL,
     reorderPoint INT NOT NULL,
     minimum INT NOT NULL,
     brandId INT NOT NULL,
     url_img VARCHAR(255) NOT NULL,
-    storeId INT,
+    storeId INT NOT NULL,
     status BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_brandId_p FOREIGN KEY (brandId) REFERENCES Brand(id),
     CONSTRAINT fk_storeId_p FOREIGN KEY (storeId) REFERENCES Store(id) ON DELETE SET NULL
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS ProductCategory (
 
 CREATE TABLE IF NOT EXISTS Item (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    quantity INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
     total DECIMAL(15,2) NOT NULL,
     unitPrice DECIMAL(10,2) NOT NULL,
     productId INT NOT NULL UNIQUE,

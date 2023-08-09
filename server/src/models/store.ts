@@ -1,59 +1,7 @@
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
-import { ProductI } from "./product";
+import { ProductInterface } from "./product";
 
-export type Color = {
-    hue: number;
-    sat: number;
-    light: number;
-};
-
-/* export interface StoreI {
-    id: number;
-    name: string;
-    managerId: number;
-    apiUrl: string;
-    colors: {
-        primary: Color;
-        secondary: Color;
-    };
-    products: ProductI[];
-    status?: number;
-} */
-
-@Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class Store implements StoreI {
-    id? = 0;
-    name = "";
-    managerId = 0;
-    apiUrl = "";
-    colors? = {
-        primary: { hue: 0, sat: 0, light: 0 },
-        secondary: { hue: 0, sat: 0, light: 0 },
-    };
-    products? = [] as ProductI[];
-    status? = 1;
-}
-
-export interface StoreColorI extends Color {
-    id?: number;
-    type: string;
-    hue: number;
-    sat: number;
-    light: number;
-    storeId: number;
-}
-
-@Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class StoreColor implements StoreColorI {
-    id? = 0;
-    type = "";
-    hue = 0;
-    sat = 0;
-    light = 0;
-    storeId = 0;
-}
-
-export interface StoreI {
+export interface StoreInterface {
     /**@IsInt */
     id?: number;
     name: string;
@@ -93,7 +41,7 @@ export interface StoreI {
         /** @IsInt */
         minimum: number;
         /** @IsInt */
-        storeId: number;
+        storeId?: number;
         categories: string[];
         sizes: string[];
         brand: string;
@@ -101,4 +49,43 @@ export interface StoreI {
         /** @IsInt */
         status?: number;
     }[];
+}
+
+@Injectable({ lifeTime: DependencyLifeTime.Transient })
+export class Store implements StoreInterface {
+    id? = 0;
+    name = "";
+    managerId = 0;
+    apiUrl = "";
+    colors? = {
+        primary: { hue: 0, sat: 0, light: 0 },
+        secondary: { hue: 0, sat: 0, light: 0 },
+    };
+    products? = [] as ProductInterface[];
+    status? = 1;
+}
+
+export interface ColorInterface {
+    hue: number;
+    sat: number;
+    light: number;
+}
+
+export interface StoreColorInterface extends ColorInterface {
+    id?: number;
+    type: string;
+    /* hue: number;
+    sat: number;
+    light: number; */
+    storeId: number;
+}
+
+@Injectable({ lifeTime: DependencyLifeTime.Transient })
+export class StoreColor implements StoreColorInterface {
+    id? = 0;
+    type = "";
+    hue = 0;
+    sat = 0;
+    light = 0;
+    storeId = 0;
 }

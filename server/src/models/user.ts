@@ -1,6 +1,6 @@
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 
-export interface UserI {
+export interface UserInterface {
     /**@IsInt */
     id?: number;
     name: string;
@@ -16,7 +16,7 @@ export interface UserI {
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class User implements UserI {
+export class User implements UserInterface {
     id? = 0;
     name = "";
     lastName = "";
@@ -28,11 +28,11 @@ export class User implements UserI {
     rol? = "";
 }
 
-export interface UserL {
+export interface UserLoginInterface {
     email: string;
     password: string;
 }
 
-export interface AdminI extends UserI {
+export interface AdminInterface extends UserInterface {
     rol: string;
 }

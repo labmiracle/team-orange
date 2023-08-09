@@ -1,14 +1,14 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
-import { UserI } from "../models/user";
+import { UserInterface } from "../models/user";
 import { JWTAuthFilter } from "../filters/jwtAuth";
 import { Path, POST, GET } from "typescript-rest";
 import { InvoiceRepository } from "../repositories/invoice.repository";
 import { ItemRepository } from "../repositories/item.repository";
 import { InvoiceViewRepository } from "../repositories/invoiceView.repository";
 import { Tags, Response } from "typescript-rest-swagger";
-import { InvoiceViewI } from "../models/invoiceView";
+import { InvoiceViewInterface } from "../models/invoiceView";
 import sendEmail from "../utils/sendEmail";
-import { ProductI } from "../models/product";
+import { ProductSaleInterface } from "../models/product";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -22,7 +22,7 @@ export class CheckoutController extends ApiController {
 
     @GET
     @Path("/get")
-    @Response<InvoiceViewI[]>(200, "Retrieve an invoice.")
+    @Response<InvoiceViewInterface[]>(200, "Retrieve an invoice.")
     @Response(404, "Invoice not found.")
     @Response(500, "Server error.")
     @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuthFilter], fromBody: true })
@@ -52,8 +52,8 @@ export class CheckoutController extends ApiController {
     //refactorizar produce
     @POST
     @Path("/produce")
-    @Action({ route: "/produce", method: HttpMethod.POST, filters: [JWTAuthFilter], fromBody: true })
-    async produceInvoice({ entity, decodedToken }: { entity: ProductI[]; decodedToken: UserI }) {
+    @Action({ route: "/produce", method: HttpMethod.POST, filters: [JWTAuthFilter], fromBody: true }) //add productsale array filter
+    async produceInvoice({ entity, decodedToken }: { entity: ProductSaleInterface[]; decodedToken: UserInterface }) {
         try {
             const date = new Date();
             const grandTotal = [...entity].reduce((acc, c) => acc + c.price * c.discountPercentage * c.quantity, 0);
