@@ -2,19 +2,16 @@ import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/para
 import { StoreRepository } from "../repositories/store.repository";
 import { ProductRepository } from "../repositories/product.repository";
 import { StoreColorRepository } from "../repositories/storeColor.repository";
-import { StoreI, Color, StoreColorI } from "../models/store";
+import { StoreInterface, ColorInterface, StoreColorInterface } from "../models/store";
 import { Path, PathParam, GET, DELETE } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
-import { ProductDBRepository } from "../repositories/productDB.repository";
-import { BrandRepository } from "../repositories/brand.repository";
-import { CategoryRepository } from "../repositories/category.repository";
-import { SizeRepository } from "../repositories/size.repository";
-import { ProductCategoryRepository } from "../repositories/productCategory.repository";
-import { ProductSizeRepository } from "../repositories/productSize.repository";
+import { JWTAuthFilter, isAdminFilter } from "../filters/jwtAuth";
+import { StoreFilter } from "../filters/store.filter";
+import { ProductInterface } from "../models/product";
 
 type Colors = {
-    primary: Color;
-    secondary: Color;
+    primary: ColorInterface;
+    secondary: ColorInterface;
 };
 
 type Names = {
@@ -27,17 +24,7 @@ type Names = {
 @Tags("Stores")
 @Controller({ route: "/api/shop" })
 export class StoreController extends ApiController {
-    constructor(
-        private storeRepo: StoreRepository,
-        private productRepo: ProductRepository,
-        private productDBRepo: ProductDBRepository,
-        private storeColorRepo: StoreColorRepository,
-        private brandRepo: BrandRepository,
-        private categoryRepo: CategoryRepository,
-        private sizeRepo: SizeRepository,
-        private productCategoryRepo: ProductCategoryRepository,
-        private productSizeRepo: ProductSizeRepository
-    ) {
+    constructor(private storeRepo: StoreRepository, private productRepo: ProductRepository, private storeColorRepo: StoreColorRepository) {
         super();
     }
 
@@ -51,13 +38,8 @@ export class StoreController extends ApiController {
     @Response(500, "Stores not found", null)
     @Action({ route: "/names", method: HttpMethod.GET })
     async getAll() {
-        try {
-            const stores = await this.storeRepo.getBy(["name"]);
-            return this.httpContext.response.status(200).send(stores);
-        } catch (err) {
-            console.error(err);
-            return this.httpContext.response.status(500).send(err.message);
-        }
+        const stores = await this.storeRepo.getBy(["name"]);
+        return stores;
     }
 
     /**
@@ -67,60 +49,50 @@ export class StoreController extends ApiController {
      */
     @Path("/:storeId")
     @GET
-    @Response<StoreI>(200, "Return a store data")
+    @Response<StoreInterface>(200, "Return a store data")
     @Response(500, "Store not found", null)
     @Action({ route: "/:storeId", method: HttpMethod.GET })
     async getById(@PathParam("storeId") storeId: number) {
+        const store = await this.storeRepo.getById(Number(storeId));
+        let products: ProductInterface[] = [];
         try {
-            const store = await this.storeRepo.getById(Number(storeId));
-            const products = await this.productRepo.find({ storeId: Number(storeId), status: 1 });
-            const colorsResponse = await this.storeColorRepo.find({ storeId: Number(storeId) });
-            const colorsObj: Colors = {} as Colors;
-            for (const color of colorsResponse) {
-                const type = color.type.toLowerCase();
-                colorsObj[type as keyof Colors] = { hue: color.hue, sat: color.sat, light: color.light };
-            }
-            return this.httpContext.response.status(200).send({ ...store, products: products, colors: colorsObj });
-        } catch (err) {
-            console.error(err);
-            return this.httpContext.response.status(500).send(err.message);
+            products = await this.productRepo.find({ storeId: Number(storeId), status: 1 });
+            // eslint-disable-next-line no-empty
+        } catch {}
+        const colorsResponse = await this.storeColorRepo.find({ storeId: Number(storeId) });
+        const colorsObj: Colors = {} as Colors;
+        for (const color of colorsResponse) {
+            const type = color.type.toLowerCase();
+            colorsObj[type as keyof Colors] = { hue: color.hue, sat: color.sat, light: color.light };
         }
+        return { ...store, products: products, colors: colorsObj };
     }
 
-    @Path("/:storeId")
+    @Path("/")
     @DELETE
-    @Action({ route: "/:storeId", method: HttpMethod.DELETE })
-    async disableStore(@PathParam("storeId") storeId: number) {
-        try {
-            const store = await this.storeRepo.getById(storeId);
-            delete store.colors;
-            delete store.products;
-            store.status = 0;
-            await this.storeRepo.update(store);
-            return this.httpContext.response.status(200).send("Store updated");
-        } catch (err) {
-            console.error(err);
-            return this.httpContext.response.status(500).send(err.message);
-        }
+    @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
+    async disableStore({ entity }: { entity: StoreInterface }) {
+        await this.storeRepo.update({ id: entity.id, status: 0 });
     }
 
-    @Action({ route: "/", method: HttpMethod.POST, fromBody: true })
-    async createStore(store: StoreI) {
-        try {
-            const colors = store.colors;
-            const products = store.products;
-            delete store.colors;
-            delete store.products;
-            const result = await this.storeRepo.insertOne(store);
+    @Action({ route: "/", method: HttpMethod.POST, fromBody: true, filters: [StoreFilter, JWTAuthFilter, isAdminFilter] })
+    async createStore({ entity: store }: { entity: StoreInterface }) {
+        let colors = store.colors;
+        delete store.colors;
+        const result = await this.storeRepo.insertOne(store);
 
-            if (colors) {
-                const primary: StoreColorI = { ...colors.primary, storeId: result.insertId, type: "PRIMARY" };
-                const secondary: StoreColorI = { ...colors.secondary, storeId: result.insertId, type: "SECONDARY" };
-                await this.storeColorRepo.insertOne(primary);
-                await this.storeColorRepo.insertOne(secondary);
-            }
+        if (!colors) {
+            colors = {
+                primary: { hue: 12, sat: 12, light: 12 } as ColorInterface,
+                secondary: { hue: 240, sat: 240, light: 240 } as ColorInterface,
+            };
+        }
 
-            if (products.length > 0) {
+        const primary: StoreColorInterface = { ...colors.primary, storeId: result.insertId, type: "PRIMARY" };
+        const secondary: StoreColorInterface = { ...colors.secondary, storeId: result.insertId, type: "SECONDARY" };
+        await this.storeColorRepo.insertOne(primary);
+        await this.storeColorRepo.insertOne(secondary);
+        /* if (products.length > 0) {
                 for (const product of products) {
                     const { categories, sizes, brand, ...rest } = product;
                     const brandName = await this.brandRepo.find({ name: brand });
@@ -148,12 +120,9 @@ export class StoreController extends ApiController {
                         });
                     }
                 }
-            }
+            } */
 
-            return this.httpContext.response.status(200).send("Store created");
-        } catch (err) {
-            console.error(err);
-            return this.httpContext.response.status(500).send(err.message);
-        }
+        const newStore = await this.storeRepo.getById(result.insertId);
+        return newStore;
     }
 }

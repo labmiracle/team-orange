@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { userDBSchema, userDBArray } from "../src/models/schemas/user.schema";
-import { UserI } from "../src/models/user";
+import { ResponseInterface } from "../src/models/response";
+import { UserInterface } from "../src/models/user";
 import { ApiClient } from "../src/core/http/api.client";
 import bcrypt from "bcrypt";
 import mysql, { RowDataPacket, format } from "mysql2/promise";
@@ -11,15 +12,9 @@ dotenv.config();
 SETUP
 *****************/
 
-const api = new ApiClient("http://localhost:4000/api/users");
+const api = new ApiClient(process.env.BASE_URL + "/api/users");
 
-interface ResponseI<T> {
-    message: string;
-    data: T | undefined;
-    error: boolean;
-}
-
-const user: UserI = {
+const user: UserInterface = {
     email: "test@email.com",
     password: "test12345",
     name: "test",
@@ -28,7 +23,7 @@ const user: UserI = {
     idDocumentNumber: 12322312,
 };
 
-const admin: UserI = {
+const admin: UserInterface = {
     email: "testadmin@example.com",
     password: "",
     name: "Test",
@@ -66,25 +61,25 @@ describe("Admin", () => {
 
 describe("/api/users/signup", () => {
     it("should create an user", async () => {
-        const response = await api.post<ResponseI<UserI>>("signup", null, JSON.stringify(user));
+        const response = await api.post<ResponseInterface<UserInterface>>("signup", null, JSON.stringify(user));
         const { error } = userDBSchema.validate(response.data.data);
         expect(response.status).toBe(200);
         expect(error).toBeFalsy();
     });
     it("should fail on duplicate email", async () => {
-        const response = await api.post<ResponseI<UserI>>("signup", null, JSON.stringify(user));
+        const response = await api.post<ResponseInterface<UserInterface>>("signup", null, JSON.stringify(user));
         expect(response.status).toBe(500);
         expect(response.data.error).toBe(true);
     });
     it("should fail on duplicate document number", async () => {
-        const response = await api.post<ResponseI<UserI>>("signup", null, JSON.stringify({ ...user, email: "test2@email.com" }));
+        const response = await api.post<ResponseInterface<UserInterface>>("signup", null, JSON.stringify({ ...user, email: "test2@email.com" }));
         expect(response.data.error).toBe(true);
     });
 });
 
 describe("/login", () => {
     it("should login user", async () => {
-        const response = await api.post<ResponseI<UserI>>("login", null, JSON.stringify({ email: user.email, password: user.password }));
+        const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: user.email, password: user.password }));
         const token = response.headers.get("x-auth");
         api.authorize(token);
         const { error } = userDBSchema.validate(response.data.data);
@@ -93,19 +88,19 @@ describe("/login", () => {
         user.id = response.data.data.id;
     });
     it("should fail on password", async () => {
-        const response = await api.post<ResponseI<UserI>>("login", null, JSON.stringify({ email: user.email, password: "incorrectPW" }));
+        const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: user.email, password: "incorrectPW" }));
         expect(response.data.error).toBe(true);
         expect(response.data.message).toMatch(/Incorrect username or password/);
     });
     it("should fail on email", async () => {
-        const response = await api.post<ResponseI<UserI>>("login", null, JSON.stringify({ email: "user@example", password: user.password }));
+        const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: "user@example", password: user.password }));
         expect(response.data.error).toBe(true);
     });
 });
 
 describe("/:id", () => {
     it("should get an user", async () => {
-        const response = await api.get<ResponseI<UserI>>(`${user.id}`, null);
+        const response = await api.get<ResponseInterface<UserInterface>>(`${user.id}`, null);
         const { error } = userDBSchema.validate(response.data.data);
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
@@ -113,7 +108,7 @@ describe("/:id", () => {
         expect(response.data.data.email).toBe(user.email);
     });
     it("should not find an user", async () => {
-        const response = await api.get<ResponseI<UserI>>("-3", null);
+        const response = await api.get<ResponseInterface<UserInterface>>("-3", null);
         expect(response.status).toBe(500);
         expect(response.data.message).toMatch(/Unable to retrieve the entity./);
     });
@@ -121,7 +116,7 @@ describe("/:id", () => {
 
 describe("/update", () => {
     it("should change name", async () => {
-        const response = await api.put<ResponseI<UserI>>("update", null, JSON.stringify({ ...user, name: "testdos" }));
+        const response = await api.put<ResponseInterface<UserInterface>>("update", null, JSON.stringify({ ...user, name: "testdos" }));
         const { error } = userDBSchema.validate(response.data.data);
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
@@ -133,14 +128,14 @@ describe("/update", () => {
 describe("/disable", () => {
     it("should disable user", async () => {
         // const response = await api.delete("disable", null)
-        const response = await api.delete<ResponseI<UserI>>("disable", JSON.stringify(user));
+        const response = await api.delete<ResponseInterface<UserInterface>>("disable", JSON.stringify(user));
         expect(response.data.message).toBe(undefined);
         const { error } = userDBSchema.validate(response.data.data);
         expect(error).toBeFalsy();
         expect(response.status).toBe(200);
     });
     it("should not be authorized to disable another user", async () => {
-        const response = await api.delete<ResponseI<UserI>>("disable", JSON.stringify({ ...user, email: "another2@user.com" }));
+        const response = await api.delete<ResponseInterface<UserInterface>>("disable", JSON.stringify({ ...user, email: "another2@user.com" }));
         expect(response.data.message).toMatch(/Unauthorized/);
         expect(response.data.error).toBe(true);
         expect(response.status).toBe(500);
@@ -149,7 +144,7 @@ describe("/disable", () => {
 
 describe("/admin/delete", () => {
     it("should not be authorized to access this route", async () => {
-        const response = await api.delete<ResponseI<UserI>>("admin/delete", JSON.stringify({ id: admin.id }));
+        const response = await api.delete<ResponseInterface<UserInterface>>("admin/delete", JSON.stringify({ id: admin.id }));
         expect(response.data.message).toMatch(/Unauthorized/);
         expect(response.data.error).toBeTruthy();
     });
@@ -157,7 +152,7 @@ describe("/admin/delete", () => {
 
 describe("/login", () => {
     it("should login admin", async () => {
-        const response = await api.post<ResponseI<UserI>>("login", null, JSON.stringify({ email: admin.email, password: "test1234" }));
+        const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: admin.email, password: "test1234" }));
         expect(response.data.message).toBe(undefined);
         const token = response.headers.get("x-auth");
         api.authorize(token);
@@ -171,7 +166,7 @@ describe("/login", () => {
 
 describe("/", () => {
     it("should get all users", async () => {
-        const response = await api.get<ResponseI<UserI[]>>("");
+        const response = await api.get<ResponseInterface<UserInterface[]>>("");
         expect(response.data.message).toBe(undefined);
         const { error } = userDBArray.validate(response.data.data);
         expect(error).toBeFalsy;
@@ -181,7 +176,7 @@ describe("/", () => {
 
 describe("/admin/restore", () => {
     it("should restore an user", async () => {
-        const response = await api.put<ResponseI<UserI>>("admin/restore", null, JSON.stringify({ id: user.id, email: user.email }));
+        const response = await api.put<ResponseInterface<UserInterface>>("admin/restore", null, JSON.stringify({ id: user.id, email: user.email }));
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
     });
@@ -189,7 +184,10 @@ describe("/admin/restore", () => {
 
 describe("/admin/disable", () => {
     it("should disable an user", async () => {
-        const response = await api.delete<ResponseI<UserI>>("admin/disable", JSON.stringify({ id: user.id, email: user.email, password: "test1234" }));
+        const response = await api.delete<ResponseInterface<UserInterface>>(
+            "admin/disable",
+            JSON.stringify({ id: user.id, email: user.email, password: "test1234" })
+        );
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
     });
@@ -197,12 +195,18 @@ describe("/admin/disable", () => {
 
 describe("/admin/delete", () => {
     it("should delete user", async () => {
-        const response = await api.delete<ResponseI<UserI>>("admin/delete", JSON.stringify({ id: user.id, email: user.email, password: "test1234" }));
+        const response = await api.delete<ResponseInterface<UserInterface>>(
+            "admin/delete",
+            JSON.stringify({ id: user.id, email: user.email, password: "test1234" })
+        );
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
     });
     it("should auto delete", async () => {
-        const response = await api.delete<ResponseI<UserI>>("admin/delete", JSON.stringify({ id: admin.id, password: "test1234", email: admin.email }));
+        const response = await api.delete<ResponseInterface<UserInterface>>(
+            "admin/delete",
+            JSON.stringify({ id: admin.id, password: "test1234", email: admin.email })
+        );
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
     });

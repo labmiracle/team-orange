@@ -1,6 +1,6 @@
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 
-export interface CartViewI {
+export interface CartViewInterface {
     /**@IsInt */
     id: number;
     /**@IsInt */
@@ -22,7 +22,7 @@ export interface CartViewI {
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class CartView implements CartViewI {
+export class CartView implements CartViewInterface {
     id = 0;
     userId = 0;
     productId = 0;

@@ -1,6 +1,6 @@
 import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
-import { userSmallSchema, userSchema, userLogin } from "../models/schemas/user.schema";
+import { userSchema, userLogin } from "../models/schemas/user.schema";
 import { Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -9,15 +9,6 @@ export class UserFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const entity = httpContext.request.body.entity ? httpContext.request.body.entity : httpContext.request.body;
         const { error } = userSchema.validate(entity);
-        if (error) throw new Error(error.details[0].message);
-    }
-}
-
-@Injectable({ lifeTime: DependencyLifeTime.Scoped })
-export class UserSmallFilter implements IFilter {
-    async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const entity = httpContext.request.body.entity ? httpContext.request.body.entity : httpContext.request.body;
-        const { error } = userSmallSchema.validate(entity);
         if (error) throw new Error(error.details[0].message);
     }
 }

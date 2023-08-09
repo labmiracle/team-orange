@@ -70,12 +70,17 @@ export const productSchema = Joi.object({
     url_img: Joi.string().required().messages({
         "any.required": "image path is a required field",
     }),
-    storeId: Joi.number().optional().messages({
-        "any.required": "storeId is a required field",
+    storeId: Joi.number().forbidden().messages({
+        "any.forbidden": "storeId is a forbidden field",
     }),
-    quantity: Joi.number().required(),
-    total: Joi.number().optional(),
     status: Joi.number().optional(),
 });
+
+const productSaleSchema = productSchema.keys({
+    quantity: Joi.number().required(),
+    total: Joi.number().optional(),
+});
+
+export const productSaleArray = Joi.array().items(productSaleSchema);
 
 export const productArray = Joi.array().items(productSchema);

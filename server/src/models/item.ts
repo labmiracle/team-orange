@@ -1,6 +1,6 @@
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 
-export interface ItemI {
+export interface ItemInterface {
     /**@IsInt */
     id?: number;
     /**@IsInt */
@@ -14,7 +14,7 @@ export interface ItemI {
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
-export class Item implements ItemI {
+export class Item implements ItemInterface {
     id? = 0;
     quantity = 0;
     total = 0;

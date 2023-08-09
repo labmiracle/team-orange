@@ -14,7 +14,6 @@ export class ItemRepository extends EditRepositoryBase<Item> {
         const values = items.map(item => Object.values(item));
         const columns = Object.keys(items[0]);
         const query = format(`INSERT INTO \`${this.tableName}\` (??) VALUES ? ON DUPLICATE KEY UPDATE quantity=quantity+1`, [columns, values]);
-        console.log(query);
         const [rows] = await this.connection.connection.execute(query);
         return rows;
     }

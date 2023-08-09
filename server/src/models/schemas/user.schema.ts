@@ -64,20 +64,6 @@ export const userLogin = Joi.object({
     }),
 });
 
-export const userSmallSchema = Joi.object({
-    id: Joi.number().required().messages({
-        "any.required": "ID is a required field",
-    }),
-    email: Joi.string().email({ minDomainSegments: 2 }).required().messages({
-        "string.email": "Invalid email format",
-        "any.required": "Email is a required field",
-    }),
-    password: Joi.string().min(8).required().messages({
-        "string.min": "Invalid password, it must contain more than 8 letters",
-        "any.required": "Password is a required field",
-    }),
-});
-
 export const userDBSchema = Joi.object({
     id: Joi.number(),
     email: Joi.string().email({ minDomainSegments: 2 }),
