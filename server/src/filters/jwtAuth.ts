@@ -20,13 +20,12 @@ export class JWTAuthFilter implements IFilter {
         };
     }
     async afterExecute(httpContext: HttpContext): Promise<void> {
-        const send = httpContext.response.send;
-        httpContext.response.send = user => {
-            httpContext.response.send = send;
-            const token = jwt.sign({ ...user.data }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
-            httpContext.response.setHeader("x-auth", token);
-            return send.call(httpContext.response, user) as Response;
-        };
+        const token = httpContext.request.header("x-auth");
+        const decodedToken = jwt.verify(token, process.env.SHOPPY__ACCESS_TOKEN) as JwtPayload;
+        delete decodedToken.iat;
+        delete decodedToken.exp;
+        const token2 = jwt.sign({ ...decodedToken }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+        httpContext.response.setHeader("x-auth", token2);
     }
 }
 //hacer un afterexecute
