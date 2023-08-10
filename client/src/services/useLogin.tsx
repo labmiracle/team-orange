@@ -13,7 +13,7 @@ type RegisterData = {
     email: string;
     password: string;
     name: string;
-    lastname: string;
+    lastName: string;
     docType: string;
     docNumber: number;
 };
@@ -33,15 +33,15 @@ export function useLogin() {
             if (response.ok) {
                 const token = response.headers.get("x-auth");
                 if (token) {
-                    const payload = decodeJwt(token) as User;
-                    setUser({ token, rol: payload.rol, name: payload.name, lastname: payload.lastName });
+                    const {name, rol , lastName} = decodeJwt(token) as User;
+                    setUser({ token, rol, name, lastName });
                     window.localStorage.setItem("user", token);
                 }
             }
         });
     }
 
-    function register({ email, password, name, lastname, docType, docNumber }: RegisterData) {
+    function register({ email, password, name, lastName, docType, docNumber }: RegisterData) {
         fetch("http://localhost:4000/api/users/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -49,7 +49,7 @@ export function useLogin() {
                 email,
                 password,
                 name,
-                lastName: lastname,
+                lastName,
                 idDocumentType: docType,
                 idDocumentNumber: docNumber,
             }),

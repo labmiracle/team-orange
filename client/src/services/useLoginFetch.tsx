@@ -32,8 +32,8 @@ export function useLoginFetch() {
             if (response.ok) {
                 const token = response.headers.get("x-auth");
                 if (token) {
-                    const payload = decodeJwt(token) as User;
-                    setUser({ token, rol: payload.rol, name: payload.name, lastname: payload.lastName });
+                    const { name, rol, lastName } = decodeJwt(token) as User;
+                    setUser({ token, rol, name, lastName });
                 }
             }
         });

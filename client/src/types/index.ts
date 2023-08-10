@@ -58,5 +58,5 @@ export type AuthData = {
     token: string;
     rol: string;
     name: string;
-    lastname: string;
+    lastName: string;
 };

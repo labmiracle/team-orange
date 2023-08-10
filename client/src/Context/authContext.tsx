@@ -12,8 +12,8 @@ function decodeUser() {
     try {
         const token = window.localStorage.getItem("user");
         if (token) {
-            const payload = decodeJwt(token) as User;
-            return { token, rol: payload.rol, name: payload.name, lastname: payload.lastName };
+            const {rol, name, lastName} = decodeJwt(token) as User;
+            return { token, rol, name, lastName };
         }
     } catch (err) {
         console.error(err);
