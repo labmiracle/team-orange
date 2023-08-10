@@ -62,8 +62,8 @@ describe("Admin", () => {
 describe("/api/users/signup", () => {
     it("should create an user", async () => {
         const response = await api.post<ResponseInterface<UserInterface>>("signup", null, JSON.stringify(user));
+        expect(response.data.message).toBe(undefined);
         const { error } = userDBSchema.validate(response.data.data);
-        expect(response.status).toBe(200);
         expect(error).toBeFalsy();
     });
     it("should fail on duplicate email", async () => {
@@ -80,6 +80,7 @@ describe("/api/users/signup", () => {
 describe("/login", () => {
     it("should login user", async () => {
         const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: user.email, password: user.password }));
+        expect(response.data.message).toBe(undefined);
         const token = response.headers.get("x-auth");
         api.authorize(token);
         const { error } = userDBSchema.validate(response.data.data);

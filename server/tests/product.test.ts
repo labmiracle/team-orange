@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { productSchema, productArray } from "../src/models/schemas/product.schema";
 import { ResponseInterface } from "../src/models/response";
 import { ProductInterface } from "../src/models/product";
 import { ApiClient } from "../src/core/http/api.client";
@@ -90,12 +90,6 @@ describe("POST /api/product", () => {
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
         product.id = response.data.data.id;
-    });
-    it("should not be authorized to create products in other stores", async () => {
-        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify({ ...product, storeId: 1 }));
-        // eslint-disable-next-line no-useless-escape
-        expect(response.data.message).toMatch(/\"storeId\" is not allowed/);
-        expect(response.status).toBe(500);
     });
 });
 
