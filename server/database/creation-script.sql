@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS Item (
     productId INT NOT NULL UNIQUE,
     invoiceId  INT NOT NULL,
     CONSTRAINT fk_productId_i FOREIGN KEY (productId) REFERENCES Product(id),
-    CONSTRAINT fk_purchaseId_i FOREIGN KEY (invoiceId) REFERENCES Invoice(id)
+    CONSTRAINT fk_invoiceId_i FOREIGN KEY (invoiceId) REFERENCES Invoice(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Cart (
@@ -184,6 +184,7 @@ CREATE OR REPLACE VIEW invoice_view AS
     inv.id,
     inv.date As date,
     inv.total AS total,
+    inv.userId,
     u.name,
     u.lastName,
     u.email,

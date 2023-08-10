@@ -7,6 +7,7 @@
         "dev:back": "npm install && npm run build:typescript && npm-run-all --parallel watch:typescript start:server",
         "dev:front": "cd ../client && npm install && npm run dev",
         "dev": "npm-run-all --parallel dev:front dev:back",
+        "prestart": "npm run build",
         "start": "node ./dist/app.js",
         "start:server": "nodemon ./dist/app.js",
         "test": "jest ./tests/ --detectOpenHandles",

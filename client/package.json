@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@miracledevs/paradigm-web-fetch": "^1.0.3",
+		"axios": "^1.4.0",
 		"dotenv": "^16.3.1",
 		"jose": "^4.14.4",
 		"jsonwebtoken": "^9.0.1",
