@@ -34,7 +34,7 @@ export class ProductController extends ApiController {
     /**
      * Retrieve a products by category
      * Example
-     * http:url/?category="Zapatos"&size="Niños"
+     * http:url/?category=Zapatos&size=Niños
      */
     @GET
     @Path("/q")
@@ -184,6 +184,8 @@ export class ProductController extends ApiController {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { categories, sizes, brand, ...rest } = entity;
         const brandName = await this.brandRepo.find({ name: brand });
+        //prevent changing product store
+        delete rest.storeId;
         await this.productDBRepo.update({ brandId: brandName[0].id, ...rest });
         const product = await this.productRepo.getById(entity.id);
 

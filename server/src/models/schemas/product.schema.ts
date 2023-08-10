@@ -70,7 +70,7 @@ export const productSchema = Joi.object({
     url_img: Joi.string().required().messages({
         "any.required": "image path is a required field",
     }),
-    storeId: Joi.number().forbidden().messages({
+    storeId: Joi.number().optional().messages({
         "any.forbidden": "storeId is a forbidden field",
     }),
     status: Joi.number().optional(),

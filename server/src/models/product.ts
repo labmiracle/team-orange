@@ -24,7 +24,7 @@ export interface ProductInterface {
 }
 
 export interface ProductSaleInterface extends ProductInterface {
-    quantity?: number;
+    quantity: number;
     total?: number;
 }
 
