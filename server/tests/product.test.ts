@@ -4,16 +4,19 @@ import { ResponseInterface } from "../src/models/response";
 import { ProductInterface } from "../src/models/product";
 import { ApiClient } from "../src/core/http/api.client";
 import { UserInterface } from "../src/models/user";
-import bcrypt from "bcrypt";
 import mysql, { ResultSetHeader, RowDataPacket, format } from "mysql2/promise";
+import { createPool } from "./db.setup";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
 /*****************
 SETUP
 *****************/
-const apiUser = new ApiClient(process.env.BASE_URL + "/api/users");
+
 const api = new ApiClient(process.env.BASE_URL + "/api/product");
+const pool = createPool();
 
 const manager: UserInterface = {
     email: "testManager@example.com",
@@ -40,40 +43,37 @@ const product: ProductInterface = {
     status: 1,
 };
 
-const hashPassword = async () => {
-    manager.password = await bcrypt.hash("test1234", 10);
-};
+beforeAll(async () => {
+    try {
+        //Create manager
+        manager.password = await bcrypt.hash("test1234", 10);
+        const [response] = await pool.query<ResultSetHeader>("INSERT INTO user SET ?", [manager]);
+        manager.id = response.insertId;
+        const token = jwt.sign({ ...manager }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+        api.authorize(token);
+        //Create store
+        await pool.query<ResultSetHeader>("INSERT INTO store SET name='test', managerId = ?, apiUrl = 'test.com'", [manager.id]);
+        //Login Manager
+    } catch (err) {
+        console.error(err);
+    }
+});
 
-const pool = mysql.createPool({
-    host: process.env.SHOPPY__MYSQLHOST,
-    port: Number(process.env.SHOPPY__MYSQLPORT),
-    database: process.env.SHOPPY__MYSQLDATABASE,
-    user: process.env.SHOPPY__MYSQLUSER,
-    decimalNumbers: true,
-    password: process.env.SHOPPY__MYSQLPASSWORD,
+afterAll(async () => {
+    try {
+        await pool.query("DELETE FROM store WHERE managerId = ?", [manager.id]);
+        await pool.query<RowDataPacket[]>("DELETE FROM user WHERE email = ?", [manager.email]);
+        await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [product.id]);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        pool.end();
+    }
 });
 
 /*****************
 TESTS
 ******************/
-
-describe("Setup for manager tests", () => {
-    it("create manager", async () => {
-        await hashPassword();
-        const query = format("INSERT INTO user SET ?", [manager]);
-        const [response] = await pool.execute<ResultSetHeader>(query);
-        manager.id = response.insertId;
-    });
-    it("create store", async () => {
-        const query = format("INSERT INTO store SET name='test', managerId = ?, apiUrl = 'test.com'", [manager.id]);
-        const [response] = await pool.execute<ResultSetHeader>(query);
-    });
-    it("login manager", async () => {
-        const response = await apiUser.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: manager.email, password: "test1234" }));
-        const token = response.headers.get("x-auth");
-        api.authorize(token);
-    });
-});
 
 describe("GET /api/product", () => {
     it("should return an array of products", async () => {
@@ -128,7 +128,7 @@ describe("PUT api/product", () => {
 });
 
 describe("DELETE api/product", () => {
-    it("should delete a product", async () => {
+    it("should disable a product", async () => {
         await api.delete<ResponseInterface<ProductInterface>>("", JSON.stringify({ id: product.id }));
         const response = await api.get<ResponseInterface<ProductInterface>>(`${product.id}`);
         expect(response.data.message).toBe(undefined);
@@ -136,28 +136,10 @@ describe("DELETE api/product", () => {
         expect(response.status).toBe(200);
         expect(response.data.error).toBeFalsy();
     });
-    it("should not be authorized to delete products from other stores", async () => {
+    it("should not be authorized to disable products from other stores", async () => {
         const response = await api.delete<ResponseInterface<ProductInterface>>("", JSON.stringify({ id: 33 }));
         expect(response.data.message).toMatch(/Unauthorized Store/);
         expect(response.status).toBe(500);
         expect(response.data.error).toBeTruthy();
-    });
-});
-
-describe("Cleaning database", () => {
-    it("delete store", async () => {
-        const query = format("DELETE FROM store WHERE managerId = ?", [manager.id]);
-        await pool.execute(query);
-    });
-    it("delete manager", async () => {
-        await hashPassword();
-        const query = format("DELETE FROM user WHERE email = ?", [manager.email]);
-        await pool.execute<RowDataPacket[]>(query);
-    });
-    it("delete product", async () => {
-        await pool.execute<RowDataPacket[]>(format("DELETE FROM productCategory WHERE productId = ?", [product.id]));
-        await pool.execute<RowDataPacket[]>(format("DELETE FROM productSize WHERE productId = ?", [product.id]));
-        await pool.execute<RowDataPacket[]>(format("DELETE FROM product WHERE id = ?", [product.id]));
-        pool.end();
     });
 });

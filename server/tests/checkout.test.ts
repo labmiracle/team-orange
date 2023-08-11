@@ -1,18 +1,21 @@
 import { ResponseInterface } from "../src/models/response";
-import { ProductInterface, ProductSaleInterface } from "../src/models/product";
+import { ProductSaleInterface } from "../src/models/product";
 import { InvoiceViewInterface } from "../src/models/invoiceView";
 import { ApiClient } from "../src/core/http/api.client";
 import { UserInterface } from "../src/models/user";
+import { createPool } from "./db.setup";
+import { ResultSetHeader } from "mysql2/promise";
 import bcrypt from "bcrypt";
-import mysql, { ResultSetHeader, format, QueryError } from "mysql2/promise";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
 /*********************
 SETUP
 **********************/
-const apiUser = new ApiClient(process.env.BASE_URL + "/api/users");
-const apiCheckout = new ApiClient(process.env.BASE_URL + "/api/checkout");
+
+const api = new ApiClient(process.env.BASE_URL + "/api/checkout");
+const pool = createPool();
 
 interface InvoiceResponse extends InvoiceViewInterface {
     messageUrl: string | false;
@@ -97,23 +100,27 @@ const products2: ProductSaleInterface[] = [
     },
 ];
 
-const pool = mysql.createPool({
-    host: process.env.SHOPPY__MYSQLHOST,
-    port: Number(process.env.SHOPPY__MYSQLPORT),
-    database: process.env.SHOPPY__MYSQLDATABASE,
-    user: process.env.SHOPPY__MYSQLUSER,
-    decimalNumbers: true,
-    password: process.env.SHOPPY__MYSQLPASSWORD,
+beforeAll(async () => {
+    try {
+        user.password = await bcrypt.hash("test1234", 10);
+        const [response] = await pool.query<ResultSetHeader>("INSERT INTO user SET ?", [user]);
+        user.id = response.insertId;
+        const token = jwt.sign({ ...user }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+        api.authorize(token);
+    } catch (err) {
+        console.error(err);
+    }
 });
 
-describe("/api/users/signup", () => {
-    it("should create an user", async () => {
-        const response = await apiUser.post<ResponseInterface<UserInterface>>("signup", null, JSON.stringify(user));
-        expect(response.data.message).toBe(undefined);
-        const token = response.headers.get("x-auth");
-        apiCheckout.authorize(token);
-        user.id = response.data.data.id;
-    });
+afterAll(async () => {
+    try {
+        await pool.query("DELETE FROM invoice WHERE userId = ?", [user.id]);
+        await pool.query("DELETE FROM user WHERE id = ?", [user.id]);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        pool.end();
+    }
 });
 
 /******************
@@ -122,13 +129,13 @@ TESTS
 
 describe("POST /api/checkout/produce", () => {
     it("should produce an invoice", async () => {
-        const response = await apiCheckout.post<ResponseInterface<InvoiceResponse>>("produce", null, JSON.stringify(products1));
+        const response = await api.post<ResponseInterface<InvoiceResponse>>("produce", null, JSON.stringify(products1));
         expect(response.data.message).toBe(undefined);
         expect(response.data.data.total).toBe(300);
         expect(response.data.data.email).toBe("testcheckout@email.com");
     }, 15000);
     it("should produce an invoice", async () => {
-        const response = await apiCheckout.post<ResponseInterface<InvoiceResponse>>("produce", null, JSON.stringify(products2));
+        const response = await api.post<ResponseInterface<InvoiceResponse>>("produce", null, JSON.stringify(products2));
         expect(response.data.message).toBe(undefined);
         expect(response.data.data.total).toBe(160);
         expect(response.data.data.email).toBe("testcheckout@email.com");
@@ -137,34 +144,10 @@ describe("POST /api/checkout/produce", () => {
 
 describe("GET /api/checkout/get", () => {
     it("should get an invoice", async () => {
-        const response = await apiCheckout.get<ResponseInterface<InvoiceResponse[]>>("get");
+        const response = await api.get<ResponseInterface<InvoiceResponse[]>>("get");
         expect(response.data.message).toBe(undefined);
         expect(response.data.data[0].total).toBe(300);
         expect(response.data.data[1].total).toBe(160);
         expect(response.data.data[0].email).toBe("testcheckout@email.com");
-    });
-});
-
-/******************
-CLEANUP
-*******************/
-
-describe("cleanup", () => {
-    it("delete invoice from database", async () => {
-        const query = format("DELETE FROM invoice WHERE userId = ?", [user.id]);
-        try {
-            await pool.execute<ResultSetHeader>(query);
-        } catch (err) {
-            expect((err as QueryError).fatal).toBeFalsy();
-        }
-    });
-    it("delete user from database", async () => {
-        const query = format("DELETE FROM user WHERE id = ?", [user.id]);
-        try {
-            await pool.execute<ResultSetHeader>(query);
-        } catch (err) {
-            expect((err as QueryError).fatal).toBeFalsy();
-        }
-        pool.end();
     });
 });
