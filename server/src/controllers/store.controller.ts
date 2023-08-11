@@ -9,7 +9,7 @@ import { JWTAuthFilter, isAdminFilter, isManagerFilter } from "../filters/jwtAut
 import { StoreFilter } from "../filters/store.filter";
 import { ProductInterface } from "../models/product";
 import { ResponseInterface } from "../models/response";
-import { UserInterface } from "../models/user";
+import { User, UserInterface } from "../models/user";
 
 type Colors = {
     primary: ColorInterface;
@@ -75,8 +75,8 @@ export class StoreController extends ApiController {
     @Response<void>(200, "Disable a store setting it's status to 0")
     @Response(500, "Store not found", null)
     @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async disableStore({ entity }: { entity: StoreInterface }) {
-        await this.storeRepo.update({ id: entity.id, status: 0 });
+    async disableStore(store: StoreInterface) {
+        await this.storeRepo.update({ id: store.id, status: 0 });
     }
 
     @Path("/")
@@ -84,7 +84,7 @@ export class StoreController extends ApiController {
     @Response<StoreInterface>(200, "Create a store")
     @Response(500, "Server error", null)
     @Action({ route: "/", method: HttpMethod.POST, fromBody: true, filters: [StoreFilter, JWTAuthFilter, isAdminFilter] })
-    async createStore({ entity: store }: { entity: StoreInterface }) {
+    async createStore(store: StoreInterface) {
         let colors = store.colors;
         delete store.colors;
         const result = await this.storeRepo.insertOne(store);
@@ -148,8 +148,8 @@ export class StoreController extends ApiController {
         fromBody: true,
         method: HttpMethod.PUT,
     })
-    async update({ entity: store, decodedToken }: { entity: StoreInterface; decodedToken: UserInterface }) {
-        const { id: idManager } = decodedToken;
+    async update(store: StoreInterface) {
+        const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
         const { id: idStore } = (await this.storeRepo.find({ managerId: idManager }))[0];
         const colors = store.colors;
         delete store.colors;

@@ -101,6 +101,7 @@ describe("GET /api/product/:id", () => {
     });
     it("should not found product", async () => {
         const response = await api.get<ResponseInterface<ProductInterface>>("-1");
+        console.log(response.data.message);
         expect(response.data.message).not.toBe(undefined);
         expect(response.status).toBe(500);
         expect(response.data.error).toBe(true);

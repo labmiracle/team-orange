@@ -26,9 +26,9 @@ export class CheckoutController extends ApiController {
     @Response<InvoiceViewInterface[]>(200, "Retrieve an invoice.")
     @Response(404, "Invoice not found.")
     @Response(500, "Server error.")
-    @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuthFilter], fromBody: true })
+    @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuthFilter] })
     async getInvoice() {
-        const { id } = this.httpContext.request.body.decodedToken;
+        const { id } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
         const invoiceView = await this.invoiceViewRepo.find({ userId: id });
         if (invoiceView.length === 0) throw new Error("No Invoice found");
         return invoiceView;
@@ -37,12 +37,13 @@ export class CheckoutController extends ApiController {
     @POST
     @Path("/produce")
     @Action({ route: "/produce", method: HttpMethod.POST, filters: [ProductSaleArrayFilter, JWTAuthFilter], fromBody: true })
-    async produceInvoice({ entity, decodedToken }: { entity: ProductSaleInterface[]; decodedToken: UserInterface }) {
-        if (entity.length === 0) throw new Error("No items in cart");
+    async produceInvoice(products: ProductSaleInterface[]) {
+        if (products.length === 0) throw new Error("No items in cart");
+        const { id: userId } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
         const date = new Date();
-        const grandTotal = [...entity].reduce((acc, c) => acc + c.price * c.discountPercentage * c.quantity, 0);
-        const invoice = await this.invoiceRepo.insertOne({ userId: decodedToken.id, date: date, total: grandTotal });
-        const items = entity.map(item => ({
+        const grandTotal = [...products].reduce((acc, c) => acc + c.price * c.discountPercentage * c.quantity, 0);
+        const invoice = await this.invoiceRepo.insertOne({ userId: userId, date: date, total: grandTotal });
+        const items = products.map(item => ({
             invoiceId: invoice.insertId,
             productId: item.id,
             unitPrice: item.price,

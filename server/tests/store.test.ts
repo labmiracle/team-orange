@@ -104,6 +104,7 @@ describe("POST /api/shop/", () => {
 describe("GET /api/shop/:id", () => {
     it("should return a store", async () => {
         const response = await api.get<ResponseInterface<StoreInterface>>(`${store.id}`);
+        expect(response.data.message).toBe(undefined);
         expect(response.data.data).toHaveProperty("id");
         expect(response.data.data.name).toBe("tienda test");
         expect(response.status).toBe(200);
@@ -141,6 +142,7 @@ describe("DELETE /api/shop", () => {
         api.authorize(tokenAdmin);
         const response = await api.delete("", JSON.stringify({ id: store.id }));
         const storeResponse = await api.get<ResponseInterface<StoreInterface>>(`${store.id}`);
+        expect(storeResponse.data.message).toBe(undefined);
         expect(response.status).toBe(200);
         expect(storeResponse.data.data.status).toBe(0);
     });

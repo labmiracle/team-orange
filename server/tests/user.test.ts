@@ -117,7 +117,7 @@ describe("GET /:id", () => {
     it("should not find an user", async () => {
         const response = await api.get<ResponseInterface<UserInterface>>("-3", null);
         expect(response.status).toBe(500);
-        expect(response.data.message).toMatch(/Unable to retrieve the entity./);
+        expect(response.data.message).toMatch(/Unable to retrieve User/);
     });
 });
 

@@ -33,7 +33,7 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         const query = format(`SELECT * FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [rows] = await this.connection.connection.execute(query);
         const entities = this.map(rows, this.entityType);
-        if (!entities || entities.length === 0) throw new Error("Unable to retrieve the entity.");
+        if (!entities || entities.length === 0) throw new Error(`Unable to retrieve ${this.entityType.name}`);
         return entities;
     }
     /**
@@ -50,7 +50,7 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${this.idColumn}\`=?`, [id]);
         const entities = this.map(rows, this.entityType);
 
-        if (!entities || entities.length === 0) throw new Error("Unable to retrieve the entity.");
+        if (!entities || entities.length === 0) throw new Error(`Unable to retrieve ${this.entityType.name}`);
 
         return entities[0];
     }

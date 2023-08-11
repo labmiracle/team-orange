@@ -7,8 +7,8 @@ import jwt from "jsonwebtoken";
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class UserFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const entity = httpContext.request.body.entity ? httpContext.request.body.entity : httpContext.request.body;
-        const { error } = userSchema.validate(entity);
+        const user = httpContext.request.body;
+        const { error } = userSchema.validate(user);
         if (error) throw new Error(error.details[0].message);
     }
 }

@@ -8,7 +8,7 @@ import { SizeRepository } from "../repositories/size.repository";
 import { ProductCategoryRepository } from "../repositories/productCategory.repository";
 import { ProductSizeRepository } from "../repositories/productSize.repository";
 import { ProductDBRepository } from "../repositories/productDB.repository";
-import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
+import { Path, PathParam, GET, POST, DELETE, PUT, HeaderParam } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { JWTAuthFilter, isManagerFilter } from "../filters/jwtAuth";
 import { StoreRepository } from "../repositories/store.repository";
@@ -104,10 +104,13 @@ export class ProductController extends ApiController {
     @Response<ProductInterface>(201, "Insert a Product on the Database.")
     @Response(500, "Product insert failed.")
     @Action({ route: "/", filters: [ProductFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
-    async post({ entity, decodedToken }: { entity: ProductInterface; decodedToken: UserInterface }) {
-        const { categories, sizes, brand, ...rest } = entity;
-        const { id } = (await this.storeRepo.find({ managerId: decodedToken.id }))[0];
+    async post(product: ProductInterface) {
+        const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth"));
+        const { categories, sizes, brand, ...rest } = product;
+        const { id } = (await this.storeRepo.find({ managerId: idManager }))[0];
+        if (!id) throw new Error("Manager not found");
         const brandName = await this.brandRepo.find({ name: brand });
+        if (!brandName) throw new Error("No brand with that name");
         const result = await this.productDBRepo.insertOne({
             ...rest,
             storeId: id,
@@ -130,8 +133,8 @@ export class ProductController extends ApiController {
                 sizeId: sizeResponse[0].id,
             });
         }
-        const product = await this.productRepo.getById(result.insertId);
-        if (product) return product;
+        const newProduct = await this.productRepo.getById(result.insertId);
+        if (newProduct) return newProduct;
     }
 
     /**
@@ -144,7 +147,7 @@ export class ProductController extends ApiController {
     @Response<ProductInterface>(200, "Disable a Product on the Database.")
     @Response(404, "Product not found.")
     @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isManagerFilter, authProductFilter] })
-    async delete({ entity }: { entity: ProductInterface }) {
+    async delete(entity: ProductInterface) {
         await this.productDBRepo.update({ id: entity.id, status: 0 });
     }
     /**
@@ -180,7 +183,7 @@ export class ProductController extends ApiController {
         fromBody: true,
         method: HttpMethod.PUT,
     })
-    async update({ entity }: { entity: ProductInterface }) {
+    async update(entity: ProductInterface) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { categories, sizes, brand, ...rest } = entity;
         const brandName = await this.brandRepo.find({ name: brand });
