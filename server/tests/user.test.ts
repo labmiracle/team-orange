@@ -2,9 +2,10 @@
 import { userDBSchema, userDBArray } from "../src/models/schemas/user.schema";
 import { ResponseInterface } from "../src/models/response";
 import { UserInterface } from "../src/models/user";
+import { StoreInterface } from "../src/models/store";
 import { ApiClient } from "../src/core/http/api.client";
 import { createPool } from "./db.setup";
-import { RowDataPacket } from "mysql2/promise";
+import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
@@ -12,6 +13,8 @@ dotenv.config();
 /*****************
 SETUP
 *****************/
+
+let storeId: number;
 
 const api = new ApiClient(process.env.BASE_URL + "/api/users");
 const pool = createPool();
@@ -40,13 +43,22 @@ beforeAll(async () => {
         //Create admin
         admin.password = await bcrypt.hash("test1234", 10);
         await pool.query<RowDataPacket[]>("INSERT INTO user SET ?", [admin]);
+        //CREATE store
+        const [store] = await pool.query<ResultSetHeader>("INSERT INTO store SET name='testUserStore', managerId = ?, apiUrl = 'test.com'", [admin.id]);
+        storeId = store.insertId;
     } catch (err) {
         console.error(err);
     }
 });
 
-afterAll(() => {
-    pool.end();
+afterAll(async () => {
+    try {
+        await pool.query<ResultSetHeader>("DELETE FROM store WHERE id = ?", [storeId]);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        pool.end();
+    }
 });
 
 /*****************
@@ -121,7 +133,7 @@ describe("PUT /update", () => {
 });
 
 describe("DELETE /disable", () => {
-    it("should disable user", async () => {
+    it("user should be able to disable itself", async () => {
         // const response = await api.delete("disable", null)
         const response = await api.delete<ResponseInterface<UserInterface>>("disable", JSON.stringify(user));
         expect(response.data.message).toBe(undefined);
@@ -174,6 +186,16 @@ describe("PUT /admin/restore", () => {
         const response = await api.put<ResponseInterface<UserInterface>>("admin/restore", null, JSON.stringify({ id: user.id, email: user.email }));
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
+    });
+});
+
+describe("PUT /admin/change_role", () => {
+    it("should change user role from client to manager", async () => {
+        const response = await api.put<ResponseInterface<UserInterface>>("admin/change_role", null, JSON.stringify({ email: user.email, idStore: storeId }));
+        expect(response.data.message).toBe(undefined);
+        expect(response.data.data.rol).toBe("Manager");
+        const [store] = (await pool.query<RowDataPacket[]>("SELECT * FROM store WHERE managerId = ?", [user.id]))[0] as StoreInterface[];
+        expect(store.name).toBe("testUserStore");
     });
 });
 
