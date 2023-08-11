@@ -249,4 +249,30 @@ export class UserController extends ApiController {
         delete userRestored.password;
         return userRestored;
     }
+
+    /**
+     * Change role of user
+     * entity: UserInterface - The user to restore
+     * decodedToken: UserInterface - It's the token each user get when they login or signup
+     * @param id
+     * @returns
+     */
+    @PUT
+    @Path("/admin/change_role")
+    @Tags("admin")
+    @Response<UserInterface>(200, "Change client to manager.")
+    @Response(401, "Unauthorized")
+    @Response(404, "User not found.")
+    @Action({ route: "/admin/change_role", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
+    async raiseToManager({ entity }: { entity: { email: string; idStore: number } }) {
+        const userRaiseToManager = await this.userRepo.getById(entity.email);
+        if (userRaiseToManager.rol === "Admin") throw new Error("Unauthorized");
+        if (!userRaiseToManager) throw new Error("User not found");
+        await this.userRepo.update({ ...userRaiseToManager, rol: "Manager" });
+        const manager = await this.userRepo.getById(entity.email);
+        await this.storeRepo.update({ managerId: manager.id, id: entity.idStore });
+
+        delete manager.password;
+        return manager;
+    }
 }
