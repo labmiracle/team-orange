@@ -60,3 +60,12 @@ export type AuthData = {
     name: string;
     lastName: string;
 };
+
+export type RegisterData = {
+    email: string;
+    password: string;
+    name: string;
+    lastName: string;
+    docType: string;
+    docNumber: number;
+};

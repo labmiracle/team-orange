@@ -8,4 +8,8 @@ export const baseEndpoints = {
         store: `${baseUrl}/shop`,
         names: `${baseUrl}/shop/names`,
     },
+    users: {
+        login: `${baseUrl}/users/login`,
+        register: `${baseUrl}/users/signup`,
+    },
 };

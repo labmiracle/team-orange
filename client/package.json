@@ -11,7 +11,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@miracledevs/paradigm-web-fetch": "^1.0.3",
+		"@miracledevs/paradigm-web-fetch": "^1.0.4",
 		"axios": "^1.4.0",
 		"dotenv": "^16.3.1",
 		"jose": "^4.14.4",
