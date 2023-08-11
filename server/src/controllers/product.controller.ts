@@ -141,7 +141,7 @@ export class ProductController extends ApiController {
      */
     @DELETE
     @Path("/")
-    @Response<ProductInterface>(200, "Delete a Product on the Database.")
+    @Response<ProductInterface>(200, "Disable a Product on the Database.")
     @Response(404, "Product not found.")
     @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isManagerFilter, authProductFilter] })
     async delete({ entity }: { entity: ProductInterface }) {
