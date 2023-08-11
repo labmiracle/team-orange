@@ -24,7 +24,7 @@ export function Register() {
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         setError(InputError.NONE);
-        const { email, password, passwordConfirm, firstname, lastname, docType, docNumber } =
+        const { email, password, passwordConfirm, firstName, lastName, docType, docNumber } =
             event.target as HTMLFormElement;
         if (password.value !== passwordConfirm.value) {
             setError(InputError.PASSWORD_MISMATCH);
@@ -32,8 +32,8 @@ export function Register() {
             register({
                 email: email.value,
                 password: password.value,
-                name: firstname.value,
-                lastname: lastname.value,
+                name: firstName.value,
+                lastName: lastName.value,
                 docType: docType.value,
                 docNumber: Number(docNumber.value),
             });
@@ -78,10 +78,10 @@ export function Register() {
                         </div>
                         <hr />
                         <div className={styles.personalData}>
-                            <Input id="firstname" type="text" required>
+                            <Input id="firstName" type="text" required>
                                 Nombre
                             </Input>
-                            <Input id="lastname" type="text" required>
+                            <Input id="lastName" type="text" required>
                                 Apellido
                             </Input>
                             <div className={styles.documentContainer}>
