@@ -1,8 +1,7 @@
 import { useContext, useEffect } from "react";
 import { CartContext } from "../Context/CartContext";
 import { Product } from "../types";
-import { ProductService } from "./Product.service";
-
+import { ProductService } from "../services/Product.service";
 
 export function useCart() {
     const cartContext = useContext(CartContext);

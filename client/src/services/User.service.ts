@@ -13,7 +13,7 @@ export class UsersService {
                     password,
                 },
             });
-
+            console.log(response);
             const token = response.headers["x-auth"];
             if (token) {
                 const { name, rol, lastName } = decodeJwt(token);

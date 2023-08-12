@@ -4,9 +4,8 @@ import Fetcher from "./Fetcher";
 export class StoreService {
     async getStoreNames() {
         try {
-            const response = await Fetcher.query(baseEndpoints.stores.names, {
-                method: "GET",
-            });
+            const response = await Fetcher.query(baseEndpoints.stores.names);
+            console.log(response);
             const names = response.data.data;
             return names;
         } catch (error) {

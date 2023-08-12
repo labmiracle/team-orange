@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type { RegisterData } from "../types";
 import { useAuthContext } from "../Context/AuthContext";
-import { UsersService } from "./Auth.service";
+import { UsersService } from "../services/User.service";
 
 export function useLogin() {
     const { user, setUser } = useAuthContext();

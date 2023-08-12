@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCart } from "../../services/useCart";
+import { useCart } from "../../Hooks/useCart";
 import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Button } from "../../components/ui/Button";

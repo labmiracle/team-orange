@@ -1,7 +1,7 @@
 import styles from "./index.module.css";
 import type { LoaderResponse, Product } from "../../../types";
 import { useLoaderData } from "react-router-dom";
-import { useCart } from "./../../../services/useCart";
+import { useCart } from "../../../Hooks/useCart";
 import { formatPrice } from "../../utilities/formatPrice";
 import { Button } from "../../../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
