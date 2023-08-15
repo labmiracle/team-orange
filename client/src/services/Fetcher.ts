@@ -7,7 +7,7 @@ class Fetcher {
 
     constructor() {
         this.fetcher = axios.create({
-            baseURL: "http:/localhost:4000/api",
+            baseURL: import.meta.env.VITE_API_URL,
             headers: { "Content-Type": "application/json" },
         });
 
@@ -17,9 +17,9 @@ class Fetcher {
         return Fetcher.instance;
     }
 
-    async query(url?: string, options?: AxiosRequestConfig) {
+    async query<T>(url: string, options?: AxiosRequestConfig): Promise<T> {
         if (url && options) return await this.fetcher(url, options);
-        if (url) return await this.fetcher(url);
+        return await this.fetcher(url);
 
         throw new Error("");
     }

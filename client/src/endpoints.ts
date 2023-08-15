@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:4000/api";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const baseEndpoints = {
     products: {
