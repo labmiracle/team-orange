@@ -9,10 +9,10 @@ export const userSchema = Joi.object({
         .optional()
         .pattern(/^[\p{L}\p{M}]+([ \p{L}\p{M}])*$/u)
         .messages({
-            "string.min": "Invalid name, it must contain more than 3 letters",
-            "string.max": "Invalid name, it must not contain more than 30 letters",
-            "string.pattern.base": "Invalid name, it must contain only letters",
-            "any.required": "Name is a required field",
+            "string.min": "Nombre inválido, debe contener mas de 3 letras",
+            "string.max": "Nombre inválido, no debe contener mas de 30 letras",
+            "string.pattern.base": "Nombre inválido, debe contener únicamente letras",
+            "any.required": "Nombre es un campo requerido",
         }),
     lastName: Joi.string()
         .alphanum()
@@ -21,32 +21,32 @@ export const userSchema = Joi.object({
         .optional()
         .pattern(/^[\p{L}\p{M}]+([ \p{L}\p{M}])*$/u)
         .messages({
-            "string.min": "Invalid last name, it must contain more than 3 letters",
-            "string.max": "Invalid last name, it must not contain more than 30 letters",
-            "string.pattern.base": "Invalid last name, it must contain only letters",
-            "any.required": "Last name is a required field",
+            "string.min": "Apellido inválido, debe contener mas de 3 letras",
+            "string.max": "Apellido inválido, no debe contener mas de 30 letras",
+            "string.pattern.base": "Apellido inválido, debe contener únicamente letras",
+            "any.required": "Apellido es un campo requerido",
         }),
     password: Joi.string()
         .min(8)
         .pattern(/^(?=.*?[a-zA-Z])(?=.*?[0-9])(?!.*[^a-zA-Z0-9])/)
         .required()
         .messages({
-            "string.min": "Invalid password, it must contain more than 8 letters",
-            "string.pattern.base": "Invalid password, it must contain both letters and numbers",
-            "any.required": "Password is a required field",
+            "string.min": "Contraseña inválida, debe contener mas de 8 dígitos",
+            "string.pattern.base": "Contraseña inválida, debe contener letras y números",
+            "any.required": "Contraseña es un campo requerido",
         }),
     idDocumentNumber: Joi.number().integer().min(10000000).max(99999999).optional().messages({
-        "number.integer": "Invalid document number, it must be an integer",
-        "number.min": "Invalid document number, it must be contain 8 digits",
-        "number.max": "Invalid document number, it must be contain 8 digits",
+        "number.integer": "Numero de documento inválido, debe ser in numero",
+        "number.min": "Numero de documento inválido, debe contener 8 dígitos",
+        "number.max": "Numero de documento inválido, debe contener 8 dígitos",
     }),
     idDocumentType: Joi.string().default("DNI").optional().valid("DNI"),
     email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
         .required()
         .messages({
-            "string.email": "Invalid email format",
-            "any.required": "Email is a required field",
+            "string.email": "Formato de email inválido",
+            "any.required": "Email es un campo requerido",
         }),
     rol: Joi.any().forbidden().messages({
         "any.forbidden": "role is forbidden",
@@ -55,12 +55,11 @@ export const userSchema = Joi.object({
 
 export const userLogin = Joi.object({
     email: Joi.string().email({ minDomainSegments: 2 }).required().messages({
-        "string.email": "Invalid email format",
-        "any.required": "Email is a required field",
+        "string.email": "Formato de email inválido",
+        "any.required": "Email es un campo requerido",
     }),
-    password: Joi.string().min(8).required().messages({
-        "string.min": "Invalid password, it must contain more than 8 letters",
-        "any.required": "Password is a required field",
+    password: Joi.string().required().messages({
+        "any.required": "Contraseña es un campo requerido",
     }),
 });
 

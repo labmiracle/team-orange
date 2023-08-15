@@ -16,10 +16,10 @@ export function useLogin() {
         const userService = new UsersService();
 
         const authData = await userService.login(email, password);
-
         if (authData) {
             setUser(authData);
         }
+        console.log(authData);
     }
 
     async function register({ email, password, name, lastName, docType, docNumber }: RegisterData) {

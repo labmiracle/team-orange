@@ -32,7 +32,7 @@ export type StoreType = {
 export type setFilterType = ({ type, size }: { type?: string; size?: string }) => void;
 
 export type LoaderResponse<T> = {
-    data: T;
+    data: T | undefined;
     message: string;
     error: boolean;
 };
@@ -51,7 +51,7 @@ export type User = {
     idDocumentType: string;
     idDocumentNumber: number;
     rol: string;
-    status: number;
+    status?: number;
 };
 
 export type AuthData = {
@@ -69,3 +69,17 @@ export type RegisterData = {
     docType: string;
     docNumber: number;
 };
+
+export enum InputError {
+    "USER_NOT_FOUND",
+    "EMAIL",
+    "DUP_EMAIL",
+    "NAME",
+    "LAST_NAME",
+    "PASSWORD",
+    "PASSWORD_MISMATCH",
+    "DUP_DNI",
+    "DNI",
+    "ERROR",
+    "NONE",
+}

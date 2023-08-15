@@ -44,7 +44,7 @@ export function Layout() {
                     <div className={styles.buttons_container}>
                         {user ? (
                             <>
-                                Hi, {user.name} {user.lastname}
+                                Hi, {user.name} {user.lastName}
                                 <button className={styles.logout} onClick={logOut}>
                                     logout
                                 </button>
