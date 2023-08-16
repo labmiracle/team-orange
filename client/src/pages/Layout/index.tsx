@@ -15,9 +15,10 @@ export function Layout() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user?.token) {
+        const token = window.localStorage.getItem("user");
+        if (token) {
             Fetcher.addInterceptor(config => {
-                config.headers.set("x-auth", user.token);
+                config.headers.set("x-auth", token);
                 return config;
             });
         }
@@ -45,6 +46,7 @@ export function Layout() {
                         {user ? (
                             <>
                                 Hi, {user.name} {user.lastName}
+                                <button onClick={() => navigate("/profile")}>Mi perfil</button>
                                 <button className={styles.logout} onClick={logOut}>
                                     logout
                                 </button>
