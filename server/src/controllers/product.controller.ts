@@ -1,7 +1,7 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { ProductInterface } from "../models/product";
 import { ProductRepository } from "../repositories/product.repository";
-import { ProductFilter, authProductFilter } from "../filters/product.filter";
+import { ProductFilter, authProductFilter, ProductArrayFilter } from "../filters/product.filter";
 import { BrandRepository } from "../repositories/brand.repository";
 import { CategoryRepository } from "../repositories/category.repository";
 import { SizeRepository } from "../repositories/size.repository";
@@ -103,38 +103,18 @@ export class ProductController extends ApiController {
     @Path("/")
     @Response<ProductInterface>(201, "Insert a Product on the Database.")
     @Response(500, "Product insert failed.")
-    @Action({ route: "/", filters: [ProductFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
-    async post(product: ProductInterface) {
+    @Action({ route: "/", filters: [ProductArrayFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
+    async post(products: ProductInterface[]) {
         const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth"));
         const { id } = (await this.storeRepo.find({ managerId: idManager }))[0];
         if (!id) throw new Error("Store not found");
-        const { categories, sizes, brand, ...rest } = product;
-        const brandName = await this.brandRepo.find({ name: brand });
-        if (!brandName) throw new Error("No brand with that name");
-        const result = await this.productDBRepo.insertOne({
-            ...rest,
-            storeId: id,
-            brandId: brandName[0].id,
-        });
-        if (!result.insertId) throw new Error("Product creation failed");
-        for (const category of categories) {
-            const categoryResponse = await this.categoryRepo.find({ name: category });
-            if (categoryResponse.length < 1) throw new Error("Invalid category");
-            await this.productCategoryRepo.insertOne({
-                productId: result.insertId,
-                categoryId: categoryResponse[0].id,
-            });
+        const resultProducts = [] as ProductInterface[];
+        for (const product of products) {
+            const result = await this.productDBRepo.insertProduct(product, id);
+            const newProduct = await this.productRepo.getById(result.insertId);
+            resultProducts.push(newProduct);
         }
-        for (const size of sizes) {
-            const sizeResponse = await this.sizeRepo.find({ name: size });
-            if (sizeResponse.length < 1) throw new Error("Invalid size");
-            await this.productSizeRepo.insertOne({
-                productId: result.insertId,
-                sizeId: sizeResponse[0].id,
-            });
-        }
-        const newProduct = await this.productRepo.getById(result.insertId);
-        if (newProduct) return newProduct;
+        return resultProducts;
     }
 
     /**
