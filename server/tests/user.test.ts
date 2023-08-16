@@ -42,7 +42,8 @@ beforeAll(async () => {
     try {
         //Create admin
         admin.password = await bcrypt.hash("test1234", 10);
-        await pool.query<RowDataPacket[]>("INSERT INTO user SET ?", [admin]);
+        const [result] = await pool.query<ResultSetHeader>("INSERT INTO user SET ?", [admin]);
+        admin.id = result.insertId;
         //CREATE store
         const [store] = await pool.query<ResultSetHeader>("INSERT INTO store SET name='testUserStore', managerId = ?, apiUrl = 'test.com'", [admin.id]);
         storeId = store.insertId;
@@ -54,8 +55,10 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         await pool.query<ResultSetHeader>("DELETE FROM store WHERE id = ?", [storeId]);
+        await pool.query<ResultSetHeader>("DELETE FROM user WHERE name = ?", [user.name]);
+        await pool.query<ResultSetHeader>("DELETE FROM user WHERE name = ?", [admin.name]);
     } catch (err) {
-        console.error(err);
+        console.error("user.test", err);
     } finally {
         pool.end();
     }
