@@ -24,9 +24,6 @@ export function Login() {
         <Navigate to={"/"} />
     ) : (
         <>
-            {/* <header className={styles.header}>
-                <p className={styles.logo}>Shoppy</p>
-            </header> */}
             <main className={styles.main}>
                 <p className={styles.title}>Iniciar sesion</p>
                 <form onSubmit={login} className={styles.loginForm}>

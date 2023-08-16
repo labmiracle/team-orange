@@ -42,9 +42,6 @@ export function Register() {
         <Navigate to={"/"} />
     ) : (
         <>
-            {/* <header className={styles.header}>
-                <p className={styles.logo}>Shoppy</p>
-            </header> */}
             <main className={styles.main}>
                 <p className={styles.title}>Registrarse</p>
                 <form onSubmit={handleSubmit} className={styles.loginForm}>
