@@ -24,10 +24,14 @@ export class JWTAuthFilter implements IFilter {
 
     async afterExecute(httpContext: HttpContext): Promise<void> {
         const token = JSON.parse(httpContext.request.header("x-auth")) as User;
-        const [rows] = await this.connection.connection.execute<RowDataPacket[]>("SELECT * FROM user WHERE id = ?", [token.id]);
-        delete rows[0].password;
-        const token2 = jwt.sign({ ...rows[0] }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
-        httpContext.response.setHeader("x-auth", token2);
+        const [rows] = await this.connection.connection.query<RowDataPacket[]>("SELECT * FROM user WHERE id = ?", [token.id]);
+        if (rows.length === 0) {
+            httpContext.response.removeHeader("x-auth");
+        } else {
+            delete rows[0].password;
+            const token2 = jwt.sign({ ...rows[0] }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+            httpContext.response.setHeader("x-auth", token2);
+        }
     }
 }
 
@@ -40,7 +44,7 @@ export class isAdminFilter implements IFilter {
 
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const { id } = JSON.parse(httpContext.request.header("x-auth"));
-        const [rows] = await this.connection.connection.execute<RowDataPacket[]>("SELECT * FROM user WHERE id = ?", [id]);
+        const [rows] = await this.connection.connection.query<RowDataPacket[]>("SELECT * FROM user WHERE id = ?", [id]);
         if (rows[0].rol !== "Admin") throw new Error("Unauthorized");
     }
 }
