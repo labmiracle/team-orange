@@ -1,19 +1,19 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { AuthData, User } from "../types";
+import React, { createContext, useContext, useState } from "react";
+import { User } from "../types";
 import { decodeJwt } from "jose";
 
 interface ContextType {
-    user: AuthData | null;
-    setUser: React.Dispatch<React.SetStateAction<AuthData | null>>;
+    user: User | null;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
-export const AuthContext = createContext<ContextType>({ user: {} as AuthData, setUser: () => ({}) as AuthData });
+export const AuthContext = createContext<ContextType>({ user: {} as User, setUser: () => ({}) as User });
 
 function decodeUser() {
     try {
         const token = window.localStorage.getItem("user");
         if (token) {
-            const {rol, name, lastName} = decodeJwt(token) as User;
-            return { token, rol, name, lastName };
+            const user = decodeJwt(token) as User;
+            return user;
         }
     } catch (err) {
         console.error(err);
@@ -21,7 +21,7 @@ function decodeUser() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<AuthData | null>(() => decodeUser() || null);
+    const [user, setUser] = useState<User | null>(() => decodeUser() || null);
 
     return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 }

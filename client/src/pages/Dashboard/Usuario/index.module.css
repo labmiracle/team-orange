@@ -1,0 +1,40 @@
+.main {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu {
+    flex-basis: 20%;
+    padding-left: 15px;
+    padding-top: 30px;
+    background-color: var(--primary);
+    color: var(--text-primary);
+}
+
+.menu > ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.menu > ul * {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    color: var(--text-primary);
+}
+
+.outlet {
+    flex-grow: 1;
+}
+
+@media (min-width: 400px) {
+    .main {
+        flex-direction: row;
+    }
+    .menu > ul {
+        flex-direction: column;
+    }
+}

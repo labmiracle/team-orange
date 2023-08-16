@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.VITE_API_URL;
+const baseUrl = import.meta.env.VITE_API_URL + "/api";
 
 export const baseEndpoints = {
     products: {
@@ -11,5 +11,11 @@ export const baseEndpoints = {
     users: {
         login: `${baseUrl}/users/login`,
         register: `${baseUrl}/users/signup`,
+        update: `${baseUrl}/users/update`,
+        get: `${baseUrl}/users`,
+    },
+    checkout: {
+        get: `${baseUrl}/checkout/get`,
+        produce: `${baseUrl}/checkout/produce`,
     },
 };

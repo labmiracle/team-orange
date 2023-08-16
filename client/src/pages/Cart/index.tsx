@@ -3,7 +3,7 @@ import { useCart } from "../../services/useCart";
 import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Button } from "../../components/ui/Button";
-import Invoice from "./Invoice";
+import Invoice from "../utilities/Invoice";
 import { useAuthContext } from "../../Context/AuthContext";
 import { PaymentForm } from "./components/PaymentForm";
 export function Cart() {
@@ -54,7 +54,12 @@ export function Cart() {
                     <ul className={styles.cartContainer}>
                         {cart.map(item => (
                             <li className={styles.itemContainer} key={item.id}>
-                                <img src={`http://localhost:4000/${item.url_img}`} alt="" width={100} height={100} />
+                                <img
+                                    src={import.meta.env.VITE_API_URL + `/${item.url_img}`}
+                                    alt=""
+                                    width={100}
+                                    height={100}
+                                />
                                 <div className={styles.itemInfo}>
                                     <div>
                                         {item.name} ({item.quantity})

@@ -106,9 +106,9 @@ export class ProductController extends ApiController {
     @Action({ route: "/", filters: [ProductFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
     async post(product: ProductInterface) {
         const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth"));
-        const { categories, sizes, brand, ...rest } = product;
         const { id } = (await this.storeRepo.find({ managerId: idManager }))[0];
-        if (!id) throw new Error("Manager not found");
+        if (!id) throw new Error("Store not found");
+        const { categories, sizes, brand, ...rest } = product;
         const brandName = await this.brandRepo.find({ name: brand });
         if (!brandName) throw new Error("No brand with that name");
         const result = await this.productDBRepo.insertOne({

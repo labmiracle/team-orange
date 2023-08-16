@@ -8,6 +8,10 @@ import jwt from "jsonwebtoken";
 export class UserFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const user = httpContext.request.body;
+        delete user.rol;
+        delete user.status;
+        delete user.iat;
+        delete user.exp;
         const { error } = userSchema.validate(user);
         if (error) throw new Error(error.details[0].message);
     }
@@ -16,7 +20,9 @@ export class UserFilter implements IFilter {
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class LoginFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const { error } = userLogin.validate(httpContext.request.body);
+        const user = httpContext.request.body;
+        delete user.rol;
+        const { error } = userLogin.validate(user);
         if (error) throw new Error(error.details[0].message);
     }
 

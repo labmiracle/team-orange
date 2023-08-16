@@ -30,7 +30,7 @@ export class CheckoutController extends ApiController {
     async getInvoice() {
         const { id } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
         const invoiceView = await this.invoiceViewRepo.find({ userId: id });
-        if (invoiceView.length === 0) throw new Error("No Invoice found");
+        if (invoiceView.length === 0) return [];
         return invoiceView;
     }
 

@@ -9,6 +9,11 @@ import { Login } from "./pages/Login";
 import { Product } from "./pages/Stores/Product";
 import { Cart } from "./pages/Cart";
 import { Register } from "./pages/Register";
+import { DashBoardUsuario } from "./pages/Dashboard/Usuario/index.tsx";
+import { UserLoader } from "./Loaders/UserDashBoard.loader.ts";
+import { RequiredPage } from "./pages/utilities/RequiredPage.tsx";
+import UserData from "./pages/Dashboard/Usuario/UserData.tsx";
+import UserInvoices from "./pages/Dashboard/Usuario/UserInvoices.tsx";
 
 export const Router = createBrowserRouter([
     {
@@ -36,6 +41,26 @@ export const Router = createBrowserRouter([
                 element: <Cart />,
             },
             {
+                path: "/profile",
+                element: (
+                    <RequiredPage>
+                        <DashBoardUsuario />
+                    </RequiredPage>
+                ),
+                children: [
+                    {
+                        path: "/profile",
+                        index: true,
+                        element: <UserData />,
+                    },
+                    {
+                        path: "/profile/invoices",
+                        loader: UserLoader.getInvoices,
+                        element: <UserInvoices />,
+                    },
+                ],
+            },
+            {
                 path: "/login",
                 element: <Login />,
             },
@@ -43,6 +68,6 @@ export const Router = createBrowserRouter([
                 path: "/register",
                 element: <Register />,
             },
-		],
-	},
+        ],
+    },
 ]);

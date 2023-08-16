@@ -4,9 +4,9 @@ import { useAuthContext } from "../../Context/AuthContext";
 export function RequiredPage({ children }: { children: React.ReactNode }) {
     const { user } = useAuthContext();
 
-    if (user) {
+    if (!user) {
         return <Navigate to={"/"} />;
     }
 
-    return children;
+    return <>{children}</>;
 }

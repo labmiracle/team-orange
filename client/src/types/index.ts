@@ -16,6 +16,25 @@ export type Product = {
     total?: number;
 };
 
+export interface InvoiceInterface {
+    id: number;
+    date: Date;
+    total: number;
+    name: string;
+    lastName: string;
+    email: string;
+    idDocumentType: string;
+    idDocumentNumber: number;
+    messageUrl: string;
+    products: {
+        name: string;
+        store: string;
+        price: number;
+        quantity: number;
+        total: number;
+    }[];
+}
+
 export type Color = { hue: number; sat: number; light: number };
 
 export type ColorsType = {
@@ -54,12 +73,12 @@ export type User = {
     status?: number;
 };
 
-export type AuthData = {
-    token: string;
-    rol: string;
-    name: string;
-    lastName: string;
-};
+// export type AuthData = {
+//     token: string;
+//     rol: string;
+//     name: string;
+//     lastName: string;
+// };
 
 export type RegisterData = {
     email: string;
