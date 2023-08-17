@@ -29,7 +29,7 @@ export class CheckoutController extends ApiController {
     @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuthFilter] })
     async getInvoice() {
         const { id } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
-        const invoiceView = await this.invoiceViewRepo.find({ userId: id });
+        const invoiceView = await this.invoiceViewRepo.find({ id });
         if (invoiceView.length === 0) return [];
         return invoiceView;
     }

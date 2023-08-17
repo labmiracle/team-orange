@@ -50,7 +50,7 @@ export const Router = createBrowserRouter([
                 children: [
                     {
                         path: "/profile",
-                        // index: true,
+                        index: true,
                         element: <UserData />,
                     },
                     {
