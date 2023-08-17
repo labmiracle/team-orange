@@ -13,6 +13,7 @@ import { Response, Tags } from "typescript-rest-swagger";
 import { JWTAuthFilter, isManagerFilter } from "../filters/jwtAuth";
 import { StoreRepository } from "../repositories/store.repository";
 import { UserInterface } from "../models/user";
+import { UnitOfWork } from "../core/unitofwork/unitofwork";
 
 @Path("/api/product")
 @Tags("Products")
@@ -26,7 +27,8 @@ export class ProductController extends ApiController {
         private sizeRepo: SizeRepository,
         private productCategoryRepo: ProductCategoryRepository,
         private productSizeRepo: ProductSizeRepository,
-        private storeRepo: StoreRepository
+        private storeRepo: StoreRepository,
+        private unitOfWork: UnitOfWork
     ) {
         super();
     }
@@ -109,11 +111,19 @@ export class ProductController extends ApiController {
         const { id } = (await this.storeRepo.find({ managerId: idManager }))[0];
         if (!id) throw new Error("Store not found");
         const resultProducts = [] as ProductInterface[];
-        for (const product of products) {
-            const result = await this.productDBRepo.insertProduct(product, id);
-            const newProduct = await this.productRepo.getById(result.insertId);
-            resultProducts.push(newProduct);
+        this.unitOfWork.beginTransaction();
+        try {
+            for (const product of products) {
+                const result = await this.productDBRepo.insertProduct(product, id);
+                const newProduct = await this.productRepo.getById(result.insertId);
+                resultProducts.push(newProduct);
+            }
+        } catch (e) {
+            this.unitOfWork.rollbackTransaction();
+            this.unitOfWork.commitTransaction();
+            throw Error(e);
         }
+        this.unitOfWork.commitTransaction();
         return resultProducts;
     }
 

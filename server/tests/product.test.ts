@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable */
 import { ResponseInterface } from "../src/models/response";
 import { ProductInterface } from "../src/models/product";
 import { ApiClient } from "../src/core/http/api.client";
@@ -43,6 +44,20 @@ const product: ProductInterface[] = [
         url_img: "images/chaqueta_de_invierno.webp",
         status: 1,
     },
+    {
+        name: "test2",
+        description: "test test test test test test test",
+        price: 100,
+        discountPercentage: 0.5,
+        currentStock: 30,
+        reorderPoint: 10,
+        minimum: 5,
+        categories: ["Chaqueta", "Sudadera"],
+        sizes: ["Hombre", "Niños"],
+        brand: "Nike",
+        url_img: "images/chaqueta_de_invierno.webp",
+        status: 1,
+    },
 ];
 
 beforeAll(async () => {
@@ -66,6 +81,7 @@ afterAll(async () => {
         await pool.query("DELETE FROM store WHERE managerId = ?", [manager.id]);
         await pool.query<RowDataPacket[]>("DELETE FROM user WHERE email = ?", [manager.email]);
         await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [product[0].id]);
+        await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [product[1].id]);
     } catch (err) {
         console.error(err);
     } finally {
@@ -87,18 +103,38 @@ describe("GET /api/product", () => {
 });
 
 describe("POST /api/product", () => {
-    it("should create a product", async () => {
+    it("should fail to create products with invalid fields and rollback any changes", async () => {
+        const newProducts = [
+            ...product,
+            {
+                ...product[0],
+                name: "test3",
+                sizes: ["Elefante", "Niños"], //Elefante is not a valid size
+            },
+        ];
+        const response = await api.post<ResponseInterface<ProductInterface[]>>("", null, JSON.stringify(newProducts));
+        expect(response.data.message).toBe('"[2].sizes[0]" must be one of [Hombre, Mujer, Niños]'); //newProducts[2].size[0] failed
+        const failResponse = await pool.query<RowDataPacket[any]>("SELECT * FROM product WHERE name = ?", [product[0].name]);
+        expect(failResponse[0].length).toBe(0);
+    });
+    it("should create products", async () => {
         const response = await api.post<ResponseInterface<ProductInterface[]>>("", null, JSON.stringify(product));
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
         product[0].id = response.data.data[0].id;
+        product[1].id = response.data.data[1].id;
     });
 });
 
 describe("GET /api/product/:id", () => {
-    it("should return a product", async () => {
+    it("should return a product 1", async () => {
         const response = await api.get<ResponseInterface<ProductInterface>>(`${product[0].id}`);
         expect(response.data.data.name).toBe("test");
+        expect(response.status).toBe(200);
+    });
+    it("should return a product 2", async () => {
+        const response = await api.get<ResponseInterface<ProductInterface>>(`${product[1].id}`);
+        expect(response.data.data.name).toBe("test2");
         expect(response.status).toBe(200);
     });
     it("should not found product", async () => {
