@@ -4,16 +4,19 @@ import { ResponseInterface } from "../src/models/response";
 import { ProductInterface } from "../src/models/product";
 import { ApiClient } from "../src/core/http/api.client";
 import { UserInterface } from "../src/models/user";
-import bcrypt from "bcrypt";
 import mysql, { ResultSetHeader, RowDataPacket, format } from "mysql2/promise";
+import { createPool } from "./db.setup";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
 /*****************
 SETUP
 *****************/
-const apiUser = new ApiClient(process.env.BASE_URL + "/api/users");
+
 const api = new ApiClient(process.env.BASE_URL + "/api/product");
+const pool = createPool();
 
 const manager: UserInterface = {
     email: "testManager@example.com",
@@ -25,55 +28,54 @@ const manager: UserInterface = {
     rol: "Manager",
 };
 
-const product: ProductInterface = {
-    name: "test",
-    description: "test test test test test test test",
-    price: 35,
-    discountPercentage: 1,
-    currentStock: 30,
-    reorderPoint: 10,
-    minimum: 5,
-    categories: ["Chaqueta", "Sudadera"],
-    sizes: ["Hombre", "Niños"],
-    brand: "Nike",
-    url_img: "images/chaqueta_de_invierno.webp",
-    status: 1,
-};
+const product: ProductInterface[] = [
+    {
+        name: "test",
+        description: "test test test test test test test",
+        price: 35,
+        discountPercentage: 1,
+        currentStock: 30,
+        reorderPoint: 10,
+        minimum: 5,
+        categories: ["Chaqueta", "Sudadera"],
+        sizes: ["Hombre", "Niños"],
+        brand: "Nike",
+        url_img: "images/chaqueta_de_invierno.webp",
+        status: 1,
+    },
+];
 
-const hashPassword = async () => {
-    manager.password = await bcrypt.hash("test1234", 10);
-};
+beforeAll(async () => {
+    try {
+        //Create manager
+        manager.password = await bcrypt.hash("test1234", 10);
+        const [response] = await pool.query<ResultSetHeader>("INSERT INTO user SET ?", [manager]);
+        manager.id = response.insertId;
+        const token = jwt.sign({ ...manager }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+        api.authorize(token);
+        //Create store
+        await pool.query<ResultSetHeader>("INSERT INTO store SET name='test', managerId = ?, apiUrl = 'test.com'", [manager.id]);
+        //Login Manager
+    } catch (err) {
+        console.error(err);
+    }
+});
 
-const pool = mysql.createPool({
-    host: process.env.SHOPPY__MYSQLHOST,
-    port: Number(process.env.SHOPPY__MYSQLPORT),
-    database: process.env.SHOPPY__MYSQLDATABASE,
-    user: process.env.SHOPPY__MYSQLUSER,
-    decimalNumbers: true,
-    password: process.env.SHOPPY__MYSQLPASSWORD,
+afterAll(async () => {
+    try {
+        await pool.query("DELETE FROM store WHERE managerId = ?", [manager.id]);
+        await pool.query<RowDataPacket[]>("DELETE FROM user WHERE email = ?", [manager.email]);
+        await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [product[0].id]);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        pool.end();
+    }
 });
 
 /*****************
 TESTS
 ******************/
-
-describe("Setup for manager tests", () => {
-    it("create manager", async () => {
-        await hashPassword();
-        const query = format("INSERT INTO user SET ?", [manager]);
-        const [response] = await pool.execute<ResultSetHeader>(query);
-        manager.id = response.insertId;
-    });
-    it("create store", async () => {
-        const query = format("INSERT INTO store SET name='test', managerId = ?, apiUrl = 'test.com'", [manager.id]);
-        const [response] = await pool.execute<ResultSetHeader>(query);
-    });
-    it("login manager", async () => {
-        const response = await apiUser.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: manager.email, password: "test1234" }));
-        const token = response.headers.get("x-auth");
-        api.authorize(token);
-    });
-});
 
 describe("GET /api/product", () => {
     it("should return an array of products", async () => {
@@ -86,16 +88,16 @@ describe("GET /api/product", () => {
 
 describe("POST /api/product", () => {
     it("should create a product", async () => {
-        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(product));
+        const response = await api.post<ResponseInterface<ProductInterface[]>>("", null, JSON.stringify(product));
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
-        product.id = response.data.data.id;
+        product[0].id = response.data.data[0].id;
     });
 });
 
 describe("GET /api/product/:id", () => {
     it("should return a product", async () => {
-        const response = await api.get<ResponseInterface<ProductInterface>>(`${product.id}`);
+        const response = await api.get<ResponseInterface<ProductInterface>>(`${product[0].id}`);
         expect(response.data.data.name).toBe("test");
         expect(response.status).toBe(200);
     });
@@ -112,7 +114,7 @@ describe("PUT api/product", () => {
         const response = await api.put<ResponseInterface<ProductInterface>>(
             "",
             null,
-            JSON.stringify({ ...product, categories: ["Zapatos", "Blusa"], sizes: ["Mujer"] })
+            JSON.stringify({ ...product[0], categories: ["Zapatos", "Blusa"], sizes: ["Mujer"] })
         );
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
@@ -121,43 +123,25 @@ describe("PUT api/product", () => {
         expect(response.data.data.sizes[0]).toMatch(/Mujer/);
     });
     it("should not be authorized to change products from other stores", async () => {
-        const response = await api.put<ResponseInterface<ProductInterface>>("", null, JSON.stringify({ ...product, name: "test2", id: 1 }));
+        const response = await api.put<ResponseInterface<ProductInterface>>("", null, JSON.stringify({ ...product[0], name: "test2", id: 1 }));
         expect(response.data.message).toMatch(/Unauthorized/);
         expect(response.status).toBe(500);
     });
 });
 
 describe("DELETE api/product", () => {
-    it("should delete a product", async () => {
-        await api.delete<ResponseInterface<ProductInterface>>("", JSON.stringify({ id: product.id }));
-        const response = await api.get<ResponseInterface<ProductInterface>>(`${product.id}`);
+    it("should disable a product", async () => {
+        await api.delete<ResponseInterface<ProductInterface>>("", JSON.stringify({ id: product[0].id }));
+        const response = await api.get<ResponseInterface<ProductInterface>>(`${product[0].id}`);
         expect(response.data.message).toBe(undefined);
         expect(response.data.data.status).toBe(0);
         expect(response.status).toBe(200);
         expect(response.data.error).toBeFalsy();
     });
-    it("should not be authorized to delete products from other stores", async () => {
+    it("should not be authorized to disable products from other stores", async () => {
         const response = await api.delete<ResponseInterface<ProductInterface>>("", JSON.stringify({ id: 33 }));
         expect(response.data.message).toMatch(/Unauthorized Store/);
         expect(response.status).toBe(500);
         expect(response.data.error).toBeTruthy();
-    });
-});
-
-describe("Cleaning database", () => {
-    it("delete store", async () => {
-        const query = format("DELETE FROM store WHERE managerId = ?", [manager.id]);
-        await pool.execute(query);
-    });
-    it("delete manager", async () => {
-        await hashPassword();
-        const query = format("DELETE FROM user WHERE email = ?", [manager.email]);
-        await pool.execute<RowDataPacket[]>(query);
-    });
-    it("delete product", async () => {
-        await pool.execute<RowDataPacket[]>(format("DELETE FROM productCategory WHERE productId = ?", [product.id]));
-        await pool.execute<RowDataPacket[]>(format("DELETE FROM productSize WHERE productId = ?", [product.id]));
-        await pool.execute<RowDataPacket[]>(format("DELETE FROM product WHERE id = ?", [product.id]));
-        pool.end();
     });
 });

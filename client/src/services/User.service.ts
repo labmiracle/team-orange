@@ -13,12 +13,12 @@ export class UsersService {
                     password,
                 },
             });
-            console.log(response);
             const token = response.headers["x-auth"];
-            if (token) {
-                const { name, rol, lastName } = decodeJwt(token);
-                if (name && rol && lastName) {
-                    return { token, name, rol, lastName } as AuthData;
+					if (token) {
+							window.localStorage.setItem('user', token)
+                const user = decodeJwt(token);
+                if (user) {
+                    return user as User;
                 }
                 throw new Error("Name, rol or lastName are undefined. Check token");
             }
@@ -29,7 +29,6 @@ export class UsersService {
     }
 
     async register({ email, password, name, lastName, docType, docNumber }: RegisterData) {
-        console.log(email, password, name, lastName, docType, docNumber);
         const response = await Fetcher.query(baseEndpoints.users.register, {
             method: "POST",
             data: {
@@ -43,5 +42,28 @@ export class UsersService {
         });
         const httpStatus = response.status;
         return httpStatus;
+    }
+
+    async update(user: User) {
+        const response = await Fetcher.query(baseEndpoints.users.update, {
+            method: "PUT",
+            data: user,
+        });
+        const token = response.headers["x-auth"];
+			if (token) {
+				if (response.data) {
+					const userResponse = response.data;
+					return userResponse;
+				}
+				throw new Error("User not found")
+			}
+			throw new Error("Token is undefined, check the headers or the endpoint");
+    }
+
+    async getUser(id: number) {
+        const response = await Fetcher.query(`${baseEndpoints.users}/${id}`, {
+            method: "GET",
+        });
+        return response.data;
     }
 }

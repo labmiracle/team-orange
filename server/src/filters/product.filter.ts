@@ -40,8 +40,8 @@ export class authProductFilter implements IFilter {
     }
 
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const { id: idUser } = httpContext.request.body.decodedToken;
-        const { id: idProduct } = httpContext.request.body.entity;
+        const { id: idUser } = JSON.parse(httpContext.request.header("x-auth"));
+        const { id: idProduct } = httpContext.request.body;
         const [rowsP] = await this.connection.connection.execute<RowDataPacket[]>(
             "SELECT * FROM product p JOIN store s ON s.id = p.storeId WHERE managerId = ? AND p.id = ?",
             [idUser, idProduct]

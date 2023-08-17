@@ -2,9 +2,11 @@
 import { userDBSchema, userDBArray } from "../src/models/schemas/user.schema";
 import { ResponseInterface } from "../src/models/response";
 import { UserInterface } from "../src/models/user";
+import { StoreInterface } from "../src/models/store";
 import { ApiClient } from "../src/core/http/api.client";
+import { createPool } from "./db.setup";
+import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import bcrypt from "bcrypt";
-import mysql, { RowDataPacket, format } from "mysql2/promise";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -12,10 +14,13 @@ dotenv.config();
 SETUP
 *****************/
 
+let storeId: number;
+
 const api = new ApiClient(process.env.BASE_URL + "/api/users");
+const pool = createPool();
 
 const user: UserInterface = {
-    email: "test@email.com",
+    email: "testuser@email.com",
     password: "test12345",
     name: "test",
     lastName: "test",
@@ -24,7 +29,7 @@ const user: UserInterface = {
 };
 
 const admin: UserInterface = {
-    email: "testadmin@example.com",
+    email: "testadminuser@example.com",
     password: "",
     name: "Test",
     lastName: "Admin",
@@ -33,33 +38,37 @@ const admin: UserInterface = {
     rol: "Admin",
 };
 
-const hashPassword = async () => {
-    admin.password = await bcrypt.hash("test1234", 10);
-};
+beforeAll(async () => {
+    try {
+        //Create admin
+        admin.password = await bcrypt.hash("test1234", 10);
+        const [result] = await pool.query<ResultSetHeader>("INSERT INTO user SET ?", [admin]);
+        admin.id = result.insertId;
+        //CREATE store
+        const [store] = await pool.query<ResultSetHeader>("INSERT INTO store SET name='testUserStore', managerId = ?, apiUrl = 'test.com'", [admin.id]);
+        storeId = store.insertId;
+    } catch (err) {
+        console.error(err);
+    }
+});
 
-const pool = mysql.createPool({
-    host: process.env.SHOPPY__MYSQLHOST,
-    port: Number(process.env.SHOPPY__MYSQLPORT),
-    database: process.env.SHOPPY__MYSQLDATABASE,
-    user: process.env.SHOPPY__MYSQLUSER,
-    decimalNumbers: true,
-    password: process.env.SHOPPY__MYSQLPASSWORD,
+afterAll(async () => {
+    try {
+        await pool.query<ResultSetHeader>("DELETE FROM store WHERE id = ?", [storeId]);
+        await pool.query<ResultSetHeader>("DELETE FROM user WHERE name = ?", [user.name]);
+        await pool.query<ResultSetHeader>("DELETE FROM user WHERE name = ?", [admin.name]);
+    } catch (err) {
+        console.error("user.test", err);
+    } finally {
+        pool.end();
+    }
 });
 
 /*****************
 TESTS
 ******************/
 
-describe("Admin", () => {
-    it("create admin", async () => {
-        await hashPassword();
-        const query = format("INSERT INTO user SET ?", [admin]);
-        await pool.execute<RowDataPacket[]>(query);
-        pool.end();
-    });
-});
-
-describe("/api/users/signup", () => {
+describe("POST /api/users/signup", () => {
     it("should create an user", async () => {
         const response = await api.post<ResponseInterface<UserInterface>>("signup", null, JSON.stringify(user));
         expect(response.data.message).toBe(undefined);
@@ -77,7 +86,7 @@ describe("/api/users/signup", () => {
     });
 });
 
-describe("/login", () => {
+describe("POST /login", () => {
     it("should login user", async () => {
         const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: user.email, password: user.password }));
         expect(response.data.message).toBe(undefined);
@@ -99,7 +108,7 @@ describe("/login", () => {
     });
 });
 
-describe("/:id", () => {
+describe("GET /:id", () => {
     it("should get an user", async () => {
         const response = await api.get<ResponseInterface<UserInterface>>(`${user.id}`, null);
         const { error } = userDBSchema.validate(response.data.data);
@@ -111,11 +120,11 @@ describe("/:id", () => {
     it("should not find an user", async () => {
         const response = await api.get<ResponseInterface<UserInterface>>("-3", null);
         expect(response.status).toBe(500);
-        expect(response.data.message).toMatch(/Unable to retrieve the entity./);
+        expect(response.data.message).toMatch(/Unable to retrieve User/);
     });
 });
 
-describe("/update", () => {
+describe("PUT /update", () => {
     it("should change name", async () => {
         const response = await api.put<ResponseInterface<UserInterface>>("update", null, JSON.stringify({ ...user, name: "testdos" }));
         const { error } = userDBSchema.validate(response.data.data);
@@ -126,8 +135,8 @@ describe("/update", () => {
     });
 });
 
-describe("/disable", () => {
-    it("should disable user", async () => {
+describe("DELETE /disable", () => {
+    it("user should be able to disable itself", async () => {
         // const response = await api.delete("disable", null)
         const response = await api.delete<ResponseInterface<UserInterface>>("disable", JSON.stringify(user));
         expect(response.data.message).toBe(undefined);
@@ -143,7 +152,7 @@ describe("/disable", () => {
     });
 });
 
-describe("/admin/delete", () => {
+describe("DELETE /admin/delete", () => {
     it("should not be authorized to access this route", async () => {
         const response = await api.delete<ResponseInterface<UserInterface>>("admin/delete", JSON.stringify({ id: admin.id }));
         expect(response.data.message).toMatch(/Unauthorized/);
@@ -151,7 +160,7 @@ describe("/admin/delete", () => {
     });
 });
 
-describe("/login", () => {
+describe("POST /login", () => {
     it("should login admin", async () => {
         const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: admin.email, password: "test1234" }));
         expect(response.data.message).toBe(undefined);
@@ -165,7 +174,7 @@ describe("/login", () => {
     });
 });
 
-describe("/", () => {
+describe("GET /", () => {
     it("should get all users", async () => {
         const response = await api.get<ResponseInterface<UserInterface[]>>("");
         expect(response.data.message).toBe(undefined);
@@ -175,7 +184,7 @@ describe("/", () => {
     });
 });
 
-describe("/admin/restore", () => {
+describe("PUT /admin/restore", () => {
     it("should restore an user", async () => {
         const response = await api.put<ResponseInterface<UserInterface>>("admin/restore", null, JSON.stringify({ id: user.id, email: user.email }));
         expect(response.data.message).toBe(undefined);
@@ -183,7 +192,17 @@ describe("/admin/restore", () => {
     });
 });
 
-describe("/admin/disable", () => {
+describe("PUT /admin/change_role", () => {
+    it("should change user role from client to manager", async () => {
+        const response = await api.put<ResponseInterface<UserInterface>>("admin/change_role", null, JSON.stringify({ email: user.email, idStore: storeId }));
+        expect(response.data.message).toBe(undefined);
+        expect(response.data.data.rol).toBe("Manager");
+        const [store] = (await pool.query<RowDataPacket[]>("SELECT * FROM store WHERE managerId = ?", [user.id]))[0] as StoreInterface[];
+        expect(store.name).toBe("testUserStore");
+    });
+});
+
+describe("DELETE /admin/disable", () => {
     it("should disable an user", async () => {
         const response = await api.delete<ResponseInterface<UserInterface>>(
             "admin/disable",
@@ -194,7 +213,7 @@ describe("/admin/disable", () => {
     });
 });
 
-describe("/admin/delete", () => {
+describe("DELETE /admin/delete", () => {
     it("should delete user", async () => {
         const response = await api.delete<ResponseInterface<UserInterface>>(
             "admin/delete",

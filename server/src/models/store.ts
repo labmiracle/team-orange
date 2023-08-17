@@ -74,9 +74,6 @@ export interface ColorInterface {
 export interface StoreColorInterface extends ColorInterface {
     id?: number;
     type: string;
-    /* hue: number;
-    sat: number;
-    light: number; */
     storeId: number;
 }
 

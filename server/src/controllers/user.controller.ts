@@ -42,11 +42,12 @@ export class UserController extends ApiController {
     @Response<UserInterface>(200, "Updates an User.")
     @Response(404, "User not found.")
     @Action({ route: "/update", filters: [JWTAuthFilter, UserFilter], fromBody: true, method: HttpMethod.PUT })
-    async update({ entity, decodedToken }: { entity: UserInterface; decodedToken: UserInterface }) {
-        if (entity.email !== decodedToken.email) throw new Error("Unauthorized");
-        entity.password = await bcrypt.hash(entity.password, 10);
-        await this.userRepo.update(entity);
-        const userUpdated = await this.userRepo.getById(entity.email);
+    async update(user: UserInterface) {
+        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        if (user.email !== email) throw new Error("Unauthorized");
+        user.password = await bcrypt.hash(user.password, 10);
+        await this.userRepo.update(user);
+        const userUpdated = await this.userRepo.getById(user.email);
         delete userUpdated.password;
         return userUpdated;
     }
@@ -120,18 +121,19 @@ export class UserController extends ApiController {
     @Response<UserInterface>(200, "User disabled.")
     @Response(404, "User not found.")
     @Action({ route: "/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, UserFilter] })
-    async disable({ entity, decodedToken }: { entity: UserInterface; decodedToken: UserInterface }) {
-        if (entity.email !== decodedToken.email) throw new Error("Unauthorized");
-        const [userdb] = await this.userRepo.find({ email: entity.email, status: 1 });
+    async disable(user: UserInterface) {
+        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        if (user.email !== email) throw new Error("Unauthorized");
+        const [userdb] = await this.userRepo.find({ email: user.email, status: 1 });
         if (!userdb) throw new Error("User not found");
         try {
-            await bcrypt.compare(entity.password, userdb.password);
+            await bcrypt.compare(user.password, userdb.password);
         } catch {
             throw new Error("Unauthorized");
         }
         userdb.status = 0;
         await this.userRepo.update(userdb);
-        const userDisabled = await this.userRepo.getById(entity.email);
+        const userDisabled = await this.userRepo.getById(user.email);
         delete userDisabled.password;
         return userDisabled;
     }
@@ -147,6 +149,7 @@ export class UserController extends ApiController {
     @Action({ route: "/:id", method: HttpMethod.GET })
     async getById(@PathParam("id") id: number) {
         const user = await this.userRepo.find({ id: id });
+        if (!user) throw new Error("User not found");
         delete user[0].password;
         return user[0];
     }
@@ -184,18 +187,19 @@ export class UserController extends ApiController {
     @Response<UserInterface>(200, "User disabled.")
     @Response(404, "User not found.")
     @Action({ route: "/admin/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async adminDisable({ entity, decodedToken }: { entity: UserInterface; decodedToken: AdminInterface }) {
-        const admin = await this.userRepo.getById(decodedToken.email);
+    async adminDisable(user: UserInterface) {
+        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const admin = await this.userRepo.getById(email);
         try {
-            await bcrypt.compare(entity.password, admin.password);
+            await bcrypt.compare(user.password, admin.password);
         } catch {
             throw new Error("Unauthorized");
         }
-        const userToDisable = await this.userRepo.getById(entity.email);
+        const userToDisable = await this.userRepo.getById(user.email);
         if (!userToDisable) throw new Error("User not found");
-        if (userToDisable.rol === "Admin" && entity.email !== decodedToken.email) throw new Error("Unauthorized");
+        if (userToDisable.rol === "Admin" && user.email !== email) throw new Error("Unauthorized");
         await this.userRepo.update({ ...userToDisable, status: 0 });
-        const userDisabled = await this.userRepo.getById(entity.email);
+        const userDisabled = await this.userRepo.getById(user.email);
         delete userDisabled.password;
         return userDisabled;
     }
@@ -212,15 +216,16 @@ export class UserController extends ApiController {
     @Response<UserInterface>(200, "User deleted.")
     @Response(404, "User not found.")
     @Action({ route: "/admin/delete", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async adminDelete({ entity, decodedToken }: { entity: UserInterface; decodedToken: AdminInterface }) {
-        const admin = await this.userRepo.getById(decodedToken.email);
+    async adminDelete(user: UserInterface) {
+        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const admin = await this.userRepo.getById(email);
         try {
-            await bcrypt.compare(entity.password, admin.password);
+            await bcrypt.compare(user.password, admin.password);
         } catch {
             throw new Error("Unauthorized");
         }
-        const userToDelete = await this.userRepo.getById(entity.email);
-        if (userToDelete.rol === "Admin" && entity.email !== decodedToken.email) throw new Error("Unauthorized");
+        const userToDelete = await this.userRepo.getById(user.email);
+        if (userToDelete.rol === "Admin" && user.email !== email) throw new Error("Unauthorized");
         await this.userRepo.delete(userToDelete);
         return userToDelete;
     }
@@ -239,14 +244,40 @@ export class UserController extends ApiController {
     @Response(401, "Unauthorized")
     @Response(404, "User not found.")
     @Action({ route: "/admin/restore", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async restore({ entity, decodedToken }: { entity: UserInterface; decodedToken: AdminInterface }) {
-        if (entity.email === decodedToken.email) throw new Error("Unauthorized");
-        const userToRestore = await this.userRepo.getById(entity.email);
+    async restore(user: UserInterface) {
+        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        if (user.email === email) throw new Error("Unauthorized");
+        const userToRestore = await this.userRepo.getById(user.email);
         if (!userToRestore) throw new Error("User not found");
-        if (userToRestore.rol === "Admin" && entity.email !== decodedToken.email) throw new Error("Unauthorized");
+        if (userToRestore.rol === "Admin" && user.email !== email) throw new Error("Unauthorized");
         await this.userRepo.update({ ...userToRestore, status: 1 });
-        const userRestored = await this.userRepo.getById(entity.email);
+        const userRestored = await this.userRepo.getById(user.email);
         delete userRestored.password;
         return userRestored;
+    }
+
+    /**
+     * Change role of user
+     * entity: UserInterface - The user to restore
+     * decodedToken: UserInterface - It's the token each user get when they login or signup
+     * @param id
+     * @returns
+     */
+    @PUT
+    @Path("/admin/change_role")
+    @Tags("admin")
+    @Response<UserInterface>(200, "Change client to manager.")
+    @Response(401, "Unauthorized")
+    @Response(404, "User not found.")
+    @Action({ route: "/admin/change_role", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
+    async raiseToManager(user: { email: string; idStore: number }) {
+        const userRaiseToManager = await this.userRepo.getById(user.email);
+        if (userRaiseToManager.rol === "Admin") throw new Error("Unauthorized");
+        if (!userRaiseToManager) throw new Error("User not found");
+        await this.userRepo.update({ ...userRaiseToManager, rol: "Manager" });
+        const manager = await this.userRepo.getById(user.email);
+        await this.storeRepo.update({ managerId: manager.id, id: user.idStore });
+        delete manager.password;
+        return manager;
     }
 }

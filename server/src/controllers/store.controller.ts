@@ -3,11 +3,13 @@ import { StoreRepository } from "../repositories/store.repository";
 import { ProductRepository } from "../repositories/product.repository";
 import { StoreColorRepository } from "../repositories/storeColor.repository";
 import { StoreInterface, ColorInterface, StoreColorInterface } from "../models/store";
-import { Path, PathParam, GET, DELETE } from "typescript-rest";
+import { Path, PathParam, GET, DELETE, POST, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
-import { JWTAuthFilter, isAdminFilter } from "../filters/jwtAuth";
+import { JWTAuthFilter, isAdminFilter, isManagerFilter } from "../filters/jwtAuth";
 import { StoreFilter } from "../filters/store.filter";
 import { ProductInterface } from "../models/product";
+import { ResponseInterface } from "../models/response";
+import { User, UserInterface } from "../models/user";
 
 type Colors = {
     primary: ColorInterface;
@@ -34,7 +36,7 @@ export class StoreController extends ApiController {
      */
     @Path("/names")
     @GET
-    @Response<Array<Names>>(200, "Return an array of each store id and name", [{ id: 1, name: "Tienda" }])
+    @Response<Array<Names>>(200, "Return an array of each store id and name")
     @Response(500, "Stores not found", null)
     @Action({ route: "/names", method: HttpMethod.GET })
     async getAll() {
@@ -70,13 +72,19 @@ export class StoreController extends ApiController {
 
     @Path("/")
     @DELETE
+    @Response<void>(200, "Disable a store setting it's status to 0")
+    @Response(500, "Store not found", null)
     @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async disableStore({ entity }: { entity: StoreInterface }) {
-        await this.storeRepo.update({ id: entity.id, status: 0 });
+    async disableStore(store: StoreInterface) {
+        await this.storeRepo.update({ id: store.id, status: 0 });
     }
 
+    @Path("/")
+    @POST
+    @Response<StoreInterface>(200, "Create a store")
+    @Response(500, "Server error", null)
     @Action({ route: "/", method: HttpMethod.POST, fromBody: true, filters: [StoreFilter, JWTAuthFilter, isAdminFilter] })
-    async createStore({ entity: store }: { entity: StoreInterface }) {
+    async createStore(store: StoreInterface) {
         let colors = store.colors;
         delete store.colors;
         const result = await this.storeRepo.insertOne(store);
@@ -124,5 +132,36 @@ export class StoreController extends ApiController {
 
         const newStore = await this.storeRepo.getById(result.insertId);
         return newStore;
+    }
+    /**
+     * UPDATE a store
+     * @param store
+     * @returns
+     */
+    @PUT
+    @Path("/")
+    @Response<void>(200, "Update a Store")
+    @Response(500, "Store not found.")
+    @Action({
+        route: "/",
+        filters: [StoreFilter, JWTAuthFilter, isManagerFilter],
+        fromBody: true,
+        method: HttpMethod.PUT,
+    })
+    async update(store: StoreInterface) {
+        const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { id: idStore } = (await this.storeRepo.find({ managerId: idManager }))[0];
+        const colors = store.colors;
+        delete store.colors;
+        delete store.products;
+        await this.storeRepo.update({ ...store, id: idStore });
+        if (colors.primary) {
+            const { id: idPrimary } = (await this.storeColorRepo.find({ storeId: idStore, type: "PRIMARY" }))[0];
+            await this.storeColorRepo.update({ ...colors.primary, id: idPrimary });
+        }
+        if (colors.secondary) {
+            const { id: idSecondary } = (await this.storeColorRepo.find({ storeId: idStore, type: "SECONDARY" }))[0];
+            await this.storeColorRepo.update({ ...colors.secondary, id: idSecondary });
+        }
     }
 }

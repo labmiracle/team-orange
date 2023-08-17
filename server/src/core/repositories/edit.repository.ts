@@ -43,7 +43,7 @@ export abstract class EditRepositoryBase<TEntity, TId = number> extends Readonly
             entity,
             (entity as any)[this.idColumn],
         ]);
-        if (!result.affectedRows) throw new Error("not found");
+        if (!result.affectedRows) throw new Error(`${this.entityType.name} not found`);
         return entity;
     }
 
@@ -53,7 +53,7 @@ export abstract class EditRepositoryBase<TEntity, TId = number> extends Readonly
         const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
         const query = format(`DELETE FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [result] = await this.connection.connection.query<ResultSetHeader>(query);
-        if (!result.affectedRows) throw new Error("not found");
+        if (!result.affectedRows) throw new Error(`${this.entityType.name} not found`);
         return result;
     }
 

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import type { Product } from "../../../types";
 import styles from "./product.module.css";
 import { Link } from "react-router-dom";
+import { assetsUrl } from "../../../endpoints";
 
 type ProductProps = {
     product: Product;
@@ -33,7 +34,7 @@ export function Product({ product, sequencer, setSequencer }: ProductProps) {
                         currentTarget.src = "/placeholder.jpg";
                     }}
                     className={styles.product_img}
-                    src={`http://localhost:4000/${product.url_img}`}
+                    src={`${assetsUrl}/${product.url_img}`}
                     width="200"
                     height="200"
                     alt={product.name}

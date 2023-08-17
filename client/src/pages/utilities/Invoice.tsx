@@ -1,24 +1,6 @@
-interface InvoiceI {
-    id?: number;
-    date: Date;
-    total: number;
-    name: string;
-    lastName: string;
-    email: string;
-    idDocumentType: string;
-    idDocumentNumber: number;
-    messageUrl: string;
-    products: {
-        name: string;
-        store: string;
-        price: number;
-        /**@IsInt */
-        quantity: number;
-        total: number;
-    }[];
-}
+import { InvoiceInterface } from "../../types";
 
-export default function Invoice({ invoice }: { invoice: InvoiceI }) {
+export default function Invoice({ invoice }: { invoice: InvoiceInterface }) {
     const date = new Date(invoice.date).toDateString();
     const odd = (number: number) =>
         number % 2 === 0

@@ -14,14 +14,15 @@ export function Layout() {
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user?.token) {
-            Fetcher.addInterceptor(config => {
-                config.headers.set("x-auth", user.token);
-                return config;
-            });
-        }
-    }, [user]);
+    // useEffect(() => {
+    //     const token = window.localStorage.getItem("user");
+    //     if (token) {
+    //         Fetcher.addInterceptor(config => {
+    //             config.headers.set("x-auth", token);
+    //             return config;
+    //         });
+    //     }
+    // }, [user]);
 
     return (
         <div className={styles.container}>
@@ -44,7 +45,8 @@ export function Layout() {
                     <div className={styles.buttons_container}>
                         {user ? (
                             <>
-                                Hi, {user.name} {user.lastname}
+                                Hi, {user.name} {user.lastName}
+                                <button onClick={() => navigate("/profile")}>Mi perfil</button>
                                 <button className={styles.logout} onClick={logOut}>
                                     logout
                                 </button>

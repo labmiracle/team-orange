@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS ProductSize (
     id INT PRIMARY KEY AUTO_INCREMENT,
     productId INT NOT NULL,
     sizeId INT NOT NULL,
-    CONSTRAINT fk_productId_ps FOREIGN KEY (productId) REFERENCES Product(id),
+    CONSTRAINT fk_productId_ps FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE,
     CONSTRAINT fk_sizeId_ps FOREIGN KEY (sizeId) REFERENCES Size(id) ON DELETE CASCADE
 );
 

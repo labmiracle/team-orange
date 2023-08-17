@@ -1,5 +1,5 @@
 export interface ResponseInterface<T> {
-    message: string;
-    data: T | undefined;
+    message: string | null;
+    data: T | undefined | null;
     error: boolean;
 }

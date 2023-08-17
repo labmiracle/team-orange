@@ -16,6 +16,30 @@ export type Product = {
     total?: number;
 };
 
+export type ItemCart = {
+	product: Product,
+	amount: number
+}
+
+export interface InvoiceInterface {
+    id: number;
+    date: Date;
+    total: number;
+    name: string;
+    lastName: string;
+    email: string;
+    idDocumentType: string;
+    idDocumentNumber: number;
+    messageUrl: string;
+    products: {
+        name: string;
+        store: string;
+        price: number;
+        quantity: number;
+        total: number;
+    }[];
+}
+
 export type Color = { hue: number; sat: number; light: number };
 
 export type ColorsType = {
@@ -32,7 +56,7 @@ export type StoreType = {
 export type setFilterType = ({ type, size }: { type?: string; size?: string }) => void;
 
 export type LoaderResponse<T> = {
-    data: T;
+    data: T | undefined;
     message: string;
     error: boolean;
 };
@@ -51,7 +75,7 @@ export type User = {
     idDocumentType: string;
     idDocumentNumber: number;
     rol: string;
-    status: number;
+    status?: number;
 };
 
 export type AuthData = {
@@ -69,3 +93,17 @@ export type RegisterData = {
     docType: string;
     docNumber: number;
 };
+
+export enum InputError {
+    "USER_NOT_FOUND",
+    "EMAIL",
+    "DUP_EMAIL",
+    "NAME",
+    "LAST_NAME",
+    "PASSWORD",
+    "PASSWORD_MISMATCH",
+    "DUP_DNI",
+    "DNI",
+    "ERROR",
+    "NONE",
+}

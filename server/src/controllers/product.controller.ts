@@ -1,14 +1,14 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { ProductInterface } from "../models/product";
 import { ProductRepository } from "../repositories/product.repository";
-import { ProductFilter, authProductFilter } from "../filters/product.filter";
+import { ProductFilter, authProductFilter, ProductArrayFilter } from "../filters/product.filter";
 import { BrandRepository } from "../repositories/brand.repository";
 import { CategoryRepository } from "../repositories/category.repository";
 import { SizeRepository } from "../repositories/size.repository";
 import { ProductCategoryRepository } from "../repositories/productCategory.repository";
 import { ProductSizeRepository } from "../repositories/productSize.repository";
 import { ProductDBRepository } from "../repositories/productDB.repository";
-import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
+import { Path, PathParam, GET, POST, DELETE, PUT, HeaderParam } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { JWTAuthFilter, isManagerFilter } from "../filters/jwtAuth";
 import { StoreRepository } from "../repositories/store.repository";
@@ -103,35 +103,18 @@ export class ProductController extends ApiController {
     @Path("/")
     @Response<ProductInterface>(201, "Insert a Product on the Database.")
     @Response(500, "Product insert failed.")
-    @Action({ route: "/", filters: [ProductFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
-    async post({ entity, decodedToken }: { entity: ProductInterface; decodedToken: UserInterface }) {
-        const { categories, sizes, brand, ...rest } = entity;
-        const { id } = (await this.storeRepo.find({ managerId: decodedToken.id }))[0];
-        const brandName = await this.brandRepo.find({ name: brand });
-        const result = await this.productDBRepo.insertOne({
-            ...rest,
-            storeId: id,
-            brandId: brandName[0].id,
-        });
-        if (!result.insertId) throw new Error("Product creation failed");
-        for (const category of categories) {
-            const categoryResponse = await this.categoryRepo.find({ name: category });
-            if (categoryResponse.length < 1) throw new Error("Invalid category");
-            await this.productCategoryRepo.insertOne({
-                productId: result.insertId,
-                categoryId: categoryResponse[0].id,
-            });
+    @Action({ route: "/", filters: [ProductArrayFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
+    async post(products: ProductInterface[]) {
+        const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth"));
+        const { id } = (await this.storeRepo.find({ managerId: idManager }))[0];
+        if (!id) throw new Error("Store not found");
+        const resultProducts = [] as ProductInterface[];
+        for (const product of products) {
+            const result = await this.productDBRepo.insertProduct(product, id);
+            const newProduct = await this.productRepo.getById(result.insertId);
+            resultProducts.push(newProduct);
         }
-        for (const size of sizes) {
-            const sizeResponse = await this.sizeRepo.find({ name: size });
-            if (sizeResponse.length < 1) throw new Error("Invalid size");
-            await this.productSizeRepo.insertOne({
-                productId: result.insertId,
-                sizeId: sizeResponse[0].id,
-            });
-        }
-        const product = await this.productRepo.getById(result.insertId);
-        if (product) return product;
+        return resultProducts;
     }
 
     /**
@@ -141,10 +124,10 @@ export class ProductController extends ApiController {
      */
     @DELETE
     @Path("/")
-    @Response<ProductInterface>(200, "Delete a Product on the Database.")
+    @Response<ProductInterface>(200, "Disable a Product on the Database.")
     @Response(404, "Product not found.")
     @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isManagerFilter, authProductFilter] })
-    async delete({ entity }: { entity: ProductInterface }) {
+    async delete(entity: ProductInterface) {
         await this.productDBRepo.update({ id: entity.id, status: 0 });
     }
     /**
@@ -180,7 +163,7 @@ export class ProductController extends ApiController {
         fromBody: true,
         method: HttpMethod.PUT,
     })
-    async update({ entity }: { entity: ProductInterface }) {
+    async update(entity: ProductInterface) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { categories, sizes, brand, ...rest } = entity;
         const brandName = await this.brandRepo.find({ name: brand });
