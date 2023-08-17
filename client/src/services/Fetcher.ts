@@ -1,4 +1,4 @@
-import { HttpClient, HttpRequest, HttpHeaders } from "@miracledevs/paradigm-web-fetch";
+import { HttpClient, HttpRequest, HttpHeaders, AuthorizationInterceptor } from "@miracledevs/paradigm-web-fetch";
 
 class Fetcher {
     private fetcher: HttpClient;
@@ -39,9 +39,9 @@ class Fetcher {
         throw new Error("");
     }
 
-    // addInterceptor(callback: (config: InternalAxiosRequestConfig<any>) => InternalAxiosRequestConfig<any>) {
-    //     this.fetcher.interceptors.request.use(callback);
-    // }
+    addAuthInterceptor(token: string) {
+        this.fetcher.registerInterceptor(new AuthorizationInterceptor(token))
+    }
 }
 
 export default new Fetcher();

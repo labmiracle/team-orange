@@ -3,12 +3,11 @@ import { baseEndpoints } from "../endpoints";
 import Fetcher from "./Fetcher";
 
 export class CheckoutService {
-    async getInvoices(token: string) {
+    async getInvoices() {
         const response = await Fetcher.query(
 					baseEndpoints.checkout.get,
 					{
 						method: "GET",
-						token
 					}
 			);
 			
