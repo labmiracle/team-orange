@@ -1,30 +1,35 @@
-import type { LoaderResponse, RegisterData, User } from "../types";
+import type { AuthData, RegisterData, User } from "../types";
 import { baseEndpoints } from "../endpoints";
-import { AxiosResponse } from "axios";
 import Fetcher from "./Fetcher";
 import { decodeJwt } from "jose";
 
 export class UsersService {
     async login(email: User["email"], password: User["password"]) {
-        const response = await Fetcher.query<AxiosResponse<LoaderResponse<User>>>(`${baseEndpoints.users.login}`, {
-            method: "POST",
-            data: {
-                email,
-                password,
-            },
-        });
-        const token = response.headers["x-auth"];
-        if (!token) throw new Error("Token not found");
-        window.localStorage.setItem("user", token);
-        const user = decodeJwt(token);
-        if (user.name && user.rol && user.lastName) {
-            return user as User;
+        try {
+            const response = await Fetcher.query(`${baseEndpoints.users.login}`, {
+                method: "POST",
+                data: {
+                    email,
+                    password,
+                },
+            });
+            const token = response.headers["x-auth"];
+					if (token) {
+							window.localStorage.setItem('user', token)
+                const user = decodeJwt(token);
+                if (user) {
+                    return user as User;
+                }
+                throw new Error("Name, rol or lastName are undefined. Check token");
+            }
+            throw new Error("Token is undefined, check the headers or the endpoint");
+        } catch (e) {
+            console.log(e);
         }
-        throw new Error("Name, rol or lastName are undefined. Check token");
     }
 
     async register({ email, password, name, lastName, docType, docNumber }: RegisterData) {
-        const response = await Fetcher.query<AxiosResponse<LoaderResponse<User>>>(baseEndpoints.users.register, {
+        const response = await Fetcher.query(baseEndpoints.users.register, {
             method: "POST",
             data: {
                 email,
@@ -40,20 +45,23 @@ export class UsersService {
     }
 
     async update(user: User) {
-        const response = await Fetcher.query<AxiosResponse<LoaderResponse<User>>>(baseEndpoints.users.update, {
+        const response = await Fetcher.query(baseEndpoints.users.update, {
             method: "PUT",
             data: user,
         });
         const token = response.headers["x-auth"];
-        if (!token) throw new Error("Token no found");
-        window.localStorage.setItem("user", token);
-        if (response.data.error) throw new Error("User not found");
-        const userResponse = response.data.data;
-        return userResponse;
+			if (token) {
+				if (response.data) {
+					const userResponse = response.data;
+					return userResponse;
+				}
+				throw new Error("User not found")
+			}
+			throw new Error("Token is undefined, check the headers or the endpoint");
     }
 
     async getUser(id: number) {
-        const response = await Fetcher.query<AxiosResponse<LoaderResponse<User>>>(`${baseEndpoints.users}/${id}`, {
+        const response = await Fetcher.query(`${baseEndpoints.users}/${id}`, {
             method: "GET",
         });
         return response.data;

@@ -1,6 +1,6 @@
 import type { RegisterData } from "../types";
 import { useAuthContext } from "../Context/AuthContext";
-import { UsersService } from "./User.service";
+import { UsersService } from "../services/User.service";
 
 export function useLogin() {
     const { user, setUser } = useAuthContext();
@@ -8,6 +8,7 @@ export function useLogin() {
     async function getAuth(email: string, password: string) {
         const userService = new UsersService();
         const authData = await userService.login(email, password);
+				
         if (authData) {
             setUser(authData);
         }

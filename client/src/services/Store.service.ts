@@ -1,15 +1,11 @@
-import { AxiosResponse } from "axios";
 import { baseEndpoints } from "../endpoints";
-import { LoaderResponse, StoreType, StoreName } from "../types";
 import Fetcher from "./Fetcher";
 
 export class StoreService {
     async getStoreNames() {
-        try {
-            const response = await Fetcher.query<AxiosResponse<LoaderResponse<StoreName>>>(baseEndpoints.stores.names, {
-                method: "GET",
-            });
-            const names = response.data.data;
+			try {
+            const response = await Fetcher.query(baseEndpoints.stores.names);
+            const names = response.data;
             return names;
         } catch (error) {
             console.log(error);
@@ -18,15 +14,8 @@ export class StoreService {
 
     async getStore(storeId: number) {
         try {
-            const response = await Fetcher.query<AxiosResponse<LoaderResponse<StoreType>>>(
-                `${baseEndpoints.stores.store}/${storeId}`,
-                {
-                    method: "GET",
-                }
-            );
-
-            const store = response.data.data;
-
+            const response = await Fetcher.query(`${baseEndpoints.stores.store}/${storeId}`, { method: "GET" });
+            const store = response.data;
             return store;
         } catch (error) {
             console.log(error);

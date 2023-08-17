@@ -14,15 +14,15 @@ export function Layout() {
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = window.localStorage.getItem("user");
-        if (token) {
-            Fetcher.addInterceptor(config => {
-                config.headers.set("x-auth", token);
-                return config;
-            });
-        }
-    }, [user]);
+    // useEffect(() => {
+    //     const token = window.localStorage.getItem("user");
+    //     if (token) {
+    //         Fetcher.addInterceptor(config => {
+    //             config.headers.set("x-auth", token);
+    //             return config;
+    //         });
+    //     }
+    // }, [user]);
 
     return (
         <div className={styles.container}>

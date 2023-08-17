@@ -1,16 +1,16 @@
 import styles from "./index.module.css";
-import type { LoaderResponse, Product } from "../../../types";
+import type {  Product } from "../../../types";
 import { useLoaderData } from "react-router-dom";
-import { useCart } from "./../../../services/useCart";
+import { useCart } from "../../../Hooks/useCart";
 import { formatPrice } from "../../utilities/formatPrice";
 import { Button } from "../../../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
+import { assetsUrl } from "../../../endpoints";
 
 export function Product() {
-    const { data: product } = useLoaderData() as LoaderResponse<Product>;
+    const product = useLoaderData() as Product;
     const { addProduct } = useCart();
     const [showNotification, setShowNotification] = useState(false);
-
     const timerRef = useRef<NodeJS.Timeout>();
 
     useEffect(() => {
@@ -18,7 +18,6 @@ export function Product() {
             timerRef.current = setTimeout(() => setShowNotification(false), 1000);
         }
         return () => {
-            console.log("Limpieando timeot");
             clearTimeout(timerRef.current);
         };
     }, [showNotification]);
@@ -32,7 +31,7 @@ export function Product() {
 
     return (
         <main className={styles.container}>
-            <img src={`http://localhost:4000/${product.url_img}`} alt="A product image" width={500} />
+            <img src={`${assetsUrl}/${product.url_img}`} alt="A product image" width={500} />
             <div className={styles.infoContainer}>
                 <div className={styles.content}>
                     <p className={styles.title}>{product.name}</p>

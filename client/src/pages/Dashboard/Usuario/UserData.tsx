@@ -19,7 +19,6 @@ export default function UserData() {
 
     const handleSubmit = async () => {
         const userService = new UsersService();
-        console.log(user);
         const data = await userService.update({ ...user, password: password });
         if (data) setUser(data);
     };

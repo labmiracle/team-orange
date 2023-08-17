@@ -16,6 +16,11 @@ export type Product = {
     total?: number;
 };
 
+export type ItemCart = {
+	product: Product,
+	amount: number
+}
+
 export interface InvoiceInterface {
     id: number;
     date: Date;
@@ -73,12 +78,12 @@ export type User = {
     status?: number;
 };
 
-// export type AuthData = {
-//     token: string;
-//     rol: string;
-//     name: string;
-//     lastName: string;
-// };
+export type AuthData = {
+    token: string;
+    rol: string;
+    name: string;
+    lastName: string;
+};
 
 export type RegisterData = {
     email: string;

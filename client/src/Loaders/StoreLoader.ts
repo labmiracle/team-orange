@@ -25,6 +25,7 @@ export const StoresLoader = {
     async getStoresName() {
         const storeService = new StoreService();
         const names = await storeService.getStoreNames();
+
         return names;
     },
 };

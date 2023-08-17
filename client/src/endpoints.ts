@@ -1,4 +1,5 @@
-const baseUrl = import.meta.env.VITE_API_URL + "/api";
+export const assetsUrl = "http://localhost:4000";
+export const baseUrl = "http://localhost:4000/api";
 
 export const baseEndpoints = {
     products: {
@@ -6,7 +7,7 @@ export const baseEndpoints = {
     },
     stores: {
         store: `${baseUrl}/shop`,
-        names: `${baseUrl}/shop/names`,
+        names: `${baseUrl}/shop/names`,	
     },
     users: {
         login: `${baseUrl}/users/login`,
