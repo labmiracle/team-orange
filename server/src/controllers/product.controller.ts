@@ -2,17 +2,11 @@ import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/para
 import { ProductInterface } from "../models/product";
 import { ProductRepository } from "../repositories/product.repository";
 import { ProductFilter, authProductFilter, ProductArrayFilter } from "../filters/product.filter";
-import { BrandRepository } from "../repositories/brand.repository";
-import { CategoryRepository } from "../repositories/category.repository";
-import { SizeRepository } from "../repositories/size.repository";
-import { ProductCategoryRepository } from "../repositories/productCategory.repository";
-import { ProductSizeRepository } from "../repositories/productSize.repository";
 import { ProductDBRepository } from "../repositories/productDB.repository";
-import { Path, PathParam, GET, POST, DELETE, PUT, HeaderParam } from "typescript-rest";
+import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { JWTAuthFilter, isManagerFilter } from "../filters/jwtAuth";
 import { StoreRepository } from "../repositories/store.repository";
-import { UserInterface } from "../models/user";
 import { UnitOfWork } from "../core/unitofwork/unitofwork";
 
 @Path("/api/product")
@@ -22,11 +16,6 @@ export class ProductController extends ApiController {
     constructor(
         private productRepo: ProductRepository,
         private productDBRepo: ProductDBRepository,
-        private brandRepo: BrandRepository,
-        private categoryRepo: CategoryRepository,
-        private sizeRepo: SizeRepository,
-        private productCategoryRepo: ProductCategoryRepository,
-        private productSizeRepo: ProductSizeRepository,
         private storeRepo: StoreRepository,
         private unitOfWork: UnitOfWork
     ) {
@@ -82,24 +71,6 @@ export class ProductController extends ApiController {
      * CREATE a product on the database
      * @param product
      * @returns {ResponseMessage}
-     *
-     * @example
-     * ```
-     * Product {
-     *      name: "test",
-     *      description: "description",
-     *      price: 200.0,
-     *      discountPercentage: 1,
-     *      currentStock: 50,
-     *      reorderPoint: 10,
-     *      minimum: 10,
-     *      brand: "Nike",
-     *      storeId: 1,
-     *      url_img: "/images/image01.jpg",
-     *      categories: ["Chaqueta", "Zapatos"],
-     *      sizes: ["Hombre", "Mujer"],
-     *      }
-     * ```
      */
     @POST
     @Path("/")
@@ -137,35 +108,17 @@ export class ProductController extends ApiController {
     @Response<ProductInterface>(200, "Disable a Product on the Database.")
     @Response(404, "Product not found.")
     @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isManagerFilter, authProductFilter] })
-    async delete(entity: ProductInterface) {
-        await this.productDBRepo.update({ id: entity.id, status: 0 });
+    async delete(product: ProductInterface) {
+        await this.productDBRepo.update({ id: product.id, status: 0 });
     }
     /**
      * UPDATE a product
      * @param product
      * @returns
-     *
-     * @example
-     * ```
-     * Product {
-     *      name: "test updated",
-     *      description: "description",
-     *      price: 200.0,
-     *      discountPercentage: 1,
-     *      currentStock: 50,
-     *      reorderPoint: 10,
-     *      minimum: 10,
-     *      brand: "Topper",
-     *      storeId: 1,
-     *      url_img: "/images/image01.jpg",
-     *      categories: ["Chaqueta", "Zapatos"],
-     *      sizes: ["Hombre", "Mujer"],
-     *      }
-     * ```
      */
     @PUT
     @Path("/")
-    @Response<ProductInterface>(200, "Update a Product on the Database. Except Categories and Sizes")
+    @Response<ProductInterface>(200, "Update a Product on the Database.")
     @Response(404, "Product not found.")
     @Action({
         route: "/",
@@ -174,33 +127,16 @@ export class ProductController extends ApiController {
         method: HttpMethod.PUT,
     })
     async update(entity: ProductInterface) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { categories, sizes, brand, ...rest } = entity;
-        const brandName = await this.brandRepo.find({ name: brand });
-        //prevent changing product store
-        delete rest.storeId;
-        await this.productDBRepo.update({ brandId: brandName[0].id, ...rest });
+        this.unitOfWork.beginTransaction();
+        try {
+            await this.productDBRepo.updateProduct(entity);
+        } catch (e) {
+            this.unitOfWork.rollbackTransaction();
+            this.unitOfWork.commitTransaction();
+            throw Error(e);
+        }
+        this.unitOfWork.commitTransaction();
         const product = await this.productRepo.getById(entity.id);
-
-        if (entity.categories.length !== product.categories.length || entity.categories.some((val, index) => val !== product.categories[index])) {
-            await this.productCategoryRepo.delete({ productId: entity.id });
-            for (const category of categories) {
-                const categoryResponse = await this.categoryRepo.find({ name: category });
-                if (categoryResponse.length < 1) throw new Error("Invalid category");
-                await this.productCategoryRepo.insertOne({ productId: entity.id, categoryId: categoryResponse[0].id });
-            }
-        }
-
-        if (entity.sizes.length !== product.sizes.length || entity.sizes.some((val, index) => val !== product.sizes[index])) {
-            await this.productSizeRepo.delete({ productId: entity.id });
-            for (const size of sizes) {
-                const sizeResponse = await this.sizeRepo.find({ name: size });
-                if (sizeResponse.length < 1) throw new Error("Invalid size");
-                await this.productSizeRepo.insertOne({ productId: entity.id, sizeId: sizeResponse[0].id });
-            }
-        }
-
-        const productR = await this.productRepo.getById(entity.id);
-        return productR;
+        return product;
     }
 }
