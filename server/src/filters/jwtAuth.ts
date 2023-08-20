@@ -5,11 +5,12 @@ import { MySqlConnection } from "../core/mysql/mysql.connection";
 import { BatchDbCommand } from "../core/repositories/commands/batch.command";
 import { RowDataPacket } from "mysql2/promise";
 import { User } from "../models/user";
+import { UserRepository } from "../repositories/user.repository";
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class JWTAuthFilter implements IFilter {
     protected batch: BatchDbCommand;
-    constructor(protected readonly connection: MySqlConnection) {
+    constructor(protected readonly connection: MySqlConnection, private userRepo: UserRepository) {
         this.batch = new BatchDbCommand(connection);
     }
 
@@ -24,13 +25,13 @@ export class JWTAuthFilter implements IFilter {
 
     async afterExecute(httpContext: HttpContext): Promise<void> {
         const token = JSON.parse(httpContext.request.header("x-auth")) as User;
-        const [rows] = await this.connection.connection.query<RowDataPacket[]>("SELECT * FROM user WHERE id = ?", [token.id]);
-        if (rows.length === 0) {
-            httpContext.response.removeHeader("x-auth");
-        } else {
-            delete rows[0].password;
-            const token2 = jwt.sign({ ...rows[0] }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+        try {
+            const user = await this.userRepo.getById(token.email);
+            delete user.password;
+            const token2 = jwt.sign({ ...user }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
             httpContext.response.setHeader("x-auth", token2);
+        } catch {
+            httpContext.response.removeHeader("x-auth");
         }
     }
 }
@@ -38,27 +39,27 @@ export class JWTAuthFilter implements IFilter {
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class isAdminFilter implements IFilter {
     protected batch: BatchDbCommand;
-    constructor(protected readonly connection: MySqlConnection) {
+    constructor(protected readonly connection: MySqlConnection, private userRepo: UserRepository) {
         this.batch = new BatchDbCommand(connection);
     }
 
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const { id } = JSON.parse(httpContext.request.header("x-auth"));
-        const [rows] = await this.connection.connection.query<RowDataPacket[]>("SELECT * FROM user WHERE id = ?", [id]);
-        if (rows[0].rol !== "Admin") throw new Error("Unauthorized");
+        const { email } = JSON.parse(httpContext.request.header("x-auth"));
+        const user = await this.userRepo.getById(email);
+        if (user.rol !== "Admin") throw new Error("Unauthorized");
     }
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class isManagerFilter implements IFilter {
     protected batch: BatchDbCommand;
-    constructor(protected readonly connection: MySqlConnection) {
+    constructor(protected readonly connection: MySqlConnection, private userRepo: UserRepository) {
         this.batch = new BatchDbCommand(connection);
     }
 
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const { id } = JSON.parse(httpContext.request.header("x-auth"));
-        const [rows] = await this.connection.connection.execute<RowDataPacket[]>("SELECT * FROM user WHERE id = ?", [id]);
-        if (rows[0].rol !== "Manager") throw new Error("Unauthorized");
+        const { email } = JSON.parse(httpContext.request.header("x-auth"));
+        const user = await this.userRepo.getById(email);
+        if (user.rol !== "Manager") throw new Error("Unauthorized");
     }
 }
