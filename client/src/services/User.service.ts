@@ -14,8 +14,8 @@ export class UsersService {
                 },
             });
             const token = response.headers["x-auth"];
-					if (token) {
-							window.localStorage.setItem('user', token)
+            if (token) {
+                window.localStorage.setItem("user", token);
                 const user = decodeJwt(token);
                 if (user) {
                     return user as User;
@@ -50,18 +50,34 @@ export class UsersService {
             data: user,
         });
         const token = response.headers["x-auth"];
-			if (token) {
-				if (response.data) {
-					const userResponse = response.data;
-					return userResponse;
-				}
-				throw new Error("User not found")
-			}
-			throw new Error("Token is undefined, check the headers or the endpoint");
+        if (token) {
+            if (response.data) {
+                const userResponse = response.data;
+                return userResponse;
+            }
+            throw new Error("User not found");
+        }
+        throw new Error("Token is undefined, check the headers or the endpoint");
     }
 
-    async getUser(id: number) {
-        const response = await Fetcher.query(`${baseEndpoints.users}/${id}`, {
+    /**
+     * GET an user with a given email
+     * /q?email=example@email.com
+     * Admin only
+     */
+    async getUser(email: string) {
+        const response = await Fetcher.query(`${baseEndpoints.users}/${email}`, {
+            method: "GET",
+        });
+        return response.data;
+    }
+
+    /**
+     * GET all users
+     * Admin only
+     */
+    async getAllUsers() {
+        const response = await Fetcher.query(`${baseEndpoints.users}`, {
             method: "GET",
         });
         return response.data;

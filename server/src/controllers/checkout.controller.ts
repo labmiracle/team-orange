@@ -11,13 +11,19 @@ import { InvoiceViewInterface } from "../models/invoiceView";
 import sendEmail from "../utils/sendEmail";
 import { ProductSaleInterface } from "../models/product";
 import dotenv from "dotenv";
+import { UserRepository } from "../repositories/user.repository";
 dotenv.config();
 
 @Path("/api/checkout")
 @Tags("Cart")
 @Controller({ route: "/api/checkout" })
 export class CheckoutController extends ApiController {
-    constructor(private invoiceRepo: InvoiceRepository, private itemRepo: ItemRepository, private invoiceViewRepo: InvoiceViewRepository) {
+    constructor(
+        private invoiceRepo: InvoiceRepository,
+        private itemRepo: ItemRepository,
+        private invoiceViewRepo: InvoiceViewRepository,
+        private userRepo: UserRepository
+    ) {
         super();
     }
 
@@ -28,8 +34,8 @@ export class CheckoutController extends ApiController {
     @Response(500, "Server error.")
     @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuthFilter] })
     async getInvoice() {
-        const { id } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
-        const invoiceView = await this.invoiceViewRepo.find({ userId: id });
+        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const invoiceView = await this.invoiceViewRepo.find({ email: email });
         if (invoiceView.length === 0) return [];
         return invoiceView;
     }
@@ -39,10 +45,11 @@ export class CheckoutController extends ApiController {
     @Action({ route: "/produce", method: HttpMethod.POST, filters: [ProductSaleArrayFilter, JWTAuthFilter], fromBody: true })
     async produceInvoice(products: ProductSaleInterface[]) {
         if (products.length === 0) throw new Error("No items in cart");
-        const { id: userId } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email: userEmail } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
         const date = new Date();
         const grandTotal = [...products].reduce((acc, c) => acc + c.price * c.discountPercentage * c.quantity, 0);
-        const invoice = await this.invoiceRepo.insertOne({ userId: userId, date: date, total: grandTotal });
+        const user = await this.userRepo.getById(userEmail);
+        const invoice = await this.invoiceRepo.insertOne({ userId: user.id, date: date, total: grandTotal });
         const items = products.map(item => ({
             invoiceId: invoice.insertId,
             productId: item.id,

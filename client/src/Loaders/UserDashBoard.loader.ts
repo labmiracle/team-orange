@@ -14,8 +14,8 @@ export const UserLoader = {
     async getUser({ params }: { params: Params }) {
         try {
             const user = new UsersService();
-            const { id } = params;
-            const data = await user.getUser(Number(id));
+            const { email } = params;
+            const data = await user.getUser(String(email));
             return data.data;
         } catch (e) {
             console.error(e);

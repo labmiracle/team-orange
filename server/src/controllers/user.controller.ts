@@ -137,26 +137,11 @@ export class UserController extends ApiController {
         delete userDisabled.password;
         return userDisabled;
     }
-    /**
-     * GET an user with a given id
-     * @param id
-     * @returns
-     */
-    @GET
-    @Path("/:id")
-    @Response<UserInterface>(200, "Retrieve an User.")
-    @Response(404, "User not found.")
-    @Action({ route: "/:id", method: HttpMethod.GET })
-    async getById(@PathParam("id") id: number) {
-        const user = await this.userRepo.find({ id: id });
-        if (!user) throw new Error("User not found");
-        delete user[0].password;
-        return user[0];
-    }
 
     /******************
     ADMIN ONLY ROUTES
     ******************/
+
     /**
      * Produce a list of all users
      * decodedToken: UserInterface - It's the token each user get when they login or signup
@@ -173,6 +158,22 @@ export class UserController extends ApiController {
     async getAll() {
         const users = await this.userRepo.getBy(["name", "lastName", "email", "idDocumentType", "idDocumentNumber", "rol", "status"]);
         return users;
+    }
+
+    /**
+     * GET an user with a given email
+     * /q?email=example@email.com
+     */
+    @GET
+    @Path("/:email")
+    @Response<UserInterface>(200, "Retrieve an User.")
+    @Response(404, "User not found.")
+    @Action({ route: "/:email", method: HttpMethod.GET, filters: [JWTAuthFilter, isAdminFilter] })
+    async getById(@PathParam("email") email: string) {
+        const user = await this.userRepo.getById(String(email));
+        if (!user) throw new Error("User not found");
+        delete user.password;
+        return user;
     }
 
     /**
@@ -275,9 +276,9 @@ export class UserController extends ApiController {
         if (userRaiseToManager.rol === "Admin") throw new Error("Unauthorized");
         if (!userRaiseToManager) throw new Error("User not found");
         await this.userRepo.update({ ...userRaiseToManager, rol: "Manager" });
-        const manager = await this.userRepo.getById(user.email);
-        await this.storeRepo.update({ managerId: manager.id, id: user.idStore });
-        delete manager.password;
-        return manager;
+        await this.storeRepo.update({ managerId: userRaiseToManager.id, id: user.idStore });
+        delete userRaiseToManager.password;
+        userRaiseToManager.rol = "Manager";
+        return userRaiseToManager;
     }
 }

@@ -17,9 +17,9 @@ export type Product = {
 };
 
 export type ItemCart = {
-	product: Product,
-	amount: number
-}
+    product: Product;
+    amount: number;
+};
 
 export interface InvoiceInterface {
     id: number;
@@ -67,7 +67,7 @@ export type StoreName = {
 };
 
 export type User = {
-    id: number;
+    id?: number;
     name: string;
     lastName: string;
     email: string;
