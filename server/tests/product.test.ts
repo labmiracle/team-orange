@@ -159,7 +159,7 @@ describe("PUT api/product", () => {
         expect(response.data.data.sizes[0]).toMatch(/Mujer/);
     });
     it("should not be authorized to change products from other stores", async () => {
-        const response = await api.put<ResponseInterface<ProductInterface>>("", null, JSON.stringify({ ...product[0], name: "test2", id: 1 }));
+        const response = await api.put<ResponseInterface<ProductInterface>>("", null, JSON.stringify({ ...product[0], name: "test2", id: 33 }));
         expect(response.data.message).toMatch(/Unauthorized/);
         expect(response.status).toBe(500);
     });

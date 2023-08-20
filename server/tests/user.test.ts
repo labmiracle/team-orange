@@ -108,22 +108,6 @@ describe("POST /login", () => {
     });
 });
 
-describe("GET /:id", () => {
-    it("should get an user", async () => {
-        const response = await api.get<ResponseInterface<UserInterface>>(`${user.id}`, null);
-        const { error } = userDBSchema.validate(response.data.data);
-        expect(response.data.message).toBe(undefined);
-        expect(response.status).toBe(200);
-        expect(error).toBeFalsy();
-        expect(response.data.data.email).toBe(user.email);
-    });
-    it("should not find an user", async () => {
-        const response = await api.get<ResponseInterface<UserInterface>>("-3", null);
-        expect(response.status).toBe(500);
-        expect(response.data.message).toMatch(/Unable to retrieve User/);
-    });
-});
-
 describe("PUT /update", () => {
     it("should change name", async () => {
         const response = await api.put<ResponseInterface<UserInterface>>("update", null, JSON.stringify({ ...user, name: "testdos" }));
@@ -154,7 +138,7 @@ describe("DELETE /disable", () => {
 
 describe("DELETE /admin/delete", () => {
     it("should not be authorized to access this route", async () => {
-        const response = await api.delete<ResponseInterface<UserInterface>>("admin/delete", JSON.stringify({ id: admin.id }));
+        const response = await api.delete<ResponseInterface<UserInterface>>("admin/delete", JSON.stringify({ email: admin.email }));
         expect(response.data.message).toMatch(/Unauthorized/);
         expect(response.data.error).toBeTruthy();
     });
@@ -181,6 +165,22 @@ describe("GET /", () => {
         const { error } = userDBArray.validate(response.data.data);
         expect(error).toBeFalsy;
         expect(response.status).toBe(200);
+    });
+});
+
+describe("GET /:id", () => {
+    it("should get an user", async () => {
+        const response = await api.get<ResponseInterface<UserInterface>>(`${user.email}`, null);
+        const { error } = userDBSchema.validate(response.data.data);
+        expect(response.data.message).toBe(undefined);
+        expect(response.status).toBe(200);
+        expect(error).toBeFalsy();
+        expect(response.data.data.email).toBe(user.email);
+    });
+    it("should not find an user", async () => {
+        const response = await api.get<ResponseInterface<UserInterface>>("error@test.com", null);
+        expect(response.status).toBe(500);
+        expect(response.data.message).toMatch(/Unable to retrieve User/);
     });
 });
 
