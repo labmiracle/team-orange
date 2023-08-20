@@ -2,8 +2,12 @@ import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
 import { userSchema, userLogin } from "../models/schemas/user.schema";
 import { Response } from "express";
+import { UserInterface, UserLoginInterface } from "../models/user";
 import jwt from "jsonwebtoken";
 
+/**
+ * Validate user of type {@link UserInterface}
+ */
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class UserFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
@@ -17,6 +21,10 @@ export class UserFilter implements IFilter {
     }
 }
 
+/**
+ * Validate login user of type {@link UserLoginInterface}
+ * and set the auth token in x-auth header
+ */
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class LoginFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
