@@ -8,10 +8,10 @@ import { ItemRepository } from "../repositories/item.repository";
 import { InvoiceViewRepository } from "../repositories/invoiceView.repository";
 import { Tags, Response } from "typescript-rest-swagger";
 import { InvoiceViewInterface } from "../models/invoiceView";
-import sendEmail from "../utils/sendEmail";
 import { ProductSaleInterface } from "../models/product";
 import dotenv from "dotenv";
 import { UserRepository } from "../repositories/user.repository";
+import { Emailer } from "../utils/emailer";
 dotenv.config();
 
 @Path("/api/checkout")
@@ -22,7 +22,8 @@ export class CheckoutController extends ApiController {
         private invoiceRepo: InvoiceRepository,
         private itemRepo: ItemRepository,
         private invoiceViewRepo: InvoiceViewRepository,
-        private userRepo: UserRepository
+        private userRepo: UserRepository,
+        private emailer: Emailer
     ) {
         super();
     }
@@ -59,7 +60,7 @@ export class CheckoutController extends ApiController {
         }));
         await this.itemRepo.insertItem(items);
         const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
-        const urlInfo = await sendEmail(invoiceView);
+        const urlInfo = await this.emailer.send(invoiceView);
         return { ...invoiceView, messageUrl: urlInfo };
     }
 }
