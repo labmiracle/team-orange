@@ -2,8 +2,8 @@ import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
 import { userSchema, userLogin } from "../models/schemas/user.schema";
 import { Response } from "express";
-import { UserInterface, UserLoginInterface } from "../models/user";
 import jwt from "jsonwebtoken";
+import { ProcessToken } from "../utils/processToken";
 
 /**
  * Validate user of type {@link UserInterface}
@@ -27,6 +27,8 @@ export class UserFilter implements IFilter {
  */
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class LoginFilter implements IFilter {
+    constructor(private readonly processToken: ProcessToken) {}
+
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const user = httpContext.request.body;
         delete user.rol;
@@ -38,7 +40,7 @@ export class LoginFilter implements IFilter {
         const send = httpContext.response.send;
         httpContext.response.send = user => {
             httpContext.response.send = send;
-            const token = jwt.sign({ ...user.data }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+            const token = this.processToken.sign(user.data);
             httpContext.response.setHeader("x-auth", token);
             return send.call(httpContext.response, user) as Response;
         };

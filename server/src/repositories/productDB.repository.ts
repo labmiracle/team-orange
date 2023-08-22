@@ -82,11 +82,11 @@ export class ProductDBRepository extends EditRepositoryBase<ProductDB> {
         }
     }
 
-    async getManager(idProduct: number): Promise<number> {
+    async getManager(idProduct: number): Promise<string> {
         const [product] = await this.connection.connection.query<RowDataPacket[]>(
-            "SELECT managerId FROM product p JOIN store s ON s.id = p.storeId WHERE p.id = ?",
+            "SELECT email FROM product p JOIN store s ON s.id = p.storeId JOIN user u ON u.id = s.managerId WHERE p.id = ?",
             [idProduct]
         );
-        return product[0].managerId;
+        return product[0].email;
     }
 }

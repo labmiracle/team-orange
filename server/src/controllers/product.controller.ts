@@ -1,23 +1,25 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { ProductInterface } from "../models/product";
 import { ProductRepository } from "../repositories/product.repository";
-import { ProductFilter, authProductFilter, ProductArrayFilter } from "../filters/product.filter";
+import { ProductFilter, ProductArrayFilter } from "../filters/product.filter";
 import { ProductDBRepository } from "../repositories/productDB.repository";
 import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
-import { JWTAuthFilter, isManagerFilter } from "../filters/jwtAuth";
+import { JWTAuthFilter, isManagerFilter, authProductFilter } from "../filters/jwtAuth";
 import { StoreRepository } from "../repositories/store.repository";
 import { UnitOfWork } from "../core/unitofwork/unitofwork";
+import { UserRepository } from "../repositories/user.repository";
 
 @Path("/api/product")
 @Tags("Products")
 @Controller({ route: "/api/product" })
 export class ProductController extends ApiController {
     constructor(
-        private productRepo: ProductRepository,
-        private productDBRepo: ProductDBRepository,
-        private storeRepo: StoreRepository,
-        private unitOfWork: UnitOfWork
+        private readonly productRepo: ProductRepository,
+        private readonly productDBRepo: ProductDBRepository,
+        private readonly storeRepo: StoreRepository,
+        private readonly userRepo: UserRepository,
+        private readonly unitOfWork: UnitOfWork
     ) {
         super();
     }
@@ -78,7 +80,7 @@ export class ProductController extends ApiController {
     @Response(500, "Product insert failed.")
     @Action({ route: "/", filters: [ProductArrayFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
     async post(products: ProductInterface[]) {
-        const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth"));
+        const { id: idManager } = this.userRepo.getAuth();
         const { id } = (await this.storeRepo.find({ managerId: idManager }))[0];
         if (!id) throw new Error("Store not found");
         const resultProducts = [] as ProductInterface[];

@@ -8,8 +8,9 @@ import { Response, Tags } from "typescript-rest-swagger";
 import { JWTAuthFilter, isAdminFilter, isManagerFilter } from "../filters/jwtAuth";
 import { StoreFilter } from "../filters/store.filter";
 import { ProductInterface } from "../models/product";
-import { ResponseInterface } from "../models/response";
-import { User, UserInterface } from "../models/user";
+import { UserAuth } from "../utils/userInstancer";
+import { DependencyContainer } from "@miracledevs/paradigm-web-di";
+import { UserRepository } from "../repositories/user.repository";
 
 type Colors = {
     primary: ColorInterface;
@@ -26,7 +27,12 @@ type Names = {
 @Tags("Stores")
 @Controller({ route: "/api/shop" })
 export class StoreController extends ApiController {
-    constructor(private storeRepo: StoreRepository, private productRepo: ProductRepository, private storeColorRepo: StoreColorRepository) {
+    constructor(
+        private readonly storeRepo: StoreRepository,
+        private readonly productRepo: ProductRepository,
+        private readonly storeColorRepo: StoreColorRepository,
+        private readonly userRepo: UserRepository
+    ) {
         super();
     }
 
@@ -149,7 +155,7 @@ export class StoreController extends ApiController {
         method: HttpMethod.PUT,
     })
     async update(store: StoreInterface) {
-        const { id: idManager } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { id: idManager } = this.userRepo.getAuth();
         const { id: idStore } = (await this.storeRepo.find({ managerId: idManager }))[0];
         const colors = store.colors;
         delete store.colors;

@@ -1,35 +1,27 @@
 import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { MySqlConnection } from "../core/mysql/mysql.connection";
-import { BatchDbCommand } from "../core/repositories/commands/batch.command";
-import { RowDataPacket } from "mysql2/promise";
-import { User } from "../models/user";
 import { UserRepository } from "../repositories/user.repository";
+import { ProductDBRepository } from "../repositories/productDB.repository";
+import { UserAuth } from "../utils/userInstancer";
+import { ProcessToken } from "../utils/processToken";
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class JWTAuthFilter implements IFilter {
-    protected batch: BatchDbCommand;
-    constructor(protected readonly connection: MySqlConnection, private userRepo: UserRepository) {
-        this.batch = new BatchDbCommand(connection);
-    }
+    constructor(private readonly userRepo: UserRepository, private readonly processToken: ProcessToken) {}
 
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const token = httpContext.request.header("x-auth");
-        if (!token) throw new Error("Token not found");
-        const decodedToken = jwt.verify(token, process.env.SHOPPY__ACCESS_TOKEN) as JwtPayload;
-        delete decodedToken.iat;
-        delete decodedToken.exp;
-        httpContext.request.headers["x-auth"] = JSON.stringify(decodedToken);
+        const decodedToken = this.processToken.verify(token);
+        this.userRepo.setAuth(decodedToken, UserAuth);
     }
 
     async afterExecute(httpContext: HttpContext): Promise<void> {
-        const token = JSON.parse(httpContext.request.header("x-auth")) as User;
+        const { email } = this.userRepo.getAuth();
         try {
-            const user = await this.userRepo.getById(token.email);
+            const user = await this.userRepo.getById(email);
             delete user.password;
-            const token2 = jwt.sign({ ...user }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
-            httpContext.response.setHeader("x-auth", token2);
+            const token = this.processToken.sign(user);
+            httpContext.response.setHeader("x-auth", token);
         } catch {
             httpContext.response.removeHeader("x-auth");
         }
@@ -38,13 +30,10 @@ export class JWTAuthFilter implements IFilter {
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class isAdminFilter implements IFilter {
-    protected batch: BatchDbCommand;
-    constructor(protected readonly connection: MySqlConnection, private userRepo: UserRepository) {
-        this.batch = new BatchDbCommand(connection);
-    }
+    constructor(private readonly userRepo: UserRepository) {}
 
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const { email } = JSON.parse(httpContext.request.header("x-auth"));
+        const { email } = this.userRepo.getAuth();
         const user = await this.userRepo.getById(email);
         if (user.rol !== "Admin") throw new Error("Unauthorized");
     }
@@ -52,14 +41,26 @@ export class isAdminFilter implements IFilter {
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class isManagerFilter implements IFilter {
-    protected batch: BatchDbCommand;
-    constructor(protected readonly connection: MySqlConnection, private userRepo: UserRepository) {
-        this.batch = new BatchDbCommand(connection);
-    }
+    constructor(private readonly userRepo: UserRepository) {}
 
     async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const { email } = JSON.parse(httpContext.request.header("x-auth"));
+        const { email } = this.userRepo.getAuth();
         const user = await this.userRepo.getById(email);
         if (user.rol !== "Manager") throw new Error("Unauthorized");
+    }
+}
+
+/**
+ * Check if the user is authorize to modify the product
+ */
+@Injectable({ lifeTime: DependencyLifeTime.Scoped })
+export class authProductFilter implements IFilter {
+    constructor(private productDBRepo: ProductDBRepository, private readonly userRepo: UserRepository) {}
+
+    async beforeExecute(httpContext: HttpContext): Promise<void> {
+        const { email: emailUser } = this.userRepo.getAuth();
+        const { id: idProduct } = httpContext.request.body;
+        const emailManager = await this.productDBRepo.getManager(idProduct);
+        if (emailManager !== emailUser) throw new Error("Unauthorized Store");
     }
 }

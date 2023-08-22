@@ -1,5 +1,4 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
-import { UserInterface } from "../models/user";
 import { JWTAuthFilter } from "../filters/jwtAuth";
 import { ProductSaleArrayFilter } from "../filters/product.filter";
 import { Path, POST, GET } from "typescript-rest";
@@ -19,11 +18,11 @@ dotenv.config();
 @Controller({ route: "/api/checkout" })
 export class CheckoutController extends ApiController {
     constructor(
-        private invoiceRepo: InvoiceRepository,
-        private itemRepo: ItemRepository,
-        private invoiceViewRepo: InvoiceViewRepository,
-        private userRepo: UserRepository,
-        private emailer: Emailer
+        private readonly invoiceRepo: InvoiceRepository,
+        private readonly itemRepo: ItemRepository,
+        private readonly invoiceViewRepo: InvoiceViewRepository,
+        private readonly userRepo: UserRepository,
+        private readonly emailer: Emailer
     ) {
         super();
     }
@@ -35,7 +34,7 @@ export class CheckoutController extends ApiController {
     @Response(500, "Server error.")
     @Action({ route: "/get", method: HttpMethod.GET, filters: [JWTAuthFilter] })
     async getInvoice() {
-        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email } = this.userRepo.getAuth();
         const invoiceView = await this.invoiceViewRepo.find({ email: email });
         if (invoiceView.length === 0) return [];
         return invoiceView;
@@ -46,7 +45,7 @@ export class CheckoutController extends ApiController {
     @Action({ route: "/produce", method: HttpMethod.POST, filters: [ProductSaleArrayFilter, JWTAuthFilter], fromBody: true })
     async produceInvoice(products: ProductSaleInterface[]) {
         if (products.length === 0) throw new Error("No items in cart");
-        const { email: userEmail } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email: userEmail } = this.userRepo.getAuth();
         const date = new Date();
         const grandTotal = [...products].reduce((acc, c) => acc + c.price * c.discountPercentage * c.quantity, 0);
         const user = await this.userRepo.getById(userEmail);

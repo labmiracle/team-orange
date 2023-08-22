@@ -1,9 +1,8 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { UserRepository } from "../repositories/user.repository";
-import { UserInterface, UserLoginInterface, AdminInterface } from "../models/user";
+import { UserInterface, UserLoginInterface } from "../models/user";
 import { UserFilter, LoginFilter } from "../filters/user.filter";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { Path, PathParam, GET, POST, DELETE, PUT, Security } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
 import { JWTAuthFilter, isAdminFilter } from "../filters/jwtAuth";
@@ -13,7 +12,7 @@ import { StoreRepository } from "../repositories/store.repository";
 @Tags("Users")
 @Controller({ route: "/api/users" })
 export class UserController extends ApiController {
-    constructor(private userRepo: UserRepository, private storeRepo: StoreRepository) {
+    constructor(private readonly userRepo: UserRepository, private readonly storeRepo: StoreRepository) {
         super();
     }
 
@@ -43,7 +42,7 @@ export class UserController extends ApiController {
     @Response(404, "User not found.")
     @Action({ route: "/update", filters: [JWTAuthFilter, UserFilter], fromBody: true, method: HttpMethod.PUT })
     async update(user: UserInterface) {
-        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email } = this.userRepo.getAuth();
         if (user.email !== email) throw new Error("Unauthorized");
         user.password = await bcrypt.hash(user.password, 10);
         await this.userRepo.update(user);
@@ -84,8 +83,6 @@ export class UserController extends ApiController {
         const { insertId } = await this.userRepo.insertOne(user);
         delete user.password;
         const userCreated = { id: insertId, ...user };
-        const token = jwt.sign(userCreated, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "30d" });
-        this.httpContext.response.setHeader("x-auth", token);
         return userCreated;
     }
 
@@ -122,7 +119,7 @@ export class UserController extends ApiController {
     @Response(404, "User not found.")
     @Action({ route: "/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, UserFilter] })
     async disable(user: UserInterface) {
-        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email } = this.userRepo.getAuth();
         if (user.email !== email) throw new Error("Unauthorized");
         const [userdb] = await this.userRepo.find({ email: user.email, status: 1 });
         if (!userdb) throw new Error("User not found");
@@ -189,7 +186,7 @@ export class UserController extends ApiController {
     @Response(404, "User not found.")
     @Action({ route: "/admin/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
     async adminDisable(user: UserInterface) {
-        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email } = this.userRepo.getAuth();
         const admin = await this.userRepo.getById(email);
         try {
             await bcrypt.compare(user.password, admin.password);
@@ -218,7 +215,7 @@ export class UserController extends ApiController {
     @Response(404, "User not found.")
     @Action({ route: "/admin/delete", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
     async adminDelete(user: UserInterface) {
-        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email } = this.userRepo.getAuth();
         const admin = await this.userRepo.getById(email);
         try {
             await bcrypt.compare(user.password, admin.password);
@@ -246,7 +243,7 @@ export class UserController extends ApiController {
     @Response(404, "User not found.")
     @Action({ route: "/admin/restore", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
     async restore(user: UserInterface) {
-        const { email } = JSON.parse(this.httpContext.request.header("x-auth")) as UserInterface;
+        const { email } = this.userRepo.getAuth();
         if (user.email === email) throw new Error("Unauthorized");
         const userToRestore = await this.userRepo.getById(user.email);
         if (!userToRestore) throw new Error("User not found");
