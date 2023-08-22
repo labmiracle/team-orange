@@ -12,7 +12,7 @@ export class ProcessToken {
     }
     public sign(entity: Record<any, any>) {
         if (!entity) throw new Error("Cannot sign undefined object");
-        const token = jwt.sign({ ...entity }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
+        const token = jwt.sign({ ...entity }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "2d" });
         return token;
     }
 }

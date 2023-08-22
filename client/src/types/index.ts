@@ -78,6 +78,11 @@ export type User = {
     status?: number;
 };
 
+export type Token = User & {
+    iat: number;
+    exp: number;
+};
+
 export type AuthData = {
     token: string;
     rol: string;

@@ -4,10 +4,11 @@ import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
-import { StoreName } from "../../types";
+import { StoreName, Token } from "../../types";
 import { useAuthContext } from "../../Context/AuthContext";
 import Fetcher from "../../services/Fetcher";
 import { useEffect } from "react";
+import { decodeJwt } from "jose";
 
 export function Layout() {
     const { user, logOut } = useAuthContext();
@@ -17,7 +18,12 @@ export function Layout() {
     useEffect(() => {
         const token = window.localStorage.getItem("user");
         if (token) {
-            Fetcher.addAuthInterceptor(token)
+            const user = decodeJwt(token) as Token;
+            if (user.exp < Date.now() / 1000) {
+                logOut();
+            } else {
+                Fetcher.addAuthInterceptor(token);
+            }
         }
     }, [user]);
 
