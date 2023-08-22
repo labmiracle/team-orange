@@ -6,6 +6,7 @@ import { StoreInterface } from "../src/models/store";
 import { ApiClient } from "../src/core/http/api.client";
 import { createPool } from "./db.setup";
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
@@ -91,6 +92,8 @@ describe("POST /login", () => {
         const response = await api.post<ResponseInterface<UserInterface>>("login", null, JSON.stringify({ email: user.email, password: user.password }));
         expect(response.data.message).toBe(undefined);
         const token = response.headers.get("x-auth");
+        const decodedToken = jwt.verify(token, process.env.SHOPPY__ACCESS_TOKEN) as JwtPayload;
+        expect(decodedToken.email).toBe(user.email);
         api.authorize(token);
         const { error } = userDBSchema.validate(response.data.data);
         expect(response.status).toBe(200);
