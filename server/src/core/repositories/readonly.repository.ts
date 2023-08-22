@@ -36,15 +36,6 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         if (!entities || entities.length === 0) throw new Error(`Unable to retrieve ${this.entityType.name}`);
         return entities;
     }
-    /**
-     * SELECT id, args[0], args[1], ... FROM {this.tableName} WHERE status = 1
-     */
-    async getBy(args: (keyof TEntity)[]) {
-        const columns = args.map(column => `\`${String(column)}\``).join(", ");
-        const query = "SELECT id, " + columns + ` FROM \`${this.tableName}\` WHERE status = 1 `;
-        const [rows] = await this.connection.connection.execute(query);
-        return rows;
-    }
 
     async getById(id: TId): Promise<TEntity> {
         const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${this.idColumn}\`=?`, [id]);

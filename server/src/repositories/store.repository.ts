@@ -10,9 +10,8 @@ export class StoreRepository extends EditRepositoryBase<Store> {
         super(dependecyContainer, connection, Store, "store");
     }
 
-    async getBy(args: any[]) {
-        const columns = args.map(column => `\`${column}\``).join(", ");
-        const query = "SELECT id, " + columns + ` FROM \`${this.tableName}\` WHERE status = 1 `;
+    async getNames() {
+        const query = `SELECT id, name FROM \`${this.tableName}\` WHERE status = 1 `;
         const [rows] = await this.connection.connection.execute(query);
         return rows;
     }

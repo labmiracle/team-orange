@@ -46,7 +46,7 @@ export class StoreController extends ApiController {
     @Response(500, "Stores not found", null)
     @Action({ route: "/names", method: HttpMethod.GET })
     async getAll() {
-        const stores = await this.storeRepo.getBy(["name"]);
+        const stores = await this.storeRepo.getNames();
         return stores;
     }
 

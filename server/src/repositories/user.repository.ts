@@ -23,4 +23,9 @@ export class UserRepository extends EditRepositoryBase<User, string> {
     getAuth() {
         return this.dependencyContainer.resolve(UserAuth);
     }
+    async getAllUsers() {
+        const query = `SELECT id, name, lastName, email, idDocumentType, idDocumentNumber, rol, status FROM \`${this.tableName}\` WHERE status = 1 `;
+        const [rows] = await this.connection.connection.execute(query);
+        return rows;
+    }
 }

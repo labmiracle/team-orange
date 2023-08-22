@@ -153,7 +153,7 @@ export class UserController extends ApiController {
     @Response(404, "Users not found.")
     @Action({ route: "/", method: HttpMethod.GET, filters: [JWTAuthFilter, isAdminFilter] })
     async getAll() {
-        const users = await this.userRepo.getBy(["name", "lastName", "email", "idDocumentType", "idDocumentNumber", "rol", "status"]);
+        const users = await this.userRepo.getAllUsers();
         return users;
     }
 
