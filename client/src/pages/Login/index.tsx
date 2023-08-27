@@ -19,7 +19,6 @@ export function Login() {
             handleError(e);
         }
     }
-    console.log(ErrorMessages);
     return user ? (
         <Navigate to={"/"} />
     ) : (

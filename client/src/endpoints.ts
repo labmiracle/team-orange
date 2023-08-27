@@ -7,13 +7,18 @@ export const baseEndpoints = {
     },
     stores: {
         store: `${baseUrl}/shop`,
-        names: `${baseUrl}/shop/names`,	
+        names: `${baseUrl}/shop/names`,
     },
     users: {
         login: `${baseUrl}/users/login`,
         register: `${baseUrl}/users/signup`,
         update: `${baseUrl}/users/update`,
         get: `${baseUrl}/users`,
+        disable: `${baseUrl}/users/admin/disable`,
+        delete: `${baseUrl}/users/admin/delete`,
+        restore: `${baseUrl}/users/admin/restore`,
+        changeRoleManager: `${baseUrl}/users/admin/change_role_manager`,
+        changeRoleClient: `${baseUrl}/users/admin/change_role_client`,
     },
     checkout: {
         get: `${baseUrl}/checkout/get`,

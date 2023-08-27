@@ -1,4 +1,4 @@
-import type { AuthData, RegisterData, User } from "../types";
+import type { AuthData, LoaderResponse, RegisterData, User } from "../types";
 import { baseEndpoints } from "../endpoints";
 import Fetcher from "./Fetcher";
 import { decodeJwt } from "jose";
@@ -45,15 +45,14 @@ export class UsersService {
     }
 
     async update(user: User) {
-        const response = await Fetcher.query(baseEndpoints.users.update, {
+        const response = await Fetcher.query<User>(baseEndpoints.users.update, {
             method: "PUT",
             data: user,
         });
         const token = response.headers["x-auth"];
         if (token) {
             if (response.data) {
-                const userResponse = response.data;
-                return userResponse;
+                return response.data;
             }
             throw new Error("User not found");
         }
@@ -63,10 +62,9 @@ export class UsersService {
     /**
      * GET an user with a given email
      * /q?email=example@email.com
-     * Admin only
      */
-    async getUser(email: string) {
-        const response = await Fetcher.query(`${baseEndpoints.users}/${email}`, {
+    async get(email: string) {
+        const response = await Fetcher.query<User>(`${baseEndpoints.users.get}/${email}`, {
             method: "GET",
         });
         return response.data;
@@ -76,9 +74,73 @@ export class UsersService {
      * GET all users
      * Admin only
      */
-    async getAllUsers() {
-        const response = await Fetcher.query(`${baseEndpoints.users}`, {
+    async getAll() {
+        const response = await Fetcher.query<User[]>(`${baseEndpoints.users.get}`, {
             method: "GET",
+        });
+        return response.data;
+    }
+
+    /**
+     * DISABLE an user
+     * Admin only
+     */
+    async disable(user: User) {
+        const response = await Fetcher.query<User>(`${baseEndpoints.users.disable}`, {
+            method: "DELETE",
+            data: user,
+        });
+        return response.data;
+    }
+
+    /**
+     * RESTORE an user
+     * Admin only
+     */
+    async restore(user: User) {
+        const response = await Fetcher.query<User>(`${baseEndpoints.users.restore}`, {
+            method: "PUT",
+            data: user,
+        });
+        return response.data;
+    }
+
+    /**
+     * DELETE an user
+     * Admin only
+     */
+    async delete(user: User) {
+        const response = await Fetcher.query<User>(`${baseEndpoints.users.delete}`, {
+            method: "DELETE",
+            data: user,
+        });
+        return response.data;
+    }
+
+    /**
+     * CHANGE ROLES to manager
+     * Admin only
+     * @param email :user email
+     * @param idStore: store id
+     */
+    async changeRoleManager({ email, idStore }: { email: string; idStore: number }) {
+        const response = await Fetcher.query(`${baseEndpoints.users.changeRoleManager}`, {
+            method: "PUT",
+            data: { email, idStore },
+        });
+        return response.data;
+    }
+
+    /**
+     * CHANGE ROLES to client
+     * Admin only
+     * @param email :user email
+     * @param idStore: store id
+     */
+    async changeRoleClient({ email }: { email: string }) {
+        const response = await Fetcher.query(`${baseEndpoints.users.changeRoleClient}`, {
+            method: "PUT",
+            data: { email },
         });
         return response.data;
     }

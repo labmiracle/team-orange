@@ -49,15 +49,26 @@ export function Layout() {
                         {user ? (
                             <>
                                 Hi, {user.name} {user.lastName}
-                                <button onClick={() => navigate("/profile")}>Mi perfil</button>
-                                <button className={styles.logout} onClick={logOut}>
+                                <NavLink to="/profile" className={styles.link}>
+                                    Mi perfil
+                                </NavLink>
+                                <button className={styles.link} onClick={logOut}>
                                     logout
                                 </button>
+                                {user.rol === "Admin" && (
+                                    <NavLink to="/admin" className={styles.link}>
+                                        Admin
+                                    </NavLink>
+                                )}
                             </>
                         ) : (
                             <>
-                                <Link to="/register">Registrarse</Link>
-                                <Link to="/login">Ingresar</Link>
+                                <NavLink to="/register" className={styles.link}>
+                                    Registrarse
+                                </NavLink>
+                                <NavLink to="/login" className={styles.link}>
+                                    Ingresar
+                                </NavLink>
                             </>
                         )}
                         <button className={styles.button_cart} onClick={() => navigate("/cart")}>

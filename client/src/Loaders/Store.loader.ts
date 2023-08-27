@@ -1,5 +1,6 @@
 import { Params } from "react-router-dom";
 import { StoreService } from "../services/Store.service";
+import { StoreName, StoreType } from "../types";
 /**
  * Fetch the store products, colors, managers
  * @param params url params
@@ -14,7 +15,7 @@ export const StoresLoader = {
         try {
             if (Number(storeId)) {
                 const storeService = new StoreService();
-                const store = await storeService.getStore(Number(storeId));
+                const store = (await storeService.getStore(Number(storeId))) as StoreType;
                 return store;
             }
         } catch (e) {
@@ -24,7 +25,7 @@ export const StoresLoader = {
 
     async getStoresName() {
         const storeService = new StoreService();
-        const names = await storeService.getStoreNames();
+        const names = (await storeService.getStoreNames()) as StoreName[];
 
         return names;
     },

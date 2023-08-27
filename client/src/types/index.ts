@@ -62,8 +62,9 @@ export type LoaderResponse<T> = {
 };
 
 export type StoreName = {
-    id: string;
+    id: number;
     name: string;
+    managerId: number | null;
 };
 
 export type User = {
@@ -76,6 +77,8 @@ export type User = {
     idDocumentNumber: number;
     rol: string;
     status?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 export type Token = User & {

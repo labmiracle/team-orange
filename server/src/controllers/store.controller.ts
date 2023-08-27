@@ -8,8 +8,6 @@ import { Response, Tags } from "typescript-rest-swagger";
 import { JWTAuthFilter, isAdminFilter, isManagerFilter } from "../filters/jwtAuth";
 import { StoreFilter } from "../filters/store.filter";
 import { ProductInterface } from "../models/product";
-import { UserAuth } from "../utils/userInstancer";
-import { DependencyContainer } from "@miracledevs/paradigm-web-di";
 import { UserRepository } from "../repositories/user.repository";
 
 type Colors = {

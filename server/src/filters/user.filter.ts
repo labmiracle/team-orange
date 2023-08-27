@@ -2,7 +2,6 @@ import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
 import { userSchema, userLogin } from "../models/schemas/user.schema";
 import { Response } from "express";
-import jwt from "jsonwebtoken";
 import { ProcessToken } from "../utils/processToken";
 
 /**

@@ -9,7 +9,7 @@ import Types from "./components/Types";
 import Sizes from "./components/Sizes";
 import CategoriesSmallMenu from "./components/Categories.small_menu";
 import styles from "./css/index.module.css";
-import Loader from "../Loader";
+import Loader from "../LoadingSpinner";
 import { useNavigation } from "react-router-dom";
 
 export function Store() {
@@ -19,7 +19,7 @@ export function Store() {
     const [sequencer, setSequencer] = useState<number[]>([]);
 
     useEffect(() => {
-			setProducts(data.products);
+        setProducts(data.products);
         setSequencer(() => data.products.map(product => +product.id));
         const colors = data.colors;
         setColors(colors);

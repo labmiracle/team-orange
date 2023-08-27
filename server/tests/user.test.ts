@@ -195,9 +195,13 @@ describe("PUT /admin/restore", () => {
     });
 });
 
-describe("PUT /admin/change_role", () => {
+describe("PUT /admin/change_role_manager", () => {
     it("should change user role from client to manager", async () => {
-        const response = await api.put<ResponseInterface<UserInterface>>("admin/change_role", null, JSON.stringify({ email: user.email, idStore: storeId }));
+        const response = await api.put<ResponseInterface<UserInterface>>(
+            "admin/change_role_manager",
+            null,
+            JSON.stringify({ email: user.email, idStore: storeId })
+        );
         expect(response.data.message).toBe(undefined);
         expect(response.data.data.rol).toBe("Manager");
         const [store] = (await pool.query<RowDataPacket[]>("SELECT * FROM store WHERE managerId = ?", [user.id]))[0] as StoreInterface[];

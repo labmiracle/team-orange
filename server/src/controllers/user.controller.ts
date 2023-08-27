@@ -134,6 +134,21 @@ export class UserController extends ApiController {
         delete userDisabled.password;
         return userDisabled;
     }
+    /**
+     * GET an user with a given email
+     * /q?email=example@email.com
+     */
+    @GET
+    @Path("/:email")
+    @Response<UserInterface>(200, "Retrieve an User.")
+    @Response(404, "User not found.")
+    @Action({ route: "/:email", method: HttpMethod.GET, filters: [JWTAuthFilter] })
+    async getById(@PathParam("email") email: string) {
+        const user = await this.userRepo.getById(String(email));
+        if (!user) throw new Error("User not found");
+        delete user.password;
+        return user;
+    }
 
     /******************
     ADMIN ONLY ROUTES
@@ -158,22 +173,6 @@ export class UserController extends ApiController {
     }
 
     /**
-     * GET an user with a given email
-     * /q?email=example@email.com
-     */
-    @GET
-    @Path("/:email")
-    @Response<UserInterface>(200, "Retrieve an User.")
-    @Response(404, "User not found.")
-    @Action({ route: "/:email", method: HttpMethod.GET, filters: [JWTAuthFilter, isAdminFilter] })
-    async getById(@PathParam("email") email: string) {
-        const user = await this.userRepo.getById(String(email));
-        if (!user) throw new Error("User not found");
-        delete user.password;
-        return user;
-    }
-
-    /**
      * DISABLE an user
      * @param - { email: userEmail, password: adminPassword }
      * @param token
@@ -187,12 +186,12 @@ export class UserController extends ApiController {
     @Action({ route: "/admin/disable", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
     async adminDisable(user: UserInterface) {
         const { email } = this.userRepo.getAuth();
-        const admin = await this.userRepo.getById(email);
+        /* const admin = await this.userRepo.getById(email);
         try {
             await bcrypt.compare(user.password, admin.password);
         } catch {
             throw new Error("Unauthorized");
-        }
+        } */
         const userToDisable = await this.userRepo.getById(user.email);
         if (!userToDisable) throw new Error("User not found");
         if (userToDisable.rol === "Admin" && user.email !== email) throw new Error("Unauthorized");
@@ -216,12 +215,12 @@ export class UserController extends ApiController {
     @Action({ route: "/admin/delete", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
     async adminDelete(user: UserInterface) {
         const { email } = this.userRepo.getAuth();
-        const admin = await this.userRepo.getById(email);
+        /* const admin = await this.userRepo.getById(email);
         try {
             await bcrypt.compare(user.password, admin.password);
         } catch {
             throw new Error("Unauthorized");
-        }
+        } */
         const userToDelete = await this.userRepo.getById(user.email);
         if (userToDelete.rol === "Admin" && user.email !== email) throw new Error("Unauthorized");
         await this.userRepo.delete(userToDelete);
@@ -262,20 +261,51 @@ export class UserController extends ApiController {
      * @returns
      */
     @PUT
-    @Path("/admin/change_role")
+    @Path("/admin/change_role_manager")
     @Tags("admin")
     @Response<UserInterface>(200, "Change client to manager.")
     @Response(401, "Unauthorized")
     @Response(404, "User not found.")
-    @Action({ route: "/admin/change_role", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async raiseToManager(user: { email: string; idStore: number }) {
-        const userRaiseToManager = await this.userRepo.getById(user.email);
-        if (userRaiseToManager.rol === "Admin") throw new Error("Unauthorized");
-        if (!userRaiseToManager) throw new Error("User not found");
-        await this.userRepo.update({ ...userRaiseToManager, rol: "Manager" });
-        await this.storeRepo.update({ managerId: userRaiseToManager.id, id: user.idStore });
-        delete userRaiseToManager.password;
-        userRaiseToManager.rol = "Manager";
-        return userRaiseToManager;
+    @Action({ route: "/admin/change_role_manager", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
+    async changeRoleManager(user: { email: string; idStore: number }) {
+        const userToChange = await this.userRepo.getById(user.email);
+        if (userToChange.rol === "Admin") throw new Error("Unauthorized");
+        if (!userToChange) throw new Error("User not found");
+
+        await this.userRepo.update({ ...userToChange, rol: "Manager" });
+        await this.storeRepo.update({ managerId: userToChange.id, id: user.idStore });
+
+        delete userToChange.password;
+        return userToChange;
+    }
+
+    /**
+     * Change role of user
+     * entity: UserInterface - The user to restore
+     * decodedToken: UserInterface - It's the token each user get when they login or signup
+     * @param id
+     * @returns
+     */
+    @PUT
+    @Path("/admin/change_role_client")
+    @Tags("admin")
+    @Response<UserInterface>(200, "Change client to manager.")
+    @Response(401, "Unauthorized")
+    @Response(404, "User not found.")
+    @Action({ route: "/admin/change_role_client", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
+    async changeRoleClient(user: { email: string }) {
+        const userToChange = await this.userRepo.getById(user.email);
+        if (userToChange.rol === "Admin") throw new Error("Unauthorized");
+        if (!userToChange) throw new Error("User not found");
+
+        await this.userRepo.update({ ...userToChange, rol: "Client" });
+        const stores = await this.storeRepo.find({ managerId: userToChange.id });
+        for (const store of stores) {
+            await this.storeRepo.update({ managerId: null, id: store.id });
+        }
+
+        userToChange.rol = "CLient";
+        delete userToChange.password;
+        return userToChange;
     }
 }

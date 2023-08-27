@@ -1,7 +1,7 @@
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 import styles from "../index.module.css";
-import Loader from "../../Loader";
+import Loader from "../../LoadingSpinner";
 
 type Props = {
     submitAction: (arg01: React.FormEvent) => void;

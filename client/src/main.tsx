@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AuthProvider } from "./Context/authContext.tsx";
+import { AuthProvider } from "./Context/AuthContext.tsx";
 import { CartProvider } from "./Context/CartContext.tsx";
 import { RouterProvider } from "react-router-dom";
 import { Router } from "./router.tsx";

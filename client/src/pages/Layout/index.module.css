@@ -72,10 +72,10 @@ ul {
     transition: all 100ms ease-in-out;
 }
 
-.logout {
+.link {
     all: unset;
-    text-decoration: underline;
-    color: blue;
+    /* text-decoration: underline;
+    color: blue; */
     cursor: pointer;
 }
 
