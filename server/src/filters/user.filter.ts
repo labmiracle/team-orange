@@ -32,6 +32,8 @@ export class LoginFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const user = httpContext.request.body;
         delete user.rol;
+        delete user.createdAt;
+        delete user.updatedAt;
         const { error } = userLogin.validate(user);
         if (error) throw new Error(error.details[0].message);
     }

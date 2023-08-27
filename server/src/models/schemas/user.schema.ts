@@ -51,6 +51,8 @@ export const userSchema = Joi.object({
     rol: Joi.any().forbidden().messages({
         "any.forbidden": "role is forbidden",
     }),
+    createdAt: Joi.date().optional(),
+    updatedAt: Joi.date().optional(),
 });
 
 export const userLogin = Joi.object({

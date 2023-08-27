@@ -13,6 +13,8 @@ export interface UserInterface {
     /**@IsInt */
     status?: number;
     rol?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
@@ -26,6 +28,12 @@ export class User implements UserInterface {
     idDocumentNumber = 0;
     status? = 1;
     rol? = "";
+    createdAt?: Date;
+    updatedAt?: Date;
+    constructor() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
 }
 
 export interface UserLoginInterface {
