@@ -28,3 +28,15 @@
 .ghost:hover {
 	background-color: #e3e3e3;
 }
+
+.modal {
+	color: var(--text-primary);
+	background-color: #009879;
+	transition: all 200ms ease-in-out;
+	cursor: pointer;
+	border: 0;
+}
+
+.modal:hover {
+	background-color: #00987acb;
+}

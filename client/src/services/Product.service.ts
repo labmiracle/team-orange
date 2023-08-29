@@ -4,7 +4,7 @@ import Fetcher from "./Fetcher";
 export class ProductService {
     async getProduct(id: Product["id"]) {
         try {
-            const product = await Fetcher.query(`${baseEndpoints.products.product}/${id}`, {
+            const product = await Fetcher.query(baseEndpoints.products.get+`/${id}`, {
                 method: "GET",
             });
             return product.data;

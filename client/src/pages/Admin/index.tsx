@@ -1,5 +1,5 @@
-import UsersTable from "./usersTable";
-import StoresTable from "./storesTable";
+import UsersTable from "./UsersTable/UsersTable";
+import StoresTable from "./StoresTable/StoresTable";
 import styles from "./index.module.css";
 import { useLoaderData } from "react-router-dom";
 import { useState } from "react";

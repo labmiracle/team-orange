@@ -1,15 +1,10 @@
 import { useState } from "react";
-import { UsersService } from "../../services/User.service";
-import { StoreName, User } from "../../types";
-import styles from "./index.module.css";
+import { UsersService } from "../../../services/User.service";
+import { StoreName, User } from "../../../types";
+import styles from "../index.module.css";
+import { Button } from "../../../components/ui/Button";
 
-export default function SetManager({
-    data,
-    setData,
-    userService,
-    managerWindow,
-    setManagerWindow,
-}: {
+type Props = {
     data: { users: User[]; stores: StoreName[] };
     setData: React.Dispatch<
         React.SetStateAction<{
@@ -18,28 +13,34 @@ export default function SetManager({
         }>
     >;
     userService: UsersService;
-    managerWindow: {
-        email: string;
-        show: boolean;
-    };
-    setManagerWindow: React.Dispatch<
-        React.SetStateAction<{
-            email: string;
-            show: boolean;
-        }>
-    >;
-}) {
+    manager: string;
+    setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowModalError: React.Dispatch<React.SetStateAction<boolean>>;
+    setMessageError: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function SetManager({
+    data,
+    setData,
+    userService,
+    manager,
+    setShowModal,
+    setShowModalError,
+    setMessageError,
+}: Props) {
     const [storeSelect, setStoreSelect] = useState(0);
 
     const changeRole = async ({ idStore }: { idStore: number }) => {
         try {
-            await userService.changeRoleManager({ email: managerWindow.email, idStore });
+            await userService.changeRoleManager({ email: manager, idStore });
+            setShowModal(false);
         } catch (e) {
-            alert((e as any).message);
+            setShowModalError(true);
+            setMessageError((e as any).message);
             return;
         }
 
-        const idUser = data.users.find(user => user.email === managerWindow.email);
+        const idUser = data.users.find(user => user.email === manager);
         if (!idUser || !idUser.id) throw new Error("User id not found");
 
         const newUsers = data.users.map(user => {
@@ -54,12 +55,10 @@ export default function SetManager({
         });
 
         setData({ stores: newStores, users: newUsers });
-        setManagerWindow(prev => ({ ...prev, show: false }));
     };
 
     return (
-        <div className={styles.set_manager_window}>
-            <button onClick={() => setManagerWindow(prev => ({ ...prev, show: false }))}>[x]</button>
+        <div className={styles.set_manager}>
             <fieldset>
                 <legend>Select Store</legend>
                 {data.stores.map(store => {
@@ -76,7 +75,9 @@ export default function SetManager({
                         </div>
                     );
                 })}
-                <button onClick={() => changeRole({ idStore: storeSelect })}>Set Manager</button>
+                <Button variant="modal" onClick={() => changeRole({ idStore: storeSelect })}>
+                    Set Manager
+                </Button>
             </fieldset>
         </div>
     );

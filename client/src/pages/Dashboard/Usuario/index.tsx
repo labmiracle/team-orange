@@ -5,7 +5,7 @@ import MenuSVG from "../../../assets/MenuSVG";
 import SignUpIconSVG from "../../../assets/SignUpIconSVG";
 import ShopIconSVG from "../../../assets/ShopIconSVG";
 
-export function DashBoardUsuario() {
+export function DashBoardUser() {
     return (
         <main className={styles.main}>
             <nav className={styles.menu}>

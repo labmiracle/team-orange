@@ -48,9 +48,13 @@ export type ColorsType = {
 };
 
 export type StoreType = {
+    id: number;
     name: string;
+    managerId: number;
+    apiUrl: string;
     colors: ColorsType;
     products: Product[];
+    status: number;
 };
 
 export type setFilterType = ({ type, size }: { type?: string; size?: string }) => void;

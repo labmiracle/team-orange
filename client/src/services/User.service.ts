@@ -6,7 +6,7 @@ import { decodeJwt } from "jose";
 export class UsersService {
     async login(email: User["email"], password: User["password"]) {
         try {
-            const response = await Fetcher.query(`${baseEndpoints.users.login}`, {
+            const response = await Fetcher.query(baseEndpoints.users.login, {
                 method: "POST",
                 data: {
                     email,
@@ -64,7 +64,7 @@ export class UsersService {
      * /q?email=example@email.com
      */
     async get(email: string) {
-        const response = await Fetcher.query<User>(`${baseEndpoints.users.get}/${email}`, {
+        const response = await Fetcher.query<User>(baseEndpoints.users.get+`/${email}`, {
             method: "GET",
         });
         return response.data;
@@ -75,7 +75,7 @@ export class UsersService {
      * Admin only
      */
     async getAll() {
-        const response = await Fetcher.query<User[]>(`${baseEndpoints.users.get}`, {
+        const response = await Fetcher.query<User[]>(baseEndpoints.users.get, {
             method: "GET",
         });
         return response.data;
@@ -86,7 +86,7 @@ export class UsersService {
      * Admin only
      */
     async disable(user: User) {
-        const response = await Fetcher.query<User>(`${baseEndpoints.users.disable}`, {
+        const response = await Fetcher.query<User>(baseEndpoints.users.disable, {
             method: "DELETE",
             data: user,
         });
@@ -98,7 +98,7 @@ export class UsersService {
      * Admin only
      */
     async restore(user: User) {
-        const response = await Fetcher.query<User>(`${baseEndpoints.users.restore}`, {
+        const response = await Fetcher.query<User>(baseEndpoints.users.restore, {
             method: "PUT",
             data: user,
         });
@@ -110,7 +110,7 @@ export class UsersService {
      * Admin only
      */
     async delete(user: User) {
-        const response = await Fetcher.query<User>(`${baseEndpoints.users.delete}`, {
+        const response = await Fetcher.query<User>(baseEndpoints.users.delete, {
             method: "DELETE",
             data: user,
         });
@@ -124,7 +124,7 @@ export class UsersService {
      * @param idStore: store id
      */
     async changeRoleManager({ email, idStore }: { email: string; idStore: number }) {
-        const response = await Fetcher.query(`${baseEndpoints.users.changeRoleManager}`, {
+        const response = await Fetcher.query(baseEndpoints.users.changeRoleManager, {
             method: "PUT",
             data: { email, idStore },
         });
@@ -138,7 +138,7 @@ export class UsersService {
      * @param idStore: store id
      */
     async changeRoleClient({ email }: { email: string }) {
-        const response = await Fetcher.query(`${baseEndpoints.users.changeRoleClient}`, {
+        const response = await Fetcher.query(baseEndpoints.users.changeRoleClient, {
             method: "PUT",
             data: { email },
         });

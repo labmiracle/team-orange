@@ -1,7 +1,6 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../Context/AuthContext";
 import { UsersService } from "../../services/User.service";
-import { User } from "../../types";
 
 export function RequiredPage({ children, rol }: { children: React.ReactNode; rol?: string }) {
     const { user } = useAuthContext();

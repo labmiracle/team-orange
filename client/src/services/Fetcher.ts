@@ -14,7 +14,7 @@ class Fetcher {
         return Fetcher.instance;
     }
 
-    async query<T>(url: string, options?: { method: string; data?: T; token?: string }) {
+    async query<T>(url: string, options?: { method: string; data?: any; token?: string }) {
         const config: HttpRequest = new HttpRequest(url);
         config.method = options?.method;
         config.headers = new HttpHeaders();

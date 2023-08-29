@@ -9,7 +9,7 @@ import { Login } from "./pages/Login";
 import { Product } from "./pages/Stores/Product";
 import { Cart } from "./pages/Cart";
 import { Register } from "./pages/Register";
-import { DashBoardUsuario } from "./pages/Dashboard/Usuario/index.tsx";
+import { DashBoardUser } from "./pages/Dashboard/Usuario/index.tsx";
 import { UserLoader } from "./Loaders/User.loader.ts";
 import { RequiredPage } from "./pages/utilities/RequiredPage.tsx";
 import UserData from "./pages/Dashboard/Usuario/UserData.tsx";
@@ -45,7 +45,7 @@ export const Router = createBrowserRouter([
                 path: "/profile",
                 element: (
                     <RequiredPage>
-                        <DashBoardUsuario />
+                        <DashBoardUser />
                     </RequiredPage>
                 ),
                 children: [

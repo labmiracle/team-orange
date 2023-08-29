@@ -1,9 +1,9 @@
-import { UsersService } from "../../services/User.service";
-import { StoreName, User } from "../../types";
-import styles from "./index.module.css";
+import { UsersService } from "../../../services/User.service";
+import { StoreName, User } from "../../../types";
+import styles from "../index.module.css";
 import { useState } from "react";
 import SetManager from "./SetManager";
-import { Modal } from "../../components/Shared/Modal";
+import { Modal } from "../../../components/Shared/Modal";
 
 type Props = {
     data: { users: User[]; stores: StoreName[] };
@@ -16,11 +16,10 @@ type Props = {
 };
 
 export default function UsersTable({ data, setData }: Props) {
-    const [managerWindow, setManagerWindow] = useState({
-        email: "",
-        show: false,
-    });
+    const [manager, setManager] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [showModalError, setShowModalError] = useState(false);
+    const [messageError, setMessageError] = useState("");
 
     const userService = new UsersService();
 
@@ -28,7 +27,8 @@ export default function UsersTable({ data, setData }: Props) {
         try {
             userService.disable(user);
         } catch (e) {
-            alert((e as any).message);
+            setShowModalError(true);
+            setMessageError((e as any).message);
             return;
         }
         const updatedUser = data.users.map(u => (u.id === user.id ? { ...u, status: 0 } : u));
@@ -39,7 +39,8 @@ export default function UsersTable({ data, setData }: Props) {
         try {
             userService.restore(user);
         } catch (e) {
-            alert((e as any).message);
+            setShowModalError(true);
+            setMessageError((e as any).message);
             return;
         }
         const updatedUser = data.users.map(u => (u.id === user.id ? { ...u, status: 1 } : u));
@@ -50,7 +51,8 @@ export default function UsersTable({ data, setData }: Props) {
         try {
             await userService.delete(user);
         } catch (e) {
-            alert((e as any).message);
+            setShowModalError(true);
+            setMessageError((e as any).message);
             return;
         }
         const userIndex = data.users.indexOf(user);
@@ -59,14 +61,16 @@ export default function UsersTable({ data, setData }: Props) {
     };
 
     const handleChangeRolesManager = (user: User) => {
-        setManagerWindow({ email: user.email, show: true });
+        setManager(user.email);
+        setShowModal(true);
     };
 
-    const handleChangeRolesUser = async (user: User) => {
+    const handleChangeRolesClient = async (user: User) => {
         try {
             await userService.changeRoleClient(user);
         } catch (e) {
-            alert((e as any).message);
+            setShowModalError(true);
+            setMessageError((e as any).message);
             return;
         }
         const updatedUser = data.users.map(u => (u.id === user.id ? { ...u, rol: "Client" } : u));
@@ -104,7 +108,7 @@ export default function UsersTable({ data, setData }: Props) {
                             <button
                                 className={styles.button}
                                 title="change role user"
-                                onClick={() => handleChangeRolesUser(user)}>
+                                onClick={() => handleChangeRolesClient(user)}>
                                 ⚡
                             </button>
                             <button className={styles.button} title="delete" onClick={() => handleDelete(user)}>
@@ -119,43 +123,42 @@ export default function UsersTable({ data, setData }: Props) {
 
     return (
         <>
-            <Modal title="test" isOpen={showModal} handleClose={() => setShowModal(false)}>
-                Form
+            <Modal title="Select store to manage" isOpen={showModal} handleClose={() => setShowModal(false)}>
+                <SetManager
+                    {...{
+                        data,
+                        setData,
+                        userService,
+                        manager,
+                        setShowModal,
+                        setShowModalError,
+                        setMessageError,
+                    }}
+                />
             </Modal>
-            <div className={styles.main}>
-                {managerWindow.show && (
-                    <SetManager
-                        {...{
-                            data,
-                            setData,
-                            userService,
-                            managerWindow,
-                            setManagerWindow,
-                        }}
-                    />
-                )}
-
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th colSpan={10}>USERS</th>
-                        </tr>
-                        <tr>
-                            <th>id</th>
-                            <th>name</th>
-                            <th>email</th>
-                            <th>rol</th>
-                            <th>documentType</th>
-                            <th>documentNumber</th>
-                            <th>status</th>
-                            <th>createdAt</th>
-                            <th>updatedAt</th>
-                            <th>actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>{users}</tbody>
-                </table>
-            </div>
+            <Modal title="Error" isOpen={showModalError} handleClose={() => setShowModalError(false)}>
+                {messageError}
+            </Modal>
+            <table className={styles.table}>
+                <thead>
+                    <tr>
+                        <th colSpan={10}>USERS</th>
+                    </tr>
+                    <tr>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>email</th>
+                        <th>rol</th>
+                        <th>documentType</th>
+                        <th>documentNumber</th>
+                        <th>status</th>
+                        <th>createdAt</th>
+                        <th>updatedAt</th>
+                        <th>actions</th>
+                    </tr>
+                </thead>
+                <tbody>{users}</tbody>
+            </table>
         </>
     );
 }

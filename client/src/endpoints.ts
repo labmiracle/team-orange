@@ -3,11 +3,15 @@ export const baseUrl = "http://localhost:4000/api";
 
 export const baseEndpoints = {
     products: {
-        product: `${baseUrl}/product`,
+        get: `${baseUrl}/product`,
     },
     stores: {
-        store: `${baseUrl}/shop`,
+        get: `${baseUrl}/shop`,
         names: `${baseUrl}/shop/names`,
+        disable: `${baseUrl}/shop`,
+        restore: `${baseUrl}/shop`,
+        update: `${baseUrl}/shop/update`,
+        create: `${baseUrl}/shop/`
     },
     users: {
         login: `${baseUrl}/users/login`,

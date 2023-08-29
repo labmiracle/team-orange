@@ -15,7 +15,7 @@ export const StoresLoader = {
         try {
             if (Number(storeId)) {
                 const storeService = new StoreService();
-                const store = (await storeService.getStore(Number(storeId))) as StoreType;
+                const store = (await storeService.get(Number(storeId))) as StoreType;
                 return store;
             }
         } catch (e) {
@@ -25,8 +25,7 @@ export const StoresLoader = {
 
     async getStoresName() {
         const storeService = new StoreService();
-        const names = (await storeService.getStoreNames()) as StoreName[];
-
+        const names = (await storeService.getNames()) as StoreName[];
         return names;
     },
 };

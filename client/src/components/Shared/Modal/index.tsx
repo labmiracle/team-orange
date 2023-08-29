@@ -1,4 +1,5 @@
 import styles from "./index.module.css";
+import CloseIconSVG from "../../../assets/CloseIconSVG"
 
 type Props = {
     children: React.ReactNode;
@@ -15,10 +16,10 @@ export const Modal = ({ children, isOpen, handleClose, title }: Props) => {
             <div className={styles.modal} onPointerDown={e => e.stopPropagation()}>
                 <div className={styles.header}>
                     <h2>{title}</h2>
-                    <button onClick={() => handleClose(false)}>x</button>
+                    <button onClick={() => handleClose(false)}><CloseIconSVG /></button>
                 </div>
+                <div className={styles.form}>{children}</div>
             </div>
-            <div className={styles.form}>{children}</div>
         </div>
     );
 };
