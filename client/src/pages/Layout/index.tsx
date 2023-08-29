@@ -7,13 +7,29 @@ import { NavLink } from "../../components/ui/NavLink";
 import { StoreName, Token } from "../../types";
 import { useAuthContext } from "../../Context/AuthContext";
 import Fetcher from "../../services/Fetcher";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { decodeJwt } from "jose";
 
 export function Layout() {
     const { user, logOut } = useAuthContext();
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();
+    const [visible, setVisible] = useState(true)
+    const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
+
+    const handleScroll = () => {
+        const currentScrollPos = window.scrollY
+        const visible = currentScrollPos < prevScrollPos
+        setPrevScrollPos(currentScrollPos)
+        setVisible(visible)
+    }
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll)
+        return () => {
+            window.removeEventListener("scroll", handleScroll)
+        }
+    }, [prevScrollPos])
 
     useEffect(() => {
         const token = window.localStorage.getItem("user");
@@ -29,7 +45,7 @@ export function Layout() {
 
     return (
         <div className={styles.container}>
-            <nav className={styles.nav}>
+            <nav className={`${styles.nav} ${visible ? styles.visible : styles.hidden}`}>
                 <div className={`${styles.row} ${styles.secondRow}`}>
                     <Link to="/" className={styles.home}>
                         <h1>Shoppy</h1>
