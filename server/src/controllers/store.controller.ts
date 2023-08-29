@@ -74,13 +74,22 @@ export class StoreController extends ApiController {
         return { ...store, products: products, colors: colorsObj };
     }
 
-    @Path("/")
+    @Path("/:storeId")
     @DELETE
     @Response<void>(200, "Disable a store setting it's status to 0")
     @Response(500, "Store not found", null)
-    @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async disableStore(store: StoreInterface) {
-        await this.storeRepo.update({ id: store.id, status: 0 });
+    @Action({ route: "/:storeId", method: HttpMethod.DELETE, filters: [JWTAuthFilter, isAdminFilter] })
+    async disableStore(@PathParam("storeId") storeId: number) {
+        await this.storeRepo.update({ id: storeId, status: 0 });
+    }
+
+    @Path("/:storeId")
+    @PUT
+    @Response<void>(200, "Restore a store setting it's status to 1")
+    @Response(500, "Store not found", null)
+    @Action({ route: "/:storeId", method: HttpMethod.DELETE, filters: [JWTAuthFilter, isAdminFilter] })
+    async restoreStore(@PathParam("storeId") storeId: number) {
+        await this.storeRepo.update({ id: storeId, status: 1 });
     }
 
     @Path("/")
@@ -91,6 +100,8 @@ export class StoreController extends ApiController {
     async createStore(store: StoreInterface) {
         let colors = store.colors;
         delete store.colors;
+        const [user] = await this.userRepo.find({id: store.managerId});
+        if(user.rol !== "Manager") throw new Error("User is not a manager");
         const result = await this.storeRepo.insertOne(store);
 
         if (!colors) {
@@ -104,36 +115,6 @@ export class StoreController extends ApiController {
         const secondary: StoreColorInterface = { ...colors.secondary, storeId: result.insertId, type: "SECONDARY" };
         await this.storeColorRepo.insertOne(primary);
         await this.storeColorRepo.insertOne(secondary);
-        /* if (products.length > 0) {
-                for (const product of products) {
-                    const { categories, sizes, brand, ...rest } = product;
-                    const brandName = await this.brandRepo.find({ name: brand });
-                    const result = await this.productDBRepo.insertOne({
-                        brandId: brandName[0].id,
-                        ...rest,
-                    });
-                    if (!result.insertId) throw new Error("Product creation failed");
-
-                    for (const category of categories) {
-                        const categoryResponse = await this.categoryRepo.find({ name: category });
-                        if (categoryResponse.length) throw new Error(`${category} is not a valid category`);
-                        await this.productCategoryRepo.insertOne({
-                            productId: result.insertId,
-                            categoryId: categoryResponse[0].id,
-                        });
-                    }
-
-                    for (const size of sizes) {
-                        const sizeResponse = await this.sizeRepo.find({ name: size });
-                        if (sizeResponse.length) throw new Error(`${size} is not a valid size`);
-                        await this.productSizeRepo.insertOne({
-                            productId: result.insertId,
-                            sizeId: sizeResponse[0].id,
-                        });
-                    }
-                }
-            } */
-
         const newStore = await this.storeRepo.getById(result.insertId);
         return newStore;
     }
@@ -143,11 +124,11 @@ export class StoreController extends ApiController {
      * @returns
      */
     @PUT
-    @Path("/")
+    @Path("/update")
     @Response<void>(200, "Update a Store")
     @Response(500, "Store not found.")
     @Action({
-        route: "/",
+        route: "/update",
         filters: [StoreFilter, JWTAuthFilter, isManagerFilter],
         fromBody: true,
         method: HttpMethod.PUT,

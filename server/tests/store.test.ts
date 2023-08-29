@@ -31,7 +31,7 @@ const admin: UserInterface = {
     name: "Test",
     lastName: "Admin",
     idDocumentType: "DNI",
-    idDocumentNumber: 11312312,
+    idDocumentNumber: 12312312,
     rol: "Admin",
 };
 
@@ -41,7 +41,7 @@ const manager: UserInterface = {
     name: "Test",
     lastName: "Manager",
     idDocumentType: "DNI",
-    idDocumentNumber: 11111111,
+    idDocumentNumber: 11113111,
     rol: "Manager",
 };
 
@@ -111,7 +111,7 @@ describe("GET /api/shop/:id", () => {
     });
 });
 
-describe("PUT /api/shop", () => {
+describe("PUT /api/shop/update", () => {
     it("should update a store", async () => {
         api.authorize(tokenManager);
         const colors = {
@@ -127,7 +127,7 @@ describe("PUT /api/shop", () => {
             },
         };
         const response = await api.put<ResponseInterface<StoreInterface>>(
-            "",
+            "update",
             null,
             JSON.stringify({ name: "tienda test 2", colors, managerId: manager.id, apiUrl: "asdasd.com" })
         );
@@ -140,7 +140,7 @@ describe("PUT /api/shop", () => {
 describe("DELETE /api/shop", () => {
     it("should disable a shop", async () => {
         api.authorize(tokenAdmin);
-        const response = await api.delete("", JSON.stringify({ id: store.id }));
+        const response = await api.delete(`${store.id}`);
         const storeResponse = await api.get<ResponseInterface<StoreInterface>>(`${store.id}`);
         expect(storeResponse.data.message).toBe(undefined);
         expect(response.status).toBe(200);
