@@ -5,7 +5,7 @@ import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
 import { StoreName, Token } from "../../types";
-import { useAuthContext } from "../../Context/AuthContext";
+import { useAuthContext } from "../../Context/authContext";
 import Fetcher from "../../services/Fetcher";
 import { useEffect, useState } from "react";
 import { decodeJwt } from "jose";
@@ -29,7 +29,7 @@ export function Layout() {
         return () => {
             window.removeEventListener("scroll", handleScroll)
         }
-    }, [prevScrollPos])
+    })
 
     useEffect(() => {
         const token = window.localStorage.getItem("user");
@@ -46,15 +46,14 @@ export function Layout() {
     return (
         <div className={styles.container}>
             <nav className={`${styles.nav} ${visible ? styles.visible : styles.hidden}`}>
-                <div className={`${styles.row} ${styles.secondRow}`}>
-                    <Link to="/" className={styles.home}>
+                    <Link to="/" className={styles.logo}>
                         <h1>Shoppy</h1>
                     </Link>
 
                     <ul className={styles.stores}>
                         {storeNames.map(store => {
                             return (
-                                <NavLink to={`stores/${store.id}`} key={store.id}>
+                                <NavLink to={`stores/${store.id}/q?`} key={store.id}>
                                     {store.name}
                                 </NavLink>
                             );
@@ -88,10 +87,9 @@ export function Layout() {
                             </>
                         )}
                         <button className={styles.button_cart} onClick={() => navigate("/cart")}>
-                            <CartIconSVG />
+                            <CartIconSVG width={"100%"}/>
                         </button>
                     </div>
-                </div>
             </nav>
             <Outlet />
             <Footer />
