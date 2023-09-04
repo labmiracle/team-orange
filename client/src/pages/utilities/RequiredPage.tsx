@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../Context/AuthContext";
+import { useAuthContext } from "../../Context/authContext";
 import { UsersService } from "../../services/User.service";
 
 export function RequiredPage({ children, rol }: { children: React.ReactNode; rol?: string }) {

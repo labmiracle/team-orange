@@ -5,27 +5,23 @@ import { decodeJwt } from "jose";
 
 export class UsersService {
     async login(email: User["email"], password: User["password"]) {
-        try {
-            const response = await Fetcher.query(baseEndpoints.users.login, {
-                method: "POST",
-                data: {
-                    email,
-                    password,
-                },
-            });
-            const token = response.headers["x-auth"];
-            if (token) {
-                window.localStorage.setItem("user", token);
-                const user = decodeJwt(token);
-                if (user) {
-                    return user as User;
-                }
-                throw new Error("Name, rol or lastName are undefined. Check token");
+        const response = await Fetcher.query(baseEndpoints.users.login, {
+            method: "POST",
+            data: {
+                email,
+                password,
+            },
+        });
+        const token = response.headers["x-auth"];
+        if (token) {
+            window.localStorage.setItem("user", token);
+            const user = decodeJwt(token);
+            if (user) {
+                return user as User;
             }
-            throw new Error("Token is undefined, check the headers or the endpoint");
-        } catch (e) {
-            console.log(e);
+            throw new Error("Name, rol or lastName are undefined. Check token");
         }
+        throw new Error("Token is undefined, check the headers or the endpoint");
     }
 
     async register({ email, password, name, lastName, docType, docNumber }: RegisterData) {
@@ -64,7 +60,7 @@ export class UsersService {
      * /q?email=example@email.com
      */
     async get(email: string) {
-        const response = await Fetcher.query<User>(baseEndpoints.users.get+`/${email}`, {
+        const response = await Fetcher.query<User>(baseEndpoints.users.get + `/${email}`, {
             method: "GET",
         });
         return response.data;
