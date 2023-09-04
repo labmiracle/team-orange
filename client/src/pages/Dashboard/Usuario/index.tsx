@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import styles from "./index.module.css";
-import MenuSVG from "../../../assets/MenuSVG";
 import SignUpIconSVG from "../../../assets/SignUpIconSVG";
 import ShopIconSVG from "../../../assets/ShopIconSVG";
 
@@ -11,8 +10,7 @@ export function DashBoardUser() {
             <nav className={styles.menu}>
                 <ul>
                     <li>
-                        <MenuSVG width={30} />
-                        <h2>Mi Cuenta</h2>
+                        <h2>Mi cuenta</h2>
                     </li>
                     <li>
                         <Link to="/profile">
