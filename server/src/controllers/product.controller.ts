@@ -25,18 +25,18 @@ export class ProductController extends ApiController {
     }
 
     /**
-     * Retrieve a products by category
+     * Retrieve products by category, size, limit or storeId
      * Example
-     * http:url/?category=Zapatos&size=Niños
+     * http:url/?category=Zapatos&size=Niños&limit=10&store=1
      */
     @GET
     @Path("/q")
-    @Response<ProductInterface>(200, "Retrieve a Product by categroy.")
+    @Response<ProductInterface>(200, "Retrieve Products by category, size, limit or storeId.")
     @Response(500, "Product not found.")
     @Action({ route: "/q", method: HttpMethod.GET })
-    async getBySizeCategory() {
-        const { size, category } = this.httpContext.request.query;
-        const products = await this.productRepo.getFilteredProducts(size as string, category as string);
+    async getByFilter() {
+        const { size, category, limit, store } = this.httpContext.request.query;
+        const products = await this.productRepo.getFilteredProducts(size as string, category as string, limit as string, store as string);
         return products;
     }
 
@@ -61,14 +61,17 @@ export class ProductController extends ApiController {
      * @returns
      */
     @GET
-    @Path("/")
+    @Path("/store/:storeId/q")
     @Response<ProductInterface[]>(201, "Retrieve a list of Products.")
     @Response(404, "Products not found.")
-    @Action({ route: "/", method: HttpMethod.GET })
-    async getAll() {
-        const products = await this.productRepo.getAll();
+    @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
+    async getAll(@PathParam("storeId") storeId: number) {
+        const { page_number, product_amount } = this.httpContext.request.query;
+        if(Number(page_number) < 1) throw new Error("Only integer greater than 0 are allowed for page number");
+        const products = await this.productRepo.getAllProducts(storeId, Number(page_number), Number(product_amount));
         return products;
     }
+
     /**
      * CREATE a product on the database
      * @param product

@@ -10,26 +10,42 @@ export class ProductRepository extends EditRepositoryBase<Product> {
         super(dependecyContainer, connection, Product, "product_view");
     }
 
-    async getFilteredProducts(size: string, category: string) {
-        let query = `SELECT p.*, c.name AS categories, s.name AS sizes
-                    FROM Product AS p
-                    JOIN ProductSize AS ps ON p.id = ps.productId
-                    JOIN Size AS s ON ps.sizeId = s.id
-                    JOIN ProductCategory AS pc ON p.id = pc.productId
-                    JOIN Category AS c ON pc.categoryId = c.id`;
+    async getFilteredProducts(size?: string, category?: string, limit?: string, store?:string) {
+        const queryStrings: string[] = [];
 
         const params: string[] = [];
+
         if (size) {
-            query += " WHERE s.name = ?";
+            queryStrings.push("sizes = ?");
             params.push(size);
         }
 
         if (category) {
-            query += size ? " AND c.name = ?" : " WHERE c.name = ?";
+            queryStrings.push("categories = ?");
             params.push(category);
         }
 
-        const [rows] = await this.connection.connection.execute(query, params);
+        if(store) {
+            queryStrings.push("storeId = ?");
+            params.push(store);
+        }
+
+        let query = queryStrings.join(" AND ");
+        if(size || category) query = " WHERE " + query;
+
+        if(limit) {
+            query += " LIMIT = ?";
+            params.push(limit);
+        }
+
+        const [rows] = await this.connection.connection.query("SELECT * FROM product_view" + query, params);
         return rows;
+    }
+
+    async getAllProducts(storeId:number, pageNumber = 1, productAmount: number) {
+        const limit = [(pageNumber - 1) * productAmount, (pageNumber) * productAmount];
+        const query = format(`SELECT * FROM \`${this.tableName}\` WHERE storeId = ? LIMIT ?` , [storeId, limit]);
+        const [rows] = await this.connection.connection.query(query);
+        return this.map(rows, this.entityType);
     }
 }
