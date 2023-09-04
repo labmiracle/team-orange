@@ -43,8 +43,18 @@ export class StoreController extends ApiController {
     @Response<Array<Names>>(200, "Return an array of each store id and name")
     @Response(500, "Stores not found", null)
     @Action({ route: "/names", method: HttpMethod.GET })
-    async getAll() {
+    async getNames() {
         const stores = await this.storeRepo.getNames();
+        return stores;
+    }
+
+    @Path("/")
+    @GET
+    @Response<Array<StoreInterface>>(200, "Return an array of each store id and name")
+    @Response(500, "Stores not found", null)
+    @Action({ route: "/", method: HttpMethod.GET })
+    async getAll() {
+        const stores = await this.storeRepo.getStores();
         return stores;
     }
 
@@ -60,18 +70,19 @@ export class StoreController extends ApiController {
     @Action({ route: "/:storeId", method: HttpMethod.GET })
     async getById(@PathParam("storeId") storeId: number) {
         const store = await this.storeRepo.getById(Number(storeId));
-        let products: ProductInterface[] = [];
+        /* let products: ProductInterface[] = [];
         try {
             products = await this.productRepo.find({ storeId: Number(storeId), status: 1 });
             // eslint-disable-next-line no-empty
-        } catch {}
+        } catch {} */
+        const numberOfProducts = await this.storeRepo.getNumberOfProducts(storeId);
         const colorsResponse = await this.storeColorRepo.find({ storeId: Number(storeId) });
         const colorsObj: Colors = {} as Colors;
         for (const color of colorsResponse) {
             const type = color.type.toLowerCase();
             colorsObj[type as keyof Colors] = { hue: color.hue, sat: color.sat, light: color.light };
         }
-        return { ...store, products: products, colors: colorsObj };
+        return { ...store, colors: colorsObj, numberOfProducts };
     }
 
     @Path("/:storeId")
@@ -83,11 +94,20 @@ export class StoreController extends ApiController {
         await this.storeRepo.update({ id: storeId, status: 0 });
     }
 
+    @Path("delete/:storeId")
+    @DELETE
+    @Response<void>(200, "Delete a store")
+    @Response(500, "Store not found", null)
+    @Action({ route: "delete/:storeId", method: HttpMethod.DELETE, filters: [JWTAuthFilter, isAdminFilter] })
+    async deleteStore(@PathParam("storeId") storeId: number) {
+        await this.storeRepo.delete({id: storeId});
+    }
+
     @Path("/:storeId")
     @PUT
     @Response<void>(200, "Restore a store setting it's status to 1")
     @Response(500, "Store not found", null)
-    @Action({ route: "/:storeId", method: HttpMethod.DELETE, filters: [JWTAuthFilter, isAdminFilter] })
+    @Action({ route: "/:storeId", method: HttpMethod.PUT, filters: [JWTAuthFilter, isAdminFilter] })
     async restoreStore(@PathParam("storeId") storeId: number) {
         await this.storeRepo.update({ id: storeId, status: 1 });
     }
