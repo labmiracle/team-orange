@@ -14,22 +14,22 @@ export function Layout() {
     const { user, logOut } = useAuthContext();
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();
-    const [visible, setVisible] = useState(true)
+    const [visible, setVisible] = useState(true);
     const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
 
     const handleScroll = () => {
-        const currentScrollPos = window.scrollY
-        const visible = currentScrollPos < prevScrollPos
-        setPrevScrollPos(currentScrollPos)
-        setVisible(visible)
-    }
+        const currentScrollPos = window.scrollY;
+        const visible = currentScrollPos < prevScrollPos;
+        setPrevScrollPos(currentScrollPos);
+        setVisible(visible);
+    };
 
     useEffect(() => {
-        window.addEventListener("scroll", handleScroll)
+        window.addEventListener("scroll", handleScroll);
         return () => {
-            window.removeEventListener("scroll", handleScroll)
-        }
-    })
+            window.removeEventListener("scroll", handleScroll);
+        };
+    });
 
     useEffect(() => {
         const token = window.localStorage.getItem("user");
@@ -46,20 +46,10 @@ export function Layout() {
     return (
         <div className={styles.container}>
             <nav className={`${styles.nav} ${visible ? styles.visible : styles.hidden}`}>
+                <div className={`${styles.logo_user_nav}`}>
                     <Link to="/" className={styles.logo}>
                         <h1>Shoppy</h1>
                     </Link>
-
-                    <ul className={styles.stores}>
-                        {storeNames.map(store => {
-                            return (
-                                <NavLink to={`stores/${store.id}/q?`} key={store.id}>
-                                    {store.name}
-                                </NavLink>
-                            );
-                        })}
-                    </ul>
-
                     <div className={styles.buttons_container}>
                         {user ? (
                             <>
@@ -87,9 +77,19 @@ export function Layout() {
                             </>
                         )}
                         <button className={styles.button_cart} onClick={() => navigate("/cart")}>
-                            <CartIconSVG width={"100%"}/>
+                            <CartIconSVG width={"100%"} />
                         </button>
                     </div>
+                </div>
+                <ul className={styles.stores_nav}>
+                    {storeNames.map(store => {
+                        return (
+                            <li key={store.id}>
+                                <NavLink to={`stores/${store.id}/q`}>{store.name}</NavLink>
+                            </li>
+                        );
+                    })}
+                </ul>
             </nav>
             <Outlet />
             <Footer />

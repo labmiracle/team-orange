@@ -8,15 +8,34 @@
 .nav {
     position: sticky;
     top: 0;
-    background-color: var(--white);
     display: flex;
-    flex-flow: wrap row;
+    flex-flow: column;
     padding: 20px 29px 20px 15px;
     align-items: center;
     width: 100%;
-    background: white;
     z-index: 3;
-    gap: 15px;
+    gap: 20px;
+    background-color: white;
+    border-bottom: 3px solid var(--primary);
+}
+
+.logo_user_nav {
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.stores_nav {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    justify-content: center;
+    flex-flow: row wrap;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    gap: 1em;
 }
 
 .visible {
@@ -52,8 +71,6 @@
 
 .link {
     all: unset;
-    /* text-decoration: underline;
-    color: blue; */
     cursor: pointer;
 }
 
@@ -72,19 +89,6 @@
     background-color: transparent;
     grid-area: logo;
     display: none;
-}
-
-.stores {
-    display: flex;
-    list-style: none;
-    align-items: center;
-    justify-content: center;
-    place-self: center;
-    flex-flow: row wrap;
-    padding: 0;
-    width: fit-content;
-    margin: auto;
-    gap: 1em;
 }
 
 /* Works on Firefox */
