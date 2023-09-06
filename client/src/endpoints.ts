@@ -4,6 +4,7 @@ export const baseUrl = "http://localhost:4000/api";
 export const baseEndpoints = {
     products: {
         get: `${baseUrl}/product`,
+        getAll: `${baseUrl}/product/store`,
     },
     stores: {
         get: `${baseUrl}/shop`,
@@ -11,7 +12,8 @@ export const baseEndpoints = {
         disable: `${baseUrl}/shop`,
         restore: `${baseUrl}/shop`,
         update: `${baseUrl}/shop/update`,
-        create: `${baseUrl}/shop/`
+        create: `${baseUrl}/shop/`,
+        delete: `${baseUrl}/shop`,
     },
     users: {
         login: `${baseUrl}/users/login`,
