@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { InputError } from "../../types/index";
+import { InputError } from "../types/index";
 
 export default function useAuthErrorHandler(): [InputError, typeof ErrorMessages, typeof handleError] {
     const [error, setError] = useState<InputError>(InputError.NONE);
@@ -17,6 +17,20 @@ export default function useAuthErrorHandler(): [InputError, typeof ErrorMessages
         [InputError.NONE]: "",
     });
 
+    function errorMatcher(message: string) {
+        if (message === "") return "NONE";
+        if (/Unable to retrieve User/i.test(message)) return "USER_NOT_FOUND";
+        if (/apellido/i.test(message)) return "LAST_NAME";
+        if (/nombre/i.test(message)) return "NAME";
+        if (/for key 'user.email'/i.test(message)) return "DUP_EMAIL";
+        if (/email/i.test(message)) return "EMAIL";
+        if (/password mismatch/i.test(message)) return "PASSWORD_MISMATCH";
+        if (/password|contraseña/i.test(message)) return "PASSWORD";
+        if (/for key 'user.idDocumentNumber'/i.test(message)) return "DUP_DNI";
+        if (/documento/i.test(message)) return "DNI";
+        return "ERROR";
+    }
+
     function handleError(e: any) {
         const message = e?.response?.data.message || e.message;
         console.log(message);
@@ -33,18 +47,4 @@ export default function useAuthErrorHandler(): [InputError, typeof ErrorMessages
     }
 
     return [error, ErrorMessages, handleError];
-}
-
-function errorMatcher(message: string) {
-    if (message === "") return "NONE";
-    if (/Unable to retrieve User/i.test(message)) return "USER_NOT_FOUND";
-    if (/apellido/i.test(message)) return "LAST_NAME";
-    if (/nombre/i.test(message)) return "NAME";
-    if (/for key 'user.email'/i.test(message)) return "DUP_EMAIL";
-    if (/email/i.test(message)) return "EMAIL";
-    if (/password mismatch/i.test(message)) return "PASSWORD_MISMATCH";
-    if (/password|contraseña/i.test(message)) return "PASSWORD";
-    if (/for key 'user.idDocumentNumber'/i.test(message)) return "DUP_DNI";
-    if (/documento/i.test(message)) return "DNI";
-    return "ERROR";
 }

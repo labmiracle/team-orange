@@ -4,7 +4,7 @@ import { useLogin } from "../../Hooks/useLogin";
 import { Input } from "../../components/ui/Input";
 import styles from "./index.module.css";
 import { Button } from "../../components/ui/Button";
-import useAuthErrorHandler from "../utilities/authErrorHandler";
+import useAuthErrorHandler from "../../Hooks/useAuthErrorHandler";
 import { InputError } from "../../types";
 
 export function Register() {

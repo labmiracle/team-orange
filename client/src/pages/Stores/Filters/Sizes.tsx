@@ -1,7 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-import { StoreType, setFilterType } from "../../../types";
+import { setFilterType } from "../../../types";
 import styles from "./categories.module.css";
-import { useState } from "react";
 
 type Props = {
     isCurrentFilter: string;
@@ -15,13 +14,7 @@ type Props = {
  * @setFilter takes a type:string or size:string and set the filters for the product grid
  */
 export default function Sizes({ isCurrentFilter, setFilter, viewWindow }: Props) {
-    const { products } = useLoaderData() as StoreType;
-    const [sizes] = useState(() =>
-        products
-            .map(product => product.sizes)
-            .flat()
-            .filter((value, index, array) => array.indexOf(value) === index)
-    );
+    const { sizes } = useLoaderData() as { sizes: string[] };
 
     function isActive(cat: string) {
         return isCurrentFilter === cat ? [styles.category_item, styles.active].join(" ") : styles.category_item;
@@ -30,15 +23,19 @@ export default function Sizes({ isCurrentFilter, setFilter, viewWindow }: Props)
     return (
         <ul className={[styles.sizes_category, styles[viewWindow]].join(" ")}>
             <li>
-                <button className={isActive("")} onClick={() => setFilter({ size: "" })}>
+                <button
+                    className={isActive("")}
+                    onClick={isCurrentFilter !== "" ? () => setFilter({ size: "" }) : undefined}>
                     All
                 </button>
             </li>
-            {sizes.map((category, i) => {
+            {sizes.map((size, i) => {
                 return (
                     <li key={i}>
-                        <button className={isActive(category)} onClick={() => setFilter({ size: category })}>
-                            {category}
+                        <button
+                            className={isActive(size)}
+                            onClick={isCurrentFilter !== size ? () => setFilter({ size: size }) : undefined}>
+                            {size}
                         </button>
                     </li>
                 );

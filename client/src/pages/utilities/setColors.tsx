@@ -25,7 +25,7 @@ function setLogoColor(light: number) {
  * @param colors {@link Types.ColorsType}
  */
 export function setColors(colors: ColorsType) {
-    const root = document.getElementById("root");
+    const root = document.querySelector("html");
     if (root) {
         root.style.setProperty("--text-primary", setTextColor(colors.primary.light));
         root.style.setProperty("--text-secondary", setTextColor(colors.secondary.light));
