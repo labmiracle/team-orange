@@ -1,9 +1,8 @@
 .link {
+    display: block;
     width: fit-content;
-    padding-inline: 8px;
-    padding-block: 8px;
+    padding: 8px;
     border-radius: 4px;
-    text-wrap: nowrap;
 }
 
 .inactive {
