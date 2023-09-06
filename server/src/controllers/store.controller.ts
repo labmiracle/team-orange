@@ -69,19 +69,17 @@ export class StoreController extends ApiController {
     @Action({ route: "/:storeId", method: HttpMethod.GET })
     async getById(@PathParam("storeId") storeId: number) {
         const store = await this.storeRepo.getById(Number(storeId));
-        /* let products: ProductInterface[] = [];
-        try {
-            products = await this.productRepo.find({ storeId: Number(storeId), status: 1 });
-            // eslint-disable-next-line no-empty
-        } catch {} */
-        const numberOfProducts = await this.storeRepo.getNumberOfProducts(storeId);
         const colorsResponse = await this.storeColorRepo.find({ storeId: Number(storeId) });
         const colorsObj: Colors = {} as Colors;
         for (const color of colorsResponse) {
             const type = color.type.toLowerCase();
             colorsObj[type as keyof Colors] = { hue: color.hue, sat: color.sat, light: color.light };
         }
-        return { ...store, colors: colorsObj, numberOfProducts };
+        const filters = await this.storeRepo.getCategoriesAndSizesById(storeId);
+        console.log(filters);
+        const categoryArr = (filters.categories as { category: string }[]).map(item => item.category);
+        const sizeArr = (filters.sizes as { size: string }[]).map(item => item.size);
+        return { ...store, colors: colorsObj, categories: categoryArr, sizes: sizeArr };
     }
 
     @Path("/:storeId")
@@ -99,7 +97,7 @@ export class StoreController extends ApiController {
     @Response(500, "Store not found", null)
     @Action({ route: "delete/:storeId", method: HttpMethod.DELETE, filters: [JWTAuthFilter, isAdminFilter] })
     async deleteStore(@PathParam("storeId") storeId: number) {
-        await this.storeRepo.delete({id: storeId});
+        await this.storeRepo.delete({ id: storeId });
     }
 
     @Path("/:storeId")
@@ -119,8 +117,8 @@ export class StoreController extends ApiController {
     async createStore(store: StoreInterface) {
         let colors = store.colors;
         delete store.colors;
-        const [user] = await this.userRepo.find({id: store.managerId});
-        if(user.rol !== "Manager") throw new Error("User is not a manager");
+        const [user] = await this.userRepo.find({ id: store.managerId });
+        if (user.rol !== "Manager") throw new Error("User is not a manager");
         const result = await this.storeRepo.insertOne(store);
 
         if (!colors) {

@@ -30,14 +30,35 @@ export class ProductController extends ApiController {
      * http:url/?category=Zapatos&size=Niños&limit=10&store=1
      */
     @GET
-    @Path("/q")
-    @Response<ProductInterface>(200, "Retrieve Products by category, size, limit or storeId.")
+    @Path("/store/:storeId/q")
+    @Response<ProductInterface>(200, "Retrieve Products by storeId with filter of category, size.")
     @Response(500, "Product not found.")
-    @Action({ route: "/q", method: HttpMethod.GET })
-    async getByFilter() {
-        const { size, category, limit, store } = this.httpContext.request.query;
-        const products = await this.productRepo.getFilteredProducts(size as string, category as string, limit as string, store as string);
-        return products;
+    @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
+    async getByFilter(@PathParam("storeId") storeId: number) {
+        const {
+            page = 1,
+            per_page = 12,
+            size,
+            category,
+        }: {
+            page?: number;
+            per_page?: number;
+            size?: string;
+            category?: string;
+        } = this.httpContext.request.query;
+        const totalItems: number = await this.productRepo.getCountFilteredProducts(storeId, size, category);
+        const totalPages = Math.ceil(totalItems / per_page);
+        const products = await this.productRepo.getFilteredProducts(storeId, page, per_page, size, category);
+        return {
+            products,
+            pagination: {
+                page: page,
+                perPage: per_page,
+                totalPages: totalPages,
+                totalItems,
+                hasNextPage: page < totalPages,
+            },
+        };
     }
 
     /**
@@ -56,21 +77,36 @@ export class ProductController extends ApiController {
         return product;
     }
 
-    /**
-     * GET all products from a store id
-     * @returns
-     */
-    @GET
-    @Path("/store/:storeId/q")
-    @Response<ProductInterface[]>(201, "Retrieve a list of Products.")
-    @Response(404, "Products not found.")
-    @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
-    async getAll(@PathParam("storeId") storeId: number) {
-        const { page_number, product_amount } = this.httpContext.request.query;
-        if(Number(page_number) < 1) throw new Error("Only integer greater than 0 are allowed for page number");
-        const products = await this.productRepo.getAllProducts(storeId, Number(page_number), Number(product_amount));
-        return products;
-    }
+    // /**
+    //  * GET all products from a store id and a query
+    //  * ?page_number=1&product_amount=20
+    //  * @returns
+    //  */
+    // @GET
+    // @Path("/store/:storeId/q")
+    // @Response<ProductInterface[]>(201, "Retrieve a list of Products.")
+    // @Response(404, "Products not found.")
+    // @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
+    // async getAll(@PathParam("storeId") storeId: number) {
+    //     const { page_number, product_amount } = this.httpContext.request.query;
+    //     if (Number(page_number) < 1) throw new Error("Only integer greater than 0 are allowed for page number");
+    //     const products = await this.productRepo.getAllProducts(storeId, Number(page_number), Number(product_amount));
+    //     return products;
+    // }
+
+    // /**
+    //  * GET all products from a store id
+    //  * @returns
+    //  */
+    // @GET
+    // @Path("/store/:storeId/")
+    // @Response<ProductInterface[]>(201, "Retrieve a list of Products.")
+    // @Response(404, "Products not found.")
+    // @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
+    // async getAll(@PathParam("storeId") storeId: number) {
+    //     const products = await this.productRepo.getAllProducts(storeId);
+    //     return products;
+    // }
 
     /**
      * CREATE a product on the database

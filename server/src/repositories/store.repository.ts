@@ -3,7 +3,6 @@ import { DependencyContainer, DependencyLifeTime, Injectable } from "@miracledev
 import { EditRepositoryBase } from "../core/repositories/edit.repository";
 import { Store } from "../models/store";
 import { MySqlConnection } from "../core/mysql/mysql.connection";
-import { RowDataPacket } from "mysql2";
 
 @Injectable({ lifeTime: DependencyLifeTime.Scoped })
 export class StoreRepository extends EditRepositoryBase<Store> {
@@ -23,9 +22,21 @@ export class StoreRepository extends EditRepositoryBase<Store> {
         return rows;
     }
 
-    async getNumberOfProducts(storeId: number) {
-        const query = "SELECT Count(*) AS total_products FROM product WHERE product.storeId = ?";
-        const [rows] = await this.connection.connection.query<RowDataPacket[]>(query, [storeId]);
-        return Number(rows[0].total_products);
+    async getCategoriesAndSizesById(storeId: number) {
+        const categoryQuery = `SELECT DISTINCT Category.name AS category
+        FROM Product
+        LEFT JOIN ProductCategory ON Product.id = ProductCategory.productId
+        LEFT JOIN Category ON ProductCategory.categoryId = Category.id
+        WHERE Product.storeId = ?;
+        `;
+        const sizeQuery = `SELECT DISTINCT Size.name AS size
+        FROM Product
+        LEFT JOIN ProductSize ON Product.id = ProductSize.productId
+        LEFT JOIN Size ON ProductSize.sizeId = Size.id
+        WHERE Product.storeId = ?;
+        `;
+        const [categories] = await this.connection.connection.query(categoryQuery, storeId);
+        const [sizes] = await this.connection.connection.query(sizeQuery, storeId);
+        return { categories, sizes };
     }
 }
