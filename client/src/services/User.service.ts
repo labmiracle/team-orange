@@ -1,4 +1,4 @@
-import type { AuthData, LoaderResponse, RegisterData, User } from "../types";
+import type { RegisterData, User } from "../types";
 import { baseEndpoints } from "../endpoints";
 import Fetcher from "./Fetcher";
 import { decodeJwt } from "jose";

@@ -1,6 +1,6 @@
 import { Params } from "react-router-dom";
 import { StoreService } from "../services/Store.service";
-import { StoreName, StoreType } from "../types";
+import { StoreType } from "../types";
 /**
  * Fetch the store products, colors, managers
  * @param params url params
@@ -10,8 +10,8 @@ import { StoreName, StoreType } from "../types";
 // const paradigm = new HttpClient();
 
 export const StoresLoader = {
-    async getStore({ params }: { params: Params }) {
-        const storeId = params.id;
+    async getStore({ params }: { params: Params<string> }) {
+        const { storeId } = params;
         try {
             if (Number(storeId)) {
                 const storeService = new StoreService();
@@ -25,7 +25,13 @@ export const StoresLoader = {
 
     async getStoresName() {
         const storeService = new StoreService();
-        const names = (await storeService.getNames()) as StoreName[];
+        const names = await storeService.getNames();
         return names;
+    },
+
+    async getAllStores() {
+        const storeService = new StoreService();
+        const stores = await storeService.getAll();
+        return stores;
     },
 };

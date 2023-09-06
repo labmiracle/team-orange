@@ -1,25 +1,34 @@
 import { Params } from "react-router-dom";
 import { ProductService } from "../services/Product.service";
 
-/**
- * Fetch the store products, colors, managers
- * @param params url params
- * @returns store object {@link Types.ProductType}
- */
-
-// const paradigm = new HttpClient();
-
 export const ProductsLoader = {
-    async getProduct({ params }: { params: Params }) {
+    /**
+     * Fetch the product by id
+     * @param params url params
+     * @returns product object {@link Product}
+     */
+
+    async getProduct({ params }: { params: Params<string> }) {
         const productService = new ProductService();
         const { productId } = params;
         if (Number(productId)) {
-            try {
-                const product = await productService.getProduct(Number(productId));
-                return product;
-            } catch (error) {
-                console.log(error);
-            }
+            const product = await productService.getProduct(Number(productId));
+            return product;
+        }
+    },
+    /**
+     * Fetch all products by store id with and limit amount and a page number
+     * @param storeId
+     * @query page_number=number&product_amount=number
+     * @returns product object {@link Product}
+     */
+    async getAllProducts({ params }: { request: Request; params: Params<string> }) {
+        const productService = new ProductService();
+        const { storeId } = params;
+        if (Number(storeId)) {
+            const data = await productService.getByFilter(Number(storeId));
+            if (data?.products?.length === 0) throw new Error("Products not found");
+            return data;
         }
     },
 };

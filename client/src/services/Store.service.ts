@@ -9,6 +9,12 @@ export class StoreService {
         return names;
     }
 
+    async getAll() {
+        const response = await Fetcher.query(baseEndpoints.stores.get, { method: "GET" });
+        const stores = response.data as Omit<StoreType, "colors" | "products">;
+        return stores;
+    }
+
     async get(storeId: number): Promise<StoreType> {
         const response = await Fetcher.query(baseEndpoints.stores.get + `/${storeId}`, { method: "GET" });
         const store = response.data as StoreType;
@@ -31,5 +37,9 @@ export class StoreService {
         const response = await Fetcher.query(baseEndpoints.stores.create, { method: "POST", data: store });
         const storeCreated = response.data as StoreType;
         return storeCreated;
+    }
+
+    async delete(storeId: number) {
+        await Fetcher.query(baseEndpoints.stores.delete + `/${storeId}`, { method: "DELETE" });
     }
 }

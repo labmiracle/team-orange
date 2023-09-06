@@ -16,6 +16,17 @@ export type Product = {
     total?: number;
 };
 
+export interface ProductResponse {
+    products: Product[];
+    pagination: {
+        page: number;
+        perPage: number;
+        totalPages: number;
+        totalItems: number;
+        hasNextPage: boolean;
+    };
+}
+
 export type ItemCart = {
     product: Product;
     amount: number;
@@ -53,7 +64,8 @@ export type StoreType = {
     managerId: number;
     apiUrl: string;
     colors: ColorsType;
-    products: Product[];
+    categories: string[];
+    sizes: string[];
     status: number;
 };
 
@@ -69,6 +81,7 @@ export type StoreName = {
     id: number;
     name: string;
     managerId: number | null;
+    status: number;
 };
 
 export type User = {
