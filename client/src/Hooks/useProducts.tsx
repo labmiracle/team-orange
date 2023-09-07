@@ -1,12 +1,19 @@
-import { useState } from "react";
-import { setFilterType } from "../types";
+import { useEffect, useState } from "react";
+import { ProductResponse, setFilterType } from "../types";
+import { ProductService } from "../services/Product.service";
+import { Product as ProductType } from "../types";
+import { useParams, useRouteLoaderData } from "react-router-dom";
 
-type Props = [
+export type Props = [
     filter: {
         type: string;
         size: string;
     },
     setFilter: setFilterType,
+    products: ProductType[],
+    loading: boolean,
+    sequencer: number[],
+    setSequencer: React.Dispatch<React.SetStateAction<number[]>>,
 ];
 
 /**
@@ -15,35 +22,87 @@ type Props = [
  * @returns - {@link Props}
  */
 export function useProducts(): Props {
-    const [filter, setFilterI] = useState({
-        type: "",
-        size: "",
-    });
+    const { storeId } = useParams();
+    const data = useRouteLoaderData("products") as ProductResponse;
+    const [filter, setFilterI] = useState({ type: "", size: "" });
+    const [loading, setLoading] = useState(false);
+    const [nextPage, setNextPage] = useState(true);
+    const [products, setProducts] = useState<ProductType[]>(data.products);
+    const [page, setPage] = useState(1);
+    const [initialLoad, setInitialLoad] = useState(true);
+    const [sequencer, setSequencer] = useState<number[]>([]);
 
-    // function filterProducts(pArray: Product[]) {
-    //     let newProducts = pArray;
-    //     if (filter.type) {
-    //         newProducts = newProducts.filter(product => product.categories.includes(filter.type));
-    //     }
-    //     if (filter.size) {
-    //         newProducts = newProducts.filter(product => product.sizes.includes(filter.size));
-    //     }
-    //     return newProducts;
-    // }
+    const fetchProducts = async () => {
+        if (!nextPage || loading) return;
+        setLoading(true);
+        try {
+            const productService = new ProductService();
+            const response = await productService.getByFilter(Number(storeId), page, 12, filter.size, filter.type);
+            if (response?.products) {
+                setProducts(prev => [...prev, ...response.products]);
+            }
+            setNextPage(response?.pagination.hasNextPage || false);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // const [products, _setState] = useState(filterProducts(productsArray));
+    useEffect(() => {
+        setSequencer(() => products.map(product => +product.id));
+    }, []);
 
-    // function setProducts(pArray: Product[]) {
-    //     _setState(() => filterProducts(pArray));
-    // }
+    /**
+     * Reset states
+     **/
+
+    useEffect(() => {
+        if (!initialLoad) {
+            setNextPage(true);
+            setPage(1);
+            setProducts([]);
+        }
+    }, [filter]);
+
+    useEffect(() => {
+        if (!initialLoad) {
+            fetchProducts();
+        }
+    }, [filter, nextPage]);
+
+    /**
+     * Infinite scroll
+     **/
+
+    const handleScroll = () => {
+        if (window.innerHeight + document.documentElement.scrollTop + 400 >= document.documentElement.scrollHeight) {
+            setPage(prev => prev + 1);
+        }
+    };
+
+    useEffect(() => {
+        if (!nextPage) return;
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [nextPage]);
+
+    useEffect(() => {
+        setInitialLoad(false);
+        if (page > 1) {
+            fetchProducts();
+        }
+    }, [page]);
 
     /**
      * Used By Types and Sizes components to change the products array filters
-     */
+     **/
     function setFilter({ type, size }: { type?: string; size?: string }) {
         if (type !== undefined) setFilterI(prev => ({ ...prev, type }));
         if (size !== undefined) setFilterI(prev => ({ ...prev, size }));
     }
 
-    return [filter, setFilter];
+    return [filter, setFilter, products, loading, sequencer, setSequencer];
 }

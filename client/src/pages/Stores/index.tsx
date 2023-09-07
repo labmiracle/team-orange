@@ -1,21 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ContextType, useEffect, useRef, useState } from "react";
-import { ProductResponse, StoreType } from "../../types";
-import { setColors } from "../utilities/setColors";
 import styles from "./index.module.css";
 import Loader from "../LoadingSpinner";
-import { useNavigation, useLoaderData, Outlet, useOutletContext } from "react-router-dom";
-// import Products from "./Products";
+import { useNavigation, Outlet, useOutletContext } from "react-router-dom";
 import { useProducts } from "../../Hooks/useProducts";
 import Types from "./Filters/Types";
 import Sizes from "./Filters/Sizes";
+import { Product } from "../../types";
 import CategoriesSmallMenu from "./Filters/Categories.small_menu";
-// import PageNumbers from "./PageNumbers.tsx";
+
+type ProductProps = {
+    products: Product[];
+    loading: boolean;
+    sequencer: number[];
+    setSequencer: React.Dispatch<React.SetStateAction<number[]>>;
+};
 
 export function Store() {
     const navigation = useNavigation();
-    const data = useLoaderData() as StoreType;
-    const [filter, setFilter] = useProducts();
+    const [filter, setFilter, products, loading, sequencer, setSequencer] = useProducts();
 
     if (navigation.state === "loading") {
         return (
@@ -41,12 +43,12 @@ export function Store() {
                 </div>
             </div>
             <div className={styles.products_container}>
-                <Outlet context={{ filter }} />
+                <Outlet context={{ products, loading, sequencer, setSequencer }} />
             </div>
         </div>
     );
 }
 
-export function useFilter() {
-    return useOutletContext<ContextType>();
+export function useContext() {
+    return useOutletContext<ProductProps>();
 }

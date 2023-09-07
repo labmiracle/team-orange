@@ -36,6 +36,7 @@ export const Router = createBrowserRouter([
                     {
                         path: "/stores/:storeId/q",
                         index: true,
+                        id: "products",
                         loader: ProductsLoader.getAllProducts,
                         element: <Products />,
                     },
