@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styles from "./index.module.css";
 import Loader from "../LoadingSpinner";
-import { useNavigation, Outlet, useOutletContext } from "react-router-dom";
+import { useNavigation, Outlet, useOutletContext, useLoaderData } from "react-router-dom";
 import { useProducts } from "../../Hooks/useProducts";
 import Categories from "./Filters/Sidebar/Categories";
 import Sizes from "./Filters/Sidebar/Sizes";
-import { Product } from "../../types";
+import { ColorsType, Product } from "../../types";
 import CategoriesSmallMenu from "./Filters/Dropdown/CategoriesSmallMenu";
+import { setColors } from "../utilities/setColors";
 
 type ProductProps = {
     products: Product[];
@@ -17,6 +18,9 @@ type ProductProps = {
 
 export function Store() {
     const navigation = useNavigation();
+    const { colors }: { colors: ColorsType } = useLoaderData() as { colors: ColorsType };
+    setColors(colors);
+
     const [filter, setFilter, products, loading, sequencer, setSequencer] = useProducts();
 
     if (navigation.state === "loading") {
