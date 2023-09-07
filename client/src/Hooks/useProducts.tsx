@@ -6,7 +6,7 @@ import { useParams, useRouteLoaderData } from "react-router-dom";
 
 export type Props = [
     filter: {
-        type: string;
+        category: string;
         size: string;
     },
     setFilter: setFilterType,
@@ -24,7 +24,7 @@ export type Props = [
 export function useProducts(): Props {
     const { storeId } = useParams();
     const data = useRouteLoaderData("products") as ProductResponse;
-    const [filter, setFilterI] = useState({ type: "", size: "" });
+    const [filter, setFilterI] = useState({ category: "", size: "" });
     const [loading, setLoading] = useState(false);
     const [nextPage, setNextPage] = useState(true);
     const [products, setProducts] = useState<ProductType[]>(data.products);
@@ -37,7 +37,7 @@ export function useProducts(): Props {
         setLoading(true);
         try {
             const productService = new ProductService();
-            const response = await productService.getByFilter(Number(storeId), page, 12, filter.size, filter.type);
+            const response = await productService.getByFilter(Number(storeId), page, 12, filter.size, filter.category);
             if (response?.products) {
                 setProducts(prev => [...prev, ...response.products]);
             }
@@ -99,8 +99,8 @@ export function useProducts(): Props {
     /**
      * Used By Types and Sizes components to change the products array filters
      **/
-    function setFilter({ type, size }: { type?: string; size?: string }) {
-        if (type !== undefined) setFilterI(prev => ({ ...prev, type }));
+    function setFilter({ category, size }: { category?: string; size?: string }) {
+        if (category !== undefined) setFilterI(prev => ({ ...prev, category }));
         if (size !== undefined) setFilterI(prev => ({ ...prev, size }));
     }
 

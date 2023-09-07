@@ -44,7 +44,7 @@ menu h4 {
     background-color: var(--secondary);
 }
 
-@media (min-width: 500px) {
+@media (min-width: 560px) {
     .menu_container {
         display: none;
     }

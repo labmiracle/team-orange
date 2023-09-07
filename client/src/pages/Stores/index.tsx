@@ -3,10 +3,10 @@ import styles from "./index.module.css";
 import Loader from "../LoadingSpinner";
 import { useNavigation, Outlet, useOutletContext } from "react-router-dom";
 import { useProducts } from "../../Hooks/useProducts";
-import Types from "./Filters/Types";
-import Sizes from "./Filters/Sizes";
+import Categories from "./Filters/Sidebar/Categories";
+import Sizes from "./Filters/Sidebar/Sizes";
 import { Product } from "../../types";
-import CategoriesSmallMenu from "./Filters/Categories.small_menu";
+import CategoriesSmallMenu from "./Filters/Dropdown/CategoriesSmallMenu";
 
 type ProductProps = {
     products: Product[];
@@ -31,7 +31,7 @@ export function Store() {
 
     return (
         <div className={styles.store_container}>
-            <CategoriesSmallMenu isCurrentFilter={filter} setFilter={setFilter} />
+            <CategoriesSmallMenu setFilter={setFilter} />
             <div className={styles.sideBar}>
                 <div className={styles.sizes_menu}>
                     <p>Talles</p>
@@ -39,7 +39,7 @@ export function Store() {
                 </div>
                 <div className={styles.types_menu}>
                     <p>Categorias</p>
-                    <Types isCurrentFilter={filter.type} setFilter={setFilter} viewWindow={"big"} />
+                    <Categories isCurrentFilter={filter.category} setFilter={setFilter} viewWindow={"big"} />
                 </div>
             </div>
             <div className={styles.products_container}>

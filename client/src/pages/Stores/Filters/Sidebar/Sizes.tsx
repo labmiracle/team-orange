@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-import { setFilterType } from "../../../types";
-import styles from "./categories.module.css";
+import { setFilterType } from "../../../../types";
+import styles from "./index.module.css";
 
 type Props = {
     isCurrentFilter: string;

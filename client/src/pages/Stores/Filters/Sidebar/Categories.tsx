@@ -1,7 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-import { StoreType, setFilterType, Product } from "../../../types";
-import styles from "./categories.module.css";
-import { useState } from "react";
+import { setFilterType } from "../../../../types";
+import styles from "./index.module.css";
 
 type Props = {
     isCurrentFilter: string;
@@ -14,7 +13,7 @@ type Props = {
  * @isCurrentFilter current set type filter
  * @setFilter takes a type:string or size:string and set the filters for the product grid
  */
-export default function Types({ isCurrentFilter, setFilter, viewWindow }: Props) {
+export default function Categories({ isCurrentFilter, setFilter, viewWindow }: Props) {
     const { categories } = useLoaderData() as { categories: string[] };
 
     function isActive(cat: string) {
@@ -24,14 +23,14 @@ export default function Types({ isCurrentFilter, setFilter, viewWindow }: Props)
     return (
         <ul className={[styles.types_category, styles[viewWindow]].join(" ")}>
             <li>
-                <button className={isActive("")} onClick={() => setFilter({ type: "" })}>
+                <button className={isActive("")} onClick={() => setFilter({ category: "" })}>
                     All
                 </button>
             </li>
             {categories.map((category, i) => {
                 return (
                     <li key={i}>
-                        <button className={isActive(category)} onClick={() => setFilter({ type: category })}>
+                        <button className={isActive(category)} onClick={() => setFilter({ category: category })}>
                             {category}
                         </button>
                     </li>

@@ -35,7 +35,7 @@ export default function Products() {
                     </div>
                 )}
                 {products.length === 0 && (
-                    <div>
+                    <div className={styles.not_found_container}>
                         <p>Producto no encontrado, intente con otros filtros.</p>
                     </div>
                 )}

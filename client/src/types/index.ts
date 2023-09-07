@@ -69,7 +69,7 @@ export type StoreType = {
     status: number;
 };
 
-export type setFilterType = ({ type, size }: { type?: string; size?: string }) => void;
+export type setFilterType = ({ category, size }: { category?: string; size?: string }) => void;
 
 export type LoaderResponse<T> = {
     data: T | undefined;
