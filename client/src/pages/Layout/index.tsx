@@ -9,6 +9,7 @@ import { useAuthContext } from "../../Context/authContext";
 import Fetcher from "../../services/Fetcher";
 import { useEffect, useState } from "react";
 import { decodeJwt } from "jose";
+import ScrollToTop from "../../components/ui/ScrollToTop";
 
 export function Layout() {
     const { user, logOut } = useAuthContext();
@@ -19,9 +20,11 @@ export function Layout() {
 
     const handleScroll = () => {
         const currentScrollPos = window.scrollY;
-        const visible = currentScrollPos < prevScrollPos;
-        setPrevScrollPos(currentScrollPos);
-        setVisible(visible);
+        if (currentScrollPos > 109) {
+            const visible = currentScrollPos < prevScrollPos;
+            setPrevScrollPos(currentScrollPos);
+            setVisible(visible);
+        }
     };
 
     useEffect(() => {
@@ -93,6 +96,7 @@ export function Layout() {
             </nav>
             <Outlet />
             <Footer />
+            <ScrollToTop />
         </div>
     );
 }

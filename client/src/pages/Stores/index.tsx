@@ -36,14 +36,16 @@ export function Store() {
     return (
         <div className={styles.store_container}>
             <CategoriesSmallMenu setFilter={setFilter} />
-            <div className={styles.sideBar}>
-                <div className={styles.sizes_menu}>
-                    <p>Talles</p>
-                    <Sizes isCurrentFilter={filter.size} setFilter={setFilter} viewWindow={"big"} />
-                </div>
-                <div className={styles.types_menu}>
-                    <p>Categorias</p>
-                    <Categories isCurrentFilter={filter.category} setFilter={setFilter} viewWindow={"big"} />
+            <div className={styles.sidebar}>
+                <div className={styles.container_sidebar}>
+                    <div className={styles.sizes_menu}>
+                        <p>Talles</p>
+                        <Sizes isCurrentFilter={filter.size} setFilter={setFilter} viewWindow={"big"} />
+                    </div>
+                    <div className={styles.types_menu}>
+                        <p>Categorias</p>
+                        <Categories isCurrentFilter={filter.category} setFilter={setFilter} viewWindow={"big"} />
+                    </div>
                 </div>
             </div>
             <div className={styles.products_container}>

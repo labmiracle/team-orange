@@ -1,0 +1,13 @@
+.scroll_to_top {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    padding: 8px !important;
+    font-size: 10px;
+}
+
+.hide_btn {
+    display: none;
+}
