@@ -7,7 +7,7 @@ export function Button({
     ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string }) {
     return (
-        <button className={`${styles.button} ${styles[variant] || ""} ${className} `} {...props}>
+        <button className={`${styles.button} ${styles[variant] || ""} ${className}`} {...props}>
             {children}
         </button>
     );

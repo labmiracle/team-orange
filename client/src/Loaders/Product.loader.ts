@@ -22,12 +22,18 @@ export const ProductsLoader = {
      * @query page_number=number&product_amount=number
      * @returns product object {@link Product}
      */
-    async getAllProducts({ params }: { request: Request; params: Params<string> }) {
+    async getAllProducts({ request, params }: { request: Request; params: Params<string> }) {
         const productService = new ProductService();
         const { storeId } = params;
+        const url = new URL(request.url);
+        const category = url.searchParams.get("category");
+        const size = url.searchParams.get("size");
         if (Number(storeId)) {
-            const data = await productService.getByFilter(Number(storeId));
-            if (data?.products?.length === 0) throw new Error("Products not found");
+            const data = await productService.getByFilter({
+                storeId: Number(storeId),
+                size: size,
+                category: category,
+            });
             return data;
         }
     },

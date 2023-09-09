@@ -4,7 +4,7 @@ import { InvoiceViewInterface } from "../models/invoiceView";
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
-@Injectable({ lifeTime: DependencyLifeTime.Scoped })
+@Injectable({ lifeTime: DependencyLifeTime.Transient })
 export class Emailer {
     private transport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
     constructor() {

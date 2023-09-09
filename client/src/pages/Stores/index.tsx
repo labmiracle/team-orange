@@ -40,11 +40,11 @@ export function Store() {
                 <div className={styles.container_sidebar}>
                     <div className={styles.sizes_menu}>
                         <p>Talles</p>
-                        <Sizes isCurrentFilter={filter.size} setFilter={setFilter} viewWindow={"big"} />
+                        <Sizes filter={filter} setFilter={setFilter} viewWindow={"big"} />
                     </div>
                     <div className={styles.types_menu}>
                         <p>Categorias</p>
-                        <Categories isCurrentFilter={filter.category} setFilter={setFilter} viewWindow={"big"} />
+                        <Categories filter={filter} setFilter={setFilter} viewWindow={"big"} />
                     </div>
                 </div>
             </div>

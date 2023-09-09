@@ -76,7 +76,6 @@ export class StoreController extends ApiController {
             colorsObj[type as keyof Colors] = { hue: color.hue, sat: color.sat, light: color.light };
         }
         const filters = await this.storeRepo.getCategoriesAndSizesById(storeId);
-        console.log(filters);
         const categoryArr = (filters.categories as { category: string }[]).map(item => item.category);
         const sizeArr = (filters.sizes as { size: string }[]).map(item => item.size);
         return { ...store, colors: colorsObj, categories: categoryArr, sizes: sizeArr };

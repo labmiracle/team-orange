@@ -24,6 +24,7 @@ export type Props = [
 export function useProducts(): Props {
     const { storeId } = useParams();
     const data = useRouteLoaderData("products") as ProductResponse;
+    console.log("useProducts", data);
     const [filter, setFilterI] = useState({ category: "", size: "" });
     const [loading, setLoading] = useState(false);
     const [nextPage, setNextPage] = useState(true);
@@ -32,26 +33,36 @@ export function useProducts(): Props {
     const [initialLoad, setInitialLoad] = useState(true);
     const [sequencer, setSequencer] = useState<number[]>([]);
 
-    const fetchProducts = async () => {
-        if (!nextPage || loading) return;
-        setLoading(true);
-        try {
-            const productService = new ProductService();
-            const response = await productService.getByFilter(Number(storeId), page, 12, filter.size, filter.category);
-            if (response?.products) {
-                setProducts(prev => [...prev, ...response.products]);
-            }
-            setNextPage(response?.pagination.hasNextPage || false);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    };
+    console.log("filtro", filter);
+    useEffect(() => {
+        setProducts(data.products);
+    }, [filter, data]);
+    // const fetchProducts = async () => {
+    //     console.log("asd");
+    //     if (!nextPage || loading) return;
+    //     setLoading(true);
+    //     try {
+    //         const productService = new ProductService();
+    //         const response = await productService.getByFilter({
+    //             storeId: Number(storeId),
+    //             page: 12,
+    //             size: filter.size,
+    //             category: filter.category,
+    //         });
+    //         if (response?.products) {
+    //             setProducts(prev => [...prev, ...response.products]);
+    //         }
+    //         setNextPage(response?.pagination.hasNextPage || false);
+    //     } catch (e) {
+    //         console.error(e);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     useEffect(() => {
         setSequencer(() => products.map(product => +product.id));
-    }, []);
+    }, [products]);
 
     /**
      * Reset states
@@ -61,13 +72,13 @@ export function useProducts(): Props {
         if (!initialLoad) {
             setNextPage(true);
             setPage(1);
-            setProducts([]);
+            // setProducts([]);
         }
     }, [filter]);
 
     useEffect(() => {
         if (!initialLoad) {
-            fetchProducts();
+            // fetchProducts();
         }
     }, [filter, nextPage]);
 
@@ -92,9 +103,13 @@ export function useProducts(): Props {
     useEffect(() => {
         setInitialLoad(false);
         if (page > 1) {
-            fetchProducts();
+            // fetchProducts();
         }
     }, [page]);
+
+    useEffect(() => {
+        // fetchProducts();
+    }, [data]);
 
     /**
      * Used By Types and Sizes components to change the products array filters

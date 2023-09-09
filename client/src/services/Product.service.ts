@@ -1,6 +1,14 @@
 import { baseEndpoints } from "../endpoints";
 import { Product, ProductResponse } from "../types";
 import Fetcher from "./Fetcher";
+type FilterProps = {
+    storeId: number;
+    page?: number;
+    perPage?: number;
+    size?: string | null;
+    category?: string | null;
+};
+
 export class ProductService {
     async getProduct(id: Product["id"]) {
         try {
@@ -37,15 +45,15 @@ export class ProductService {
         }
     }
 
-    async getByFilter(storeId: number, page = 1, perPage = 12, size?: string, category?: string) {
+    async getByFilter({ storeId, page = 1, perPage = 12, size, category }: FilterProps) {
         try {
-            let url = `${baseEndpoints.products.getAll}/${storeId}/q?page=${page}&per_page=${perPage}`;
-            if (size) {
-                url += `&size=${size}`;
-            }
-            if (category) {
-                url += `&category=${category}`;
-            }
+            const urlParamsArray: string[] = [];
+            page && urlParamsArray.push(`page=${page}`);
+            perPage && urlParamsArray.push(`per_page=${perPage}`);
+            size && urlParamsArray.push(`size=${size}`);
+            category && urlParamsArray.push(`category=${category}`);
+            const urlParams = "?" + urlParamsArray.join("&");
+            const url = `${baseEndpoints.products.getAll}/${storeId}/q${urlParams}`;
             const products = await Fetcher.query<ProductResponse>(url, { method: "GET" });
             return products.data;
         } catch (e) {

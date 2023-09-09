@@ -40,6 +40,7 @@ export const Router = createBrowserRouter([
                         loader: ProductsLoader.getAllProducts,
                         element: <Products />,
                     },
+                    {},
                 ],
             },
             {
