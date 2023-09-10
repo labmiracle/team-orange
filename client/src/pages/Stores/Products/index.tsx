@@ -4,10 +4,18 @@ import styles from "./index.module.css";
 import Loader from "../../LoadingSpinner";
 import { useNavigation } from "react-router-dom";
 import { useContext } from "..";
+import { useEffect, useState } from "react";
 
 export default function Products() {
     const navigation = useNavigation();
-    const { products, loading, sequencer, setSequencer } = useContext();
+    const { products, loading } = useContext();
+    const [sequencer, setSequencer] = useState<number[]>([]);
+
+    useEffect(() => {
+        if (products.length <= 12) {
+            setSequencer(() => products.map(product => +product.id));
+        }
+    }, [products]);
 
     if (navigation.state === "loading") {
         return (

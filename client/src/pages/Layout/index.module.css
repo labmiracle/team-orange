@@ -3,7 +3,6 @@
     min-height: 100vh;
     display: grid;
     grid-template-rows: minmax(8vh, auto) minmax(92vh, auto) auto;
-    margin-right: 10px;
 }
 
 .nav {

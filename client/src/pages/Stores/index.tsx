@@ -12,8 +12,6 @@ import { setColors } from "../utilities/setColors";
 type ProductProps = {
     products: Product[];
     loading: boolean;
-    sequencer: number[];
-    setSequencer: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export function Store() {
@@ -21,7 +19,7 @@ export function Store() {
     const { colors }: { colors: ColorsType } = useLoaderData() as { colors: ColorsType };
     setColors(colors);
 
-    const [filter, setFilter, products, loading, sequencer, setSequencer] = useProducts();
+    const [filter, setFilter, products, loading] = useProducts();
 
     if (navigation.state === "loading") {
         return (
@@ -49,7 +47,7 @@ export function Store() {
                 </div>
             </div>
             <div className={styles.products_container}>
-                <Outlet context={{ products, loading, sequencer, setSequencer }} />
+                <Outlet context={{ products, loading }} />
             </div>
         </div>
     );
