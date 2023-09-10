@@ -35,7 +35,7 @@ export function Store() {
 
     return (
         <div className={styles.store_container}>
-            <CategoriesSmallMenu setFilter={setFilter} />
+            <CategoriesSmallMenu filter={filter} setFilter={setFilter} />
             <div className={styles.sidebar}>
                 <div className={styles.container_sidebar}>
                     <div className={styles.sizes_menu}>

@@ -1,27 +1,30 @@
 import { setFilterType } from "../../../../types";
-import { useState } from "react";
 import styles from "./index.module.css";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 
 type Props = {
+    filter: {
+        category: string;
+        size: string;
+    };
     setFilter: setFilterType;
 };
 
-export default function CategoriesSmallMenu({ setFilter }: Props) {
-    const [sizesState, setSizes] = useState("all");
-    const [typesState, setTypes] = useState("all");
+export default function CategoriesSmallMenu({ filter, setFilter }: Props) {
     const { sizes, categories } = useLoaderData() as { sizes: string[]; categories: string[] };
+    const { storeId } = useParams();
+    const navigate = useNavigate();
 
     function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
         const name = e.currentTarget.name;
         const value = e.currentTarget.value;
         if (name === "sizes") {
-            setSizes(value);
             setFilter({ size: value });
+            navigate(`/stores/${storeId}/q?category=${filter.category}&size=${value}`);
         }
-        if (name === "types") {
-            setTypes(value);
+        if (name === "category") {
             setFilter({ category: value });
+            navigate(`/stores/${storeId}/q?category=${value}&size=${filter.size}`);
         }
     }
 
@@ -29,7 +32,7 @@ export default function CategoriesSmallMenu({ setFilter }: Props) {
         <div className={styles.menu_container}>
             <label>
                 Sizes
-                <select name={"sizes"} value={sizesState} onChange={handleChange}>
+                <select name={"sizes"} value={filter.size} onChange={handleChange}>
                     <option value={""}>All</option>
                     {sizes.map(size => {
                         return (
@@ -41,13 +44,13 @@ export default function CategoriesSmallMenu({ setFilter }: Props) {
                 </select>
             </label>
             <label>
-                Types
-                <select name={"types"} value={typesState} onChange={handleChange}>
+                Category
+                <select name={"category"} value={filter.category} onChange={handleChange}>
                     <option value={""}>All</option>
-                    {categories.map(type => {
+                    {categories.map(category => {
                         return (
-                            <option key={type} value={type}>
-                                {type}
+                            <option key={category} value={category}>
+                                {category}
                             </option>
                         );
                     })}

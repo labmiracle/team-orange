@@ -24,7 +24,6 @@ export type Props = [
 export function useProducts(): Props {
     const { storeId } = useParams();
     const data = useRouteLoaderData("products") as ProductResponse;
-    console.log("useProducts", data);
     const [filter, setFilterI] = useState({ category: "", size: "" });
     const [loading, setLoading] = useState(false);
     const [nextPage, setNextPage] = useState(true);
@@ -33,7 +32,6 @@ export function useProducts(): Props {
     const [initialLoad, setInitialLoad] = useState(true);
     const [sequencer, setSequencer] = useState<number[]>([]);
 
-    console.log("filtro", filter);
     useEffect(() => {
         setProducts(data.products);
     }, [filter, data]);

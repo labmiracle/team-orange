@@ -33,7 +33,6 @@ export default function useAuthErrorHandler(): [InputError, typeof ErrorMessages
 
     function handleError(e: any) {
         const message = e?.response?.data.message || e.message;
-        console.log(message);
         const errorType = errorMatcher(message);
         setError(InputError[errorType]);
         setErrorMessages(errors => ({

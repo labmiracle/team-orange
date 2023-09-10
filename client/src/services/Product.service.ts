@@ -35,13 +35,7 @@ export class ProductService {
 
             return products.data;
         } catch (e) {
-            console.log(
-                baseEndpoints.products.getAll +
-                    `/${storeId}
-                ${pageNumber ? +`/q?page_number=${pageNumber}` : ""}
-                ${pageNumber ? productAmount && `&product_amount=${productAmount}` : ""}`
-            );
-            console.error("hola", e);
+            console.error(e);
         }
     }
 

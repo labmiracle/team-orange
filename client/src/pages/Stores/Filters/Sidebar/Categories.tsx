@@ -1,5 +1,4 @@
 import { useLoaderData, Link, useParams } from "react-router-dom";
-import { NavLink } from "../../../../components/ui/NavLink";
 import { setFilterType } from "../../../../types";
 import styles from "./index.module.css";
 

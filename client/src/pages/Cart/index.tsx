@@ -11,7 +11,6 @@ export function Cart() {
     const [showForm, setShowForm] = useState(false);
     const [invoice, setInvoice] = useState(null);
     const [isLoading, setLoading] = useState(false);
-	console.log(cart)
     function confirmCartContent() {
         setShowForm(true);
     }
@@ -54,12 +53,7 @@ export function Cart() {
                     <ul className={styles.cartContainer}>
                         {cart.map(item => (
                             <li className={styles.itemContainer} key={item.product.id}>
-                                <img
-                                    src={`${assetsUrl}/${item.product.url_img}`}
-                                    alt=""
-                                    width={100}
-                                    height={100}
-                                />
+                                <img src={`${assetsUrl}/${item.product.url_img}`} alt="" width={100} height={100} />
                                 <div className={styles.itemInfo}>
                                     <div>
                                         {item.product.name} ({item.amount})
@@ -71,7 +65,9 @@ export function Cart() {
                                             </div>
                                         )}
                                         <div className={styles.price}>
-                                            {formatPrice(item.product.price * item.product.discountPercentage * item.amount)}
+                                            {formatPrice(
+                                                item.product.price * item.product.discountPercentage * item.amount
+                                            )}
                                         </div>
                                     </div>
                                 </div>
