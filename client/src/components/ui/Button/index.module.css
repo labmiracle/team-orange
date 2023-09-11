@@ -8,7 +8,7 @@
     background: var(--primary);
     color: var(--text-primary);
     cursor: pointer;
-    transition: all 200ms;
+    transition: background 200ms;
 }
 
 .solid:hover {

@@ -25,11 +25,8 @@ export default function ScrollToTop() {
 
     return (
         <div>
-            <Button
-                variant={`${"solid"}`}
-                className={`${visibility ? styles.scroll_to_top : styles.hide_btn}`}
-                onClick={goTop}>
-                &#9650;
+            <Button variant={`${"solid"}`} className={`${visibility ? styles.scroll_to_top : ""}`} onClick={goTop}>
+                ▼
             </Button>
         </div>
     );
