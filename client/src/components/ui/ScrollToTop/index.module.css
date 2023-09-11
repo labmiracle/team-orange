@@ -1,5 +1,6 @@
 .scroll_to_top {
     display: flex;
+    display: block;
     justify-content: center;
     position: fixed;
     right: 20px;
@@ -11,6 +12,10 @@
     animation-duration: 0.3s;
     animation-timing-function: ease-out;
     animation-iteration-count: 1;
+}
+
+.hide_button {
+    display: none;
 }
 
 @keyframes rotating {
