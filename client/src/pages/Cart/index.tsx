@@ -88,7 +88,7 @@ export function Cart() {
                             <hr />
                             <div className={styles.detail}>
                                 <h3>Total</h3>
-                                <p>{calculateTotalPrice()}</p>
+                                <p>{formatPrice(calculateTotalPrice())}</p>
                             </div>
                             <Button onClick={confirmCartContent} className={styles.continueButton}>
                                 Continuar

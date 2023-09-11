@@ -15,9 +15,6 @@
     background-color: var(--tertiary);
 }
 
-.bordered {
-}
-
 .ghost {
     background-color: transparent;
     color: var(--text-primary);
