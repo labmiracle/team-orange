@@ -1,10 +1,7 @@
 import { useContext, useEffect } from "react";
 import { CartContext } from "../Context/CartContext";
-import { AuthData, Product } from "../types";
-import { ProductService } from "../services/Product.service";
-import Fetcher from "../services/Fetcher";
-import { baseEndpoints } from "../endpoints";
-import { CartService } from "../services/Cart.service";
+import { Product } from "../types";
+import { CheckoutService } from "../services/Checkout.service";
 
 export function useCart() {
     const cartContext = useContext(CartContext);
@@ -18,14 +15,14 @@ export function useCart() {
     }, [cart]);
 
     function addProduct(product: Product, amount: number) {
-        if (cart.length > 0 && cart.some(item => item.product.id === product.id)) {
+        if (cart.length > 0 && cart.some(item => item.id === product.id)) {
             const updatedCart = cart.map(item => {
-                if (item.product.id === product.id) return { product: item.product, amount: item.amount + amount };
+                if (item.id === product.id) return { ...product, quantity: item.quantity + amount };
                 return item;
             });
             setCart(updatedCart);
         } else {
-            setCart(prev => [...prev, { product, amount }]);
+            setCart(prev => [...prev, { ...product, quantity: amount }]);
         }
     }
 
@@ -33,19 +30,10 @@ export function useCart() {
         setCart([]);
     }
 
-    function checkout() {
-        const user = window.localStorage.getItem("user");
-
-        const cartService = new CartService();
-        if (user) {
-            return cartService.checkout(cart, user).then(invoice => {
-                return invoice.data;
-            });
-        } else {
-            return cartService.checkout(cart).then(invoice => {
-                return invoice.data;
-            });
-        }
+    async function checkout() {
+        const checkoutService = new CheckoutService();
+        const invoice = await checkoutService.produceInvoice(cart);
+        return invoice;
     }
 
     return { cart, addProduct, clearCart, checkout };

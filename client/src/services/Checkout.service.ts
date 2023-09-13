@@ -1,4 +1,4 @@
-import type { Product } from "../types";
+import type { InvoiceInterface, Product } from "../types";
 import { baseEndpoints } from "../endpoints";
 import Fetcher from "./Fetcher";
 
@@ -11,8 +11,8 @@ export class CheckoutService {
         return response.data;
     }
 
-    async produceInvoice(products: Product[]) {
-        const response = await Fetcher.query(baseEndpoints.checkout.get, {
+    async produceInvoice(products: Product[]): Promise<InvoiceInterface> {
+        const response = await Fetcher.query<InvoiceInterface>(baseEndpoints.checkout.produce, {
             method: "POST",
             data: products,
         });

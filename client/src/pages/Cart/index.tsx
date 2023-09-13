@@ -6,22 +6,22 @@ import { Button } from "../../components/ui/Button";
 import Invoice from "../utilities/Invoice";
 import { PaymentForm } from "./components/PaymentForm";
 import { assetsUrl } from "../../endpoints";
+import { InvoiceInterface } from "../../types";
 export function Cart() {
     const { cart, clearCart, checkout } = useCart();
     const [showForm, setShowForm] = useState(false);
-    const [invoice, setInvoice] = useState(null);
+    const [invoice, setInvoice] = useState<InvoiceInterface | null>(null);
     const [isLoading, setLoading] = useState(false);
     function confirmCartContent() {
         setShowForm(true);
     }
 
-    function confirmPayment(event: React.FormEvent) {
+    async function confirmPayment(event: React.FormEvent) {
         event.preventDefault();
         setLoading(true);
-        checkout().then(data => {
-            setLoading(false);
-            setInvoice(data);
-        });
+        const data = await checkout();
+        setLoading(false);
+        setInvoice(data);
         clearCart();
         setShowForm(false);
     }
@@ -31,18 +31,16 @@ export function Cart() {
     }
 
     function calculateTotalPrice() {
-        return cart.reduce((acc, item) => acc + item.product.price * item.product.discountPercentage * item.amount, 0);
+        return cart.reduce((acc, item) => acc + item.price * item.discountPercentage * item.quantity, 0);
     }
 
     function calculateTotalItems() {
-        return cart.reduce((acc, item) => acc + item.amount, 0);
+        return cart.reduce((acc, item) => acc + item.quantity, 0);
     }
 
     if (cart === null) return null;
 
-    if (!cart || cart.length === 0) {
-        if (invoice) return <Invoice {...{ invoice }} />;
-    }
+    if (invoice) return <Invoice {...{ invoice }} />;
 
     return (
         <main className={styles.container}>
@@ -52,22 +50,20 @@ export function Cart() {
                 <>
                     <ul className={styles.cartContainer}>
                         {cart.map(item => (
-                            <li className={styles.itemContainer} key={item.product.id}>
-                                <img src={`${assetsUrl}/${item.product.url_img}`} alt="" width={100} height={100} />
+                            <li className={styles.itemContainer} key={item.id}>
+                                <img src={`${assetsUrl}/${item.url_img}`} alt="" width={100} height={100} />
                                 <div className={styles.itemInfo}>
                                     <div>
-                                        {item.product.name} ({item.amount})
+                                        {item.name} ({item.quantity})
                                     </div>
                                     <div className={styles.priceContainer}>
-                                        {item.product.discountPercentage < 1 && (
+                                        {item.discountPercentage < 1 && (
                                             <div className={styles.oldPrice}>
-                                                {formatPrice(item.product.price * item.amount)}
+                                                {formatPrice(item.price * item.quantity)}
                                             </div>
                                         )}
                                         <div className={styles.price}>
-                                            {formatPrice(
-                                                item.product.price * item.product.discountPercentage * item.amount
-                                            )}
+                                            {formatPrice(item.price * item.discountPercentage * item.quantity)}
                                         </div>
                                     </div>
                                 </div>

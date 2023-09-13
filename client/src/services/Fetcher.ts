@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient, HttpRequest, HttpHeaders, AuthorizationInterceptor } from "@miracledevs/paradigm-web-fetch";
 
 class Fetcher {

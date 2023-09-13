@@ -28,11 +28,13 @@ export const ProductsLoader = {
         const url = new URL(request.url);
         const category = url.searchParams.get("category");
         const size = url.searchParams.get("size");
+        const page = url.searchParams.get("page");
         if (Number(storeId)) {
             const data = await productService.getByFilter({
                 storeId: Number(storeId),
                 size: size,
                 category: category,
+                page: Number(page),
             });
             return data;
         }
