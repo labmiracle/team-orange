@@ -7,6 +7,7 @@ import Invoice from "../utilities/Invoice";
 import { PaymentForm } from "./components/PaymentForm";
 import { assetsUrl } from "../../endpoints";
 import { InvoiceInterface } from "../../types";
+import EmptyCart from "./EmptyCart/EmptyCart";
 export function Cart() {
     const { cart, clearCart, checkout } = useCart();
     const [showForm, setShowForm] = useState(false);
@@ -41,6 +42,7 @@ export function Cart() {
     if (cart === null) return null;
 
     if (invoice) return <Invoice {...{ invoice }} />;
+    if (cart.length === 0) return <EmptyCart />;
 
     return (
         <main className={styles.container}>

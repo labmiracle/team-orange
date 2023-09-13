@@ -1,0 +1,24 @@
+.container_empty_cart {
+    margin: 50px auto;
+}
+
+.bg_empty_cart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: clamp(300px, 50vw, 700px);
+    background: white;
+    border-radius: 4px;
+    padding: 50px 0;
+}
+
+.link {
+    background: var(--primary);
+    color: white;
+}
+
+.link:hover {
+    background-color: var(--tertiary);
+}
