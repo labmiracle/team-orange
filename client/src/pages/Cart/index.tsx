@@ -4,10 +4,11 @@ import { formatPrice } from "../utilities/formatPrice";
 import styles from "./index.module.css";
 import { Button } from "../../components/ui/Button";
 import Invoice from "../utilities/Invoice";
-import { PaymentForm } from "./components/PaymentForm";
+import { PaymentForm } from "./PaymentForm";
 import { assetsUrl } from "../../endpoints";
 import { InvoiceInterface } from "../../types";
-import EmptyCart from "./EmptyCart/EmptyCart";
+import EmptyCart from "./EmptyCart";
+
 export function Cart() {
     const { cart, clearCart, checkout } = useCart();
     const [showForm, setShowForm] = useState(false);
