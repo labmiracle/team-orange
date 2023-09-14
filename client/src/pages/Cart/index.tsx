@@ -8,9 +8,11 @@ import { PaymentForm } from "./PaymentForm";
 import { assetsUrl } from "../../endpoints";
 import { InvoiceInterface } from "../../types";
 import EmptyCart from "./EmptyCart";
+import TrashIconSVG from "../../assets/TrashSVG";
+import { Link } from "../../components/ui/Link";
 
 export function Cart() {
-    const { cart, clearCart, checkout } = useCart();
+    const { cart, clearCart, checkout, removeProduct, incrementProduct, decrementProduct } = useCart();
     const [showForm, setShowForm] = useState(false);
     const [invoice, setInvoice] = useState<InvoiceInterface | null>(null);
     const [isLoading, setLoading] = useState(false);
@@ -54,21 +56,53 @@ export function Cart() {
                     <ul className={styles.cartContainer}>
                         {cart.map(item => (
                             <li className={styles.itemContainer} key={item.id}>
-                                <img src={`${assetsUrl}/${item.url_img}`} alt="" width={100} height={100} />
-                                <div className={styles.itemInfo}>
-                                    <div>
-                                        {item.name} ({item.quantity})
-                                    </div>
-                                    <div className={styles.priceContainer}>
-                                        {item.discountPercentage < 1 && (
-                                            <div className={styles.oldPrice}>
-                                                {formatPrice(item.price * item.quantity)}
+                                <div className={styles.containerLeft}>
+                                    <Link to={`/products/${item.id}`}>
+                                        <div className={styles.containerImg}>
+                                            <img
+                                                src={`${assetsUrl}/${item.url_img}`}
+                                                className={styles.productImg}
+                                                alt={item.name}
+                                            />
+                                        </div>
+                                    </Link>
+                                    <div className={styles.itemInfo}>
+                                        <Link to={`/products/${item.id}`}>
+                                            <div>{item.name}</div>
+                                        </Link>
+                                        <div className={styles.priceContainer}>
+                                            {item.discountPercentage < 1 && (
+                                                <div className={styles.oldPrice}>
+                                                    {formatPrice(item.price * item.quantity)}
+                                                </div>
+                                            )}
+                                            <div className={styles.price}>
+                                                {formatPrice(item.price * item.discountPercentage * item.quantity)}
                                             </div>
-                                        )}
-                                        <div className={styles.price}>
-                                            {formatPrice(item.price * item.discountPercentage * item.quantity)}
                                         </div>
                                     </div>
+                                </div>
+                                <div className={styles.containerRight}>
+                                    <div className={styles.counterContainer}>
+                                        <Button
+                                            onClick={() => decrementProduct(item)}
+                                            className={`${styles.counterButton} ${
+                                                item.quantity === 1 ? styles.disableButton : ""
+                                            }`}>
+                                            -
+                                        </Button>
+                                        <span>{item.quantity}</span>
+                                        <Button
+                                            onClick={() => incrementProduct(item)}
+                                            className={`${styles.counterButton} ${
+                                                item.quantity >= item.currentStock ? styles.disableButton : ""
+                                            }`}>
+                                            +
+                                        </Button>
+                                    </div>
+                                    <Button onClick={() => removeProduct(item)} className={styles.deleteButton}>
+                                        <TrashIconSVG width="20px" />
+                                    </Button>
                                 </div>
                             </li>
                         ))}

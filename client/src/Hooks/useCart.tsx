@@ -26,6 +26,32 @@ export function useCart() {
         }
     }
 
+    function removeProduct(product: Product) {
+        console.log(cart);
+        const updatedCart = cart.filter(item => item.id !== product.id);
+        setCart(updatedCart);
+    }
+
+    function incrementProduct(product: Product) {
+        if (product.quantity < product.currentStock) {
+            const updatedCart = cart.map(item => {
+                if (item.id === product.id) return { ...item, quantity: item.quantity + 1 };
+                return item;
+            });
+            setCart(updatedCart);
+        }
+    }
+
+    function decrementProduct(product: Product) {
+        if (product.quantity > 1) {
+            const updatedCart = cart.map(item => {
+                if (item.id === product.id && item) return { ...item, quantity: item.quantity - 1 };
+                return item;
+            });
+            setCart(updatedCart);
+        }
+    }
+
     function clearCart() {
         setCart([]);
     }
@@ -36,5 +62,5 @@ export function useCart() {
         return invoice;
     }
 
-    return { cart, addProduct, clearCart, checkout };
+    return { cart, addProduct, clearCart, checkout, removeProduct, incrementProduct, decrementProduct };
 }

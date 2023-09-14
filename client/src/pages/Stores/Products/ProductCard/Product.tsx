@@ -36,8 +36,6 @@ export function Product({ product, sequencer, setSequencer }: ProductProps) {
                         }}
                         className={styles.product_img}
                         src={`${assetsUrl}/${product.url_img}`}
-                        /* width="350"
-                    height="450" */
                         alt={product.name}
                     />
                     <div className={styles.infoProduct}>

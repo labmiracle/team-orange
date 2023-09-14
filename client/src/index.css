@@ -5,7 +5,7 @@
     --white: rgb(240, 240, 240);
     --primary: black;
     --secondary: white;
-    --tertiary: white;
+    --tertiary: rgba(0, 0, 0, 0.85);
     --text-primary: white;
     --text-secondary: black;
     --logo-color-filter: invert(1);
