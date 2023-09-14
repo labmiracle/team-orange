@@ -79,7 +79,10 @@ export function Layout() {
                                 </NavLink>
                             </>
                         )}
-                        <button className={styles.button_cart} onClick={() => navigate("/cart")}>
+                        <button
+                            className={styles.button_cart}
+                            onClick={() => navigate("/cart")}
+                            aria-label="Ir al carrito de compras">
                             <CartIconSVG width={"100%"} />
                         </button>
                     </div>

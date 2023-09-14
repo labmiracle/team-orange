@@ -15,13 +15,31 @@ import swarovski from "../../assets/logos/swarovski.png";
 import zara from "../../assets/logos/zara.png";
 
 export default function Footer() {
-    const imgArr = [adidas, boss, casio, chanel, cheeky, forever21, gucci, lacoste, levis, oshkosh, polo, rolex, swarovski, zara];
+    const imgArr = [
+        adidas,
+        boss,
+        casio,
+        chanel,
+        cheeky,
+        forever21,
+        gucci,
+        lacoste,
+        levis,
+        oshkosh,
+        polo,
+        rolex,
+        swarovski,
+        zara,
+    ];
 
     return (
         <footer className={styles.footer}>
             <div className={styles.logos}>
                 {imgArr.map((brand, i) => {
-                    return <img className={styles.img} src={brand} key={i} />;
+                    const parts = brand.split("/");
+                    const logoNamePng = parts[parts.length - 1];
+                    const logoName = logoNamePng.split(".")[0];
+                    return <img className={styles.img} src={brand} key={i} alt={`logo ${logoName}`} />;
                 })}
             </div>
         </footer>
