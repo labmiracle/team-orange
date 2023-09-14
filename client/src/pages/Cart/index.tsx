@@ -56,16 +56,16 @@ export function Cart() {
                     <ul className={styles.cartContainer}>
                         {cart.map(item => (
                             <li className={styles.itemContainer} key={item.id}>
-                                <div className={styles.containerLeft}>
-                                    <Link to={`/products/${item.id}`}>
-                                        <div className={styles.containerImg}>
-                                            <img
-                                                src={`${assetsUrl}/${item.url_img}`}
-                                                className={styles.productImg}
-                                                alt={item.name}
-                                            />
-                                        </div>
-                                    </Link>
+                                <Link to={`/products/${item.id}`}>
+                                    <div className={styles.containerImg}>
+                                        <img
+                                            src={`${assetsUrl}/${item.url_img}`}
+                                            className={styles.productImg}
+                                            alt={item.name}
+                                        />
+                                    </div>
+                                </Link>
+                                <div className={styles.containerContent}>
                                     <div className={styles.itemInfo}>
                                         <Link to={`/products/${item.id}`}>
                                             <div>{item.name}</div>
@@ -81,28 +81,28 @@ export function Cart() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className={styles.containerRight}>
-                                    <div className={styles.counterContainer}>
-                                        <Button
-                                            onClick={() => decrementProduct(item)}
-                                            className={`${styles.counterButton} ${
-                                                item.quantity === 1 ? styles.disableButton : ""
-                                            }`}>
-                                            -
-                                        </Button>
-                                        <span>{item.quantity}</span>
-                                        <Button
-                                            onClick={() => incrementProduct(item)}
-                                            className={`${styles.counterButton} ${
-                                                item.quantity >= item.currentStock ? styles.disableButton : ""
-                                            }`}>
-                                            +
+                                    <div className={styles.itemActions}>
+                                        <div className={styles.counterContainer}>
+                                            <Button
+                                                onClick={() => decrementProduct(item)}
+                                                className={`${styles.counterButton} ${
+                                                    item.quantity === 1 ? styles.disableButton : ""
+                                                }`}>
+                                                -
+                                            </Button>
+                                            <span className={styles.quantity}>{item.quantity}</span>
+                                            <Button
+                                                onClick={() => incrementProduct(item)}
+                                                className={`${styles.counterButton} ${
+                                                    item.quantity >= item.currentStock ? styles.disableButton : ""
+                                                }`}>
+                                                +
+                                            </Button>
+                                        </div>
+                                        <Button onClick={() => removeProduct(item)} className={styles.deleteButton}>
+                                            <TrashIconSVG width="20px" />
                                         </Button>
                                     </div>
-                                    <Button onClick={() => removeProduct(item)} className={styles.deleteButton}>
-                                        <TrashIconSVG width="20px" />
-                                    </Button>
                                 </div>
                             </li>
                         ))}

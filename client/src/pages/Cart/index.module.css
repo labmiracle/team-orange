@@ -1,36 +1,45 @@
 .container {
     display: flex;
-    justify-content: space-between;
-    padding-inline: 4em;
+    flex-direction: column;
     padding-block: 2em;
     width: 100%;
 }
 
 .cartContainer {
-    width: 65%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+    padding-inline: 10px;
 }
 
 .itemContainer {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
     width: 100%;
     border-radius: 4px;
-    display: flex;
     gap: 16px;
-    height: 150px;
     border: 1px solid #828282;
     padding: 16px;
     background-color: white;
 }
 
-.containerLeft {
+.itemContainer:last-child {
+    margin-bottom: 40px;
+}
+
+.containerContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.itemActions {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
 }
 
 .containerImg {
@@ -44,12 +53,6 @@
     object-fit: cover;
     aspect-ratio: 1/1.2;
     width: 85px;
-}
-
-.containerRight {
-    display: flex;
-    align-items: center;
-    gap: 20px;
 }
 
 .counterContainer {
@@ -72,6 +75,11 @@
     cursor: not-allowed;
 }
 
+.quantity {
+    width: 28px;
+    text-align: center;
+}
+
 .itemContainer > img {
     max-inline-size: 100%;
     block-size: auto;
@@ -85,22 +93,20 @@
 }
 
 .purchaseSummaryContainer {
-    width: 30%;
-    display: flex;
-    position: sticky;
-    top: 25px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
     background-color: white;
+    z-index: 100;
     border-radius: 4px;
     padding: 16px;
     border: 1px solid #828282;
-    max-height: 250px;
-    flex-direction: column;
-    justify-content: space-between;
+    font-size: 85%;
 }
 
 .paymentForm {
     background-color: white;
-    padding: 16px;
+    padding: 10px;
     border: 1px solid #828282;
     border-radius: 4px;
 }
@@ -130,11 +136,11 @@
 }
 
 .deleteButton svg {
-    fill: var(--primary); /* Cambia el color del relleno del icono al hacer hover */
+    fill: var(--primary);
 }
 
 .deleteButton:hover svg {
-    fill: crimson; /* Cambia el color del relleno del icono al hacer hover */
+    fill: crimson;
 }
 
 .summary {
@@ -202,4 +208,50 @@
 
 .backButton {
     color: black;
+}
+
+@media (min-width: 450px) {
+    .cartContainer {
+        padding-inline: 3em;
+    }
+}
+
+@media (min-width: 750px) {
+    .container {
+        flex-direction: row;
+        justify-content: center;
+        padding-inline: 2em;
+    }
+
+    .cartContainer {
+        width: 65%;
+        align-items: center;
+        max-width: 1000px;
+        padding-inline: 10px;
+    }
+
+    .containerContent {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .itemContainer {
+        margin: 0;
+    }
+
+    .purchaseSummaryContainer {
+        width: clamp(250px, 30%, 400px);
+        position: sticky;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        top: 25px;
+        max-height: 250px;
+        font-size: 100%;
+    }
+
+    .paymentForm {
+        padding: 16px;
+    }
 }
