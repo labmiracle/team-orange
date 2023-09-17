@@ -31,7 +31,7 @@ export class ProductController extends ApiController {
      */
     @GET
     @Path("/store/:storeId/q")
-    @Response<ProductInterface>(200, "Retrieve Products by storeId with filter of category, size.")
+    @Response<ProductInterface[]>(200, "Retrieve Products by storeId with filter of category, size.")
     @Response(500, "Product not found.")
     @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
     async getByFilter(@PathParam("storeId") storeId: number) {
@@ -77,6 +77,20 @@ export class ProductController extends ApiController {
         return product;
     }
 
+    /**
+     * GET all products from a manager id
+     * @returns products array
+     */
+    @GET
+    @Path("/manager/:managerId")
+    @Response<ProductInterface[]>(200, "Retrieve Products")
+    @Response(500, "Products not found")
+    @Action({ route: "/:managerId", method: HttpMethod.GET })
+    async getByManager(@PathParam("managerId") managerId: number) {
+        const products = await this.productRepo.getByManagerId(Number(managerId));
+        if (!products) throw new Error("Products not found");
+        return products;
+    }
     // /**
     //  * GET all products from a store id and a query
     //  * ?page_number=1&product_amount=20
@@ -141,16 +155,16 @@ export class ProductController extends ApiController {
 
     /**
      * DELETE a product
-     * @param param0 { id:number, storeId:number }
+     * @param param0 productId
      * @returns
      */
     @DELETE
-    @Path("/")
+    @Path("/:productId")
     @Response<ProductInterface>(200, "Disable a Product on the Database.")
     @Response(404, "Product not found.")
-    @Action({ route: "/", method: HttpMethod.DELETE, fromBody: true, filters: [JWTAuthFilter, isManagerFilter, authProductFilter] })
-    async delete(product: ProductInterface) {
-        await this.productDBRepo.update({ id: product.id, status: 0 });
+    @Action({ route: "/:productId", method: HttpMethod.DELETE, filters: [JWTAuthFilter, isManagerFilter, authProductFilter] })
+    async delete(@PathParam("productId") productId: number) {
+        await this.productDBRepo.update({ id: productId, status: 0 });
     }
     /**
      * UPDATE a product

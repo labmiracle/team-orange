@@ -1,4 +1,4 @@
-import { Product } from "../models/product";
+import { Product, ProductInterface } from "../models/product";
 import { MySqlConnection } from "../core/mysql/mysql.connection";
 import { DependencyContainer, DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 import { EditRepositoryBase } from "../core/repositories/edit.repository";
@@ -10,7 +10,7 @@ export class ProductRepository extends EditRepositoryBase<Product> {
         super(dependecyContainer, connection, Product, "product_view");
     }
 
-    async getFilteredProducts(storeId: number, page: number, per_page: number, size?: string, category?: string) {
+    async getFilteredProducts(storeId: number, page: number, per_page: number, size?: string, category?: string): Promise<ProductInterface[]> {
         const queryConditions: string[] = [];
         const params: (number | string)[] = [];
 
@@ -40,11 +40,11 @@ export class ProductRepository extends EditRepositoryBase<Product> {
             params.push(offset, Number(per_page));
         }
 
-        const [rows] = await this.connection.connection.query("SELECT * FROM product_view " + query, params);
-        return rows;
+        const [rows] = await this.connection.connection.query<RowDataPacket[]>("SELECT * FROM product_view " + query, params);
+        return this.map(rows, this.entityType);
     }
 
-    async getCountFilteredProducts(storeId: number, size?: string, category?: string) {
+    async getCountFilteredProducts(storeId: number, size?: string, category?: string): Promise<number> {
         const queryConditions: string[] = [];
         const params: (number | string)[] = [];
 
@@ -76,6 +76,14 @@ export class ProductRepository extends EditRepositoryBase<Product> {
         const limit = [(pageNumber - 1) * productAmount, pageNumber * productAmount];
         const query = format(`SELECT * FROM \`${this.tableName}\` WHERE storeId = ? LIMIT ?`, [storeId, limit]);
         const [rows] = await this.connection.connection.query(query);
+        return this.map(rows, this.entityType);
+    }
+
+    async getByManagerId(managerId: number) {
+        const [rows] = await this.connection.connection.query(
+            `SELECT * FROM \`${this.tableName}\` as pv JOIN store ON storeId = store.id WHERE managerId = ?`,
+            [managerId]
+        );
         return this.map(rows, this.entityType);
     }
 }
