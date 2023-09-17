@@ -39,4 +39,11 @@ export const ProductsLoader = {
             return data;
         }
     },
+
+    async getByManagerId({params}: {params: Params<string>}) {
+        const productService = new ProductService();
+        const {managerId} = params;
+        const data = await productService.getByManager(Number(managerId))
+        return data;
+    }
 };

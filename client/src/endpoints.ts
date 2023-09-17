@@ -5,6 +5,7 @@ export const baseEndpoints = {
     products: {
         get: `${baseUrl}/product`,
         getAll: `${baseUrl}/product/store`,
+        getByManager: `${baseUrl}/product/manager`
     },
     stores: {
         get: `${baseUrl}/shop`,

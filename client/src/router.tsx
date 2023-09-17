@@ -16,6 +16,7 @@ import UserData from "./pages/Dashboard/Usuario/UserData/UserData.tsx";
 import UserInvoices from "./pages/Dashboard/Usuario/UserInvoices/UserInvoices.tsx";
 import Admin from "./pages/Dashboard/Admin/index.tsx";
 import Products from "./pages/Stores/Products/index.tsx";
+import Manager from "./pages/Dashboard/Manager/index.tsx";
 
 export const Router = createBrowserRouter([
     {
@@ -92,6 +93,15 @@ export const Router = createBrowserRouter([
                     const stores = await StoresLoader.getAllStores();
                     return { users, stores };
                 },
+            },
+            {
+                path: "/manager/:managerId",
+                element: (
+                    <RequiredPage rol="Manager">
+                        <Manager />
+                    </RequiredPage>
+                ),
+                loader: ProductsLoader.getByManagerId,
             },
         ],
     },

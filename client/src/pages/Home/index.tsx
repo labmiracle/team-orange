@@ -12,7 +12,7 @@ export function Home() {
                         recogé en la tienda física! ¡Una aventura de compras única en Shoppy! 👜🛍️🎉
                     </p>
                 </div>
-                <img src="header.jpg" alt="" width={900} />
+                <img src="header.webp" alt="" width={900} />
             </section>
         </main>
     );

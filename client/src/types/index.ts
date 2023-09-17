@@ -3,7 +3,6 @@ export type Product = {
     name: string;
     brand: string;
     categories: string[];
-    color: string;
     currentStock: number;
     reorderPoint: number;
     minimum: number;

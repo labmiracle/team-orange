@@ -54,4 +54,43 @@ export class ProductService {
             console.error(e);
         }
     }
+
+    async getByManager(managerId: number) {
+        try {
+            const url = `${baseEndpoints.products.getByManager}/${managerId}`;
+            const products = await Fetcher.query<ProductResponse>(url, { method: "GET" });
+            return products.data;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async post(products: Product[]) {
+        try {
+            const url = `${baseEndpoints.products.get}`;
+            const productsResponse = await Fetcher.query<ProductResponse>(url, {
+                method: "POST",
+                data: products,
+            });
+            return productsResponse.data;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async disable(id: number) {
+        try {
+            await Fetcher.query(`${baseEndpoints.products.get}/${id}`, { method: "DELETE" });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async update(product: Product) {
+        try {
+            await Fetcher.query(`${baseEndpoints.products.get}`, { method: "PUT", data: product });
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }
