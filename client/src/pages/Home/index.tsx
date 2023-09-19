@@ -1,6 +1,6 @@
 import styles from "./index.module.css";
 
-export function Home() {
+export default function Home() {
     return (
         <main className={styles.container}>
             <section>
@@ -12,7 +12,7 @@ export function Home() {
                         recogé en la tienda física! ¡Una aventura de compras única en Shoppy! 👜🛍️🎉
                     </p>
                 </div>
-                <img src="header.webp" alt="" width={900} />
+                <img src="header.webp" alt="Mujer feliz comprando en nuestro sitio web" width="900" height="600" />
             </section>
         </main>
     );

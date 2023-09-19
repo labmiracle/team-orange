@@ -11,11 +11,14 @@
     width: 100%;
     justify-content: center;
     gap: 20px;
+    padding-inline: 20px;
 }
 
 .container > section > img {
     border-radius: 8px;
-    width: 300px;
+    width: 100%;
+    max-width: 740px;
+    height: auto;
 }
 
 .copy {
@@ -37,9 +40,17 @@
     max-inline-size: 60ch;
 }
 
-@media (min-width: 600px) {
-    .container > section > img {
-        width: 500px;
+@media (min-width: 1024px) {
+    .copy {
+        width: 40%;
+    }
+    .container > section {
+        flex-direction: row;
         padding-inline: 50px;
+    }
+
+    .container > section > img {
+        width: 60%;
+        max-width: 900px;
     }
 }
