@@ -13,8 +13,6 @@ import cookieParser from "cookie-parser";
 import { CheckoutController } from "./controllers/checkout.controller";
 import path from "path";
 import { ResponseFilter } from "./filters/response.filter";
-import { UserAuth } from "./utils/userInstancer";
-import { ObjectType } from "@miracledevs/paradigm-web-di";
 
 /**
  * Represents the api server application.
