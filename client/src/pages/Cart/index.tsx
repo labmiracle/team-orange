@@ -11,7 +11,7 @@ import EmptyCart from "./EmptyCart";
 import TrashIconSVG from "../../assets/TrashSVG";
 import { Link } from "../../components/ui/Link";
 
-export function Cart() {
+export default function Cart() {
     const { cart, clearCart, checkout, removeProduct, incrementProduct, decrementProduct } = useCart();
     const [showForm, setShowForm] = useState(false);
     const [invoice, setInvoice] = useState<InvoiceInterface | null>(null);

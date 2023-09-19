@@ -7,7 +7,7 @@ import { Button } from "../../components/ui/Button";
 import useAuthErrorHandler from "../../Hooks/useAuthErrorHandler";
 import { InputError } from "../../types";
 
-export function Register() {
+export default function Register() {
     const { setUser } = useAuthContext();
     const { register, user } = useLogin();
     const [error, ErrorMessages, handleError] = useAuthErrorHandler();

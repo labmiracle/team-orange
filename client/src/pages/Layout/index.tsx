@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { decodeJwt } from "jose";
 import ScrollToTop from "../../components/ui/ScrollToTop";
 
-export function Layout() {
+export default function Layout() {
     const { user, logOut } = useAuthContext();
     const storeNames = useLoaderData() as StoreName[];
     const navigate = useNavigate();

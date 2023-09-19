@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/Button";
 import useAuthErrorHandler from "../../Hooks/useAuthErrorHandler";
 import { InputError } from "../../types";
 
-export function Login() {
+export default function Login() {
     const { getAuth, user } = useLogin();
     const [error, ErrorMessages, handleError] = useAuthErrorHandler();
     const navigate = useNavigate();

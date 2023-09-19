@@ -7,7 +7,7 @@ import { Button } from "../../../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import { assetsUrl } from "../../../endpoints";
 
-export function Product() {
+export default function Product() {
     const product = useLoaderData() as Product;
     const { addProduct } = useCart();
     const [showNotification, setShowNotification] = useState(false);
