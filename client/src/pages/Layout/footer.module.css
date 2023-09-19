@@ -16,6 +16,7 @@
     padding: 5px;
     width: 80px;
     filter: var(--logo-color-filter);
+    height: auto;
 }
 
 @media (max-width: 850px) {

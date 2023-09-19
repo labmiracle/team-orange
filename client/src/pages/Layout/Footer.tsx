@@ -14,6 +14,23 @@ import rolex from "../../assets/logos/rolex.webp";
 import swarovski from "../../assets/logos/swarovski.webp";
 import zara from "../../assets/logos/zara.webp";
 
+const imageDimensions = {
+    adidas: { width: 80, height: 54 },
+    boss: { width: 80, height: 30 },
+    casio: { width: 80, height: 14 },
+    chanel: { width: 80, height: 45 },
+    cheeky: { width: 80, height: 80 },
+    forever21: { width: 80, height: 16 },
+    gucci: { width: 80, height: 82 },
+    lacoste: { width: 80, height: 80 },
+    levis: { width: 80, height: 37 },
+    oshkosh: { width: 80, height: 80 },
+    polo: { width: 80, height: 48 },
+    rolex: { width: 80, height: 80 },
+    swarovski: { width: 80, height: 45 },
+    zara: { width: 80, height: 33 },
+};
+
 export default function Footer() {
     const imgArr = [
         adidas,
@@ -35,11 +52,18 @@ export default function Footer() {
     return (
         <footer className={styles.footer}>
             <div className={styles.logos}>
-                {imgArr.map((brand, i) => {
-                    const parts = brand.split("/");
-                    const logoNameWebP = parts[parts.length - 1];
-                    const logoName = logoNameWebP.split(".")[0];
-                    return <img className={styles.img} src={brand} key={i} alt={`logo ${logoName}`} />;
+                {Object.entries(imageDimensions).map(([logoName, dimensions], i) => {
+                    const brandImage = imgArr.find(image => image.includes(logoName));
+                    return (
+                        <img
+                            className={styles.img}
+                            src={brandImage}
+                            key={i}
+                            alt={`logo ${logoName}`}
+                            width={dimensions.width}
+                            height={dimensions.height}
+                        />
+                    );
                 })}
             </div>
         </footer>
