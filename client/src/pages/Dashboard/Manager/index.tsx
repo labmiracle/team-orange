@@ -9,7 +9,7 @@ export default function Manager() {
     const [showModal, setShowModal] = useState(false);
     const data = useLoaderData() as Product[];
     const [products, setProducts] = useState<Product[]>(data);
-    const [product, setProduct] = useState<Product | null>(null);
+    const [product, setProduct] = useState<Product>({} as Product);
 
     const productService = new ProductService();
 
@@ -19,9 +19,15 @@ export default function Manager() {
 
     async function handleUpdate(product: Product) {
         setProduct(product);
+        setShowModal(true);
     }
 
-    const productsRows = data.map(product => {
+    function handleModalClose() {
+        setProducts(prev => prev.map(prd => prd.id === product.id ? product : prd))
+        setShowModal(false)
+    }
+
+    const productsRows = products.map(product => {
         return (
             <tr>
                 <td>{product.id}</td>
@@ -45,7 +51,7 @@ export default function Manager() {
 
     return (
         <>
-            <Modal title="Select store to manage" isOpen={showModal} handleClose={() => setShowModal(false)}>
+            <Modal title="Select store to manage" isOpen={showModal} handleClose={handleModalClose}>
                 <FormProduct product={product} setProduct={setProduct}/>
             </Modal>
             <table>

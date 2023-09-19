@@ -1,4 +1,5 @@
 import { Product } from "../../../../types";
+import { ProductService } from "../../../../services/Product.service";
 
 export default function FormProduct({product, setProduct}: {product: Product, setProduct: React.Dispatch<React.SetStateAction<Product>>}) {
 
@@ -8,8 +9,14 @@ export default function FormProduct({product, setProduct}: {product: Product, se
     setProduct(prev => ({...prev, [name]: value}))
   }
 
+  async function handleSubmitUpdate(event: React.ChangeEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const productService = new ProductService()
+    await productService.update(product)
+  }
+
     return (
-        <form>
+        <form onSubmit={handleSubmitUpdate}>
             <label htmlFor="name" >name:&nbsp</label>
             <input type="text" id="name" name="name" value={product.name} onChange={handleChange}/>
             <label htmlFor="description" >description:&nbsp</label>
@@ -24,6 +31,7 @@ export default function FormProduct({product, setProduct}: {product: Product, se
             <input type="number" min={0} id="reorderPoint" name="reorderPoint" value={product.reorderPoint} onChange={handleChange}/>
             <label htmlFor="minimum" >minimum:&nbsp</label>
             <input type="number" min={0} id="minimum" name="minimum" value={product.minimum} onChange={handleChange}/>
+            <button type="submit">update!</button>
         </form>
     );
 }
