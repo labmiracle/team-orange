@@ -103,7 +103,7 @@ export const Router = createBrowserRouter([
                         <Manager />
                     </RequiredPage>
                 ),
-                loader: ProductsLoader.getByManagerId,
+                loader: StoresLoader.getByManagerId,
             },
         ],
     },

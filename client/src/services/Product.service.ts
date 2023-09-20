@@ -55,16 +55,6 @@ export class ProductService {
         }
     }
 
-    async getByManager(managerId: number) {
-        try {
-            const url = `${baseEndpoints.products.getByManager}/${managerId}`;
-            const products = await Fetcher.query<ProductResponse>(url, { method: "GET" });
-            return products.data;
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
     async post(products: Product[]) {
         try {
             const url = `${baseEndpoints.products.get}`;

@@ -68,6 +68,11 @@ export default function Layout() {
                                         Admin
                                     </NavLink>
                                 )}
+                                {user.rol == "Manager" && (
+                                    <NavLink to={`/manager/${user.id}`} className={styles.link}>
+                                        Manager
+                                    </NavLink>
+                                )}
                             </>
                         ) : (
                             <>

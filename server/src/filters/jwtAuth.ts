@@ -32,7 +32,7 @@ export class JWTAuthFilter implements IFilter {
 export class isAdminFilter implements IFilter {
     constructor(private readonly userRepo: UserRepository) {}
 
-    async beforeExecute(httpContext: HttpContext): Promise<void> {
+    async beforeExecute(): Promise<void> {
         const { email } = this.userRepo.getAuth();
         const user = await this.userRepo.getById(email);
         if (user.rol !== "Admin") throw new Error("Unauthorized");
@@ -43,7 +43,7 @@ export class isAdminFilter implements IFilter {
 export class isManagerFilter implements IFilter {
     constructor(private readonly userRepo: UserRepository) {}
 
-    async beforeExecute(httpContext: HttpContext): Promise<void> {
+    async beforeExecute(): Promise<void> {
         const { email } = this.userRepo.getAuth();
         const user = await this.userRepo.getById(email);
         if (user.rol !== "Manager") throw new Error("Unauthorized");
@@ -60,7 +60,8 @@ export class authProductFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const { email: emailUser } = this.userRepo.getAuth();
         const { id: idProduct } = httpContext.request.body;
-        const emailManager = await this.productDBRepo.getManager(idProduct);
+        const { productId } = httpContext.request.params;
+        const emailManager = await this.productDBRepo.getManager(idProduct ?? productId);
         if (emailManager !== emailUser) throw new Error("Unauthorized Store");
     }
 }

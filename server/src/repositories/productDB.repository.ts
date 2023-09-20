@@ -62,6 +62,7 @@ export class ProductDBRepository extends EditRepositoryBase<ProductDB> {
         delete rest.storeId;
         await this.update({ brandId: brandName[0].id, ...rest });
         const product = await this.productRepo.getById(entity.id);
+        if (!product) throw new Error("Product not found");
 
         if (entity.categories.length !== product.categories.length || entity.categories.some((val, index) => val !== product.categories[index])) {
             await this.productCategoryRepo.delete({ productId: entity.id });
@@ -87,6 +88,7 @@ export class ProductDBRepository extends EditRepositoryBase<ProductDB> {
             "SELECT email FROM product p JOIN store s ON s.id = p.storeId JOIN user u ON u.id = s.managerId WHERE p.id = ?",
             [idProduct]
         );
+        if (product.length === 0) throw new Error("Manager email not found");
         return product[0].email;
     }
 }

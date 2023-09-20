@@ -22,7 +22,8 @@ PRODUCTS
 }
 
 .sidebar p {
-    color: #fff;
+    color: var(--text-primary);
+    font-weight: bold;
 }
 
 .sizes_menu ul,

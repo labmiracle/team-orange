@@ -68,6 +68,10 @@ export type StoreType = {
     status: number;
 };
 
+export type StoreWithProducts = StoreType & {
+    products: Product[];
+};
+
 export type setFilterType = ({ category, size }: { category?: string; size?: string }) => void;
 
 export type LoaderResponse<T> = {

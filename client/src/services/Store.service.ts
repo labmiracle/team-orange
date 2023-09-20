@@ -1,6 +1,6 @@
 import { baseEndpoints } from "../endpoints";
 import Fetcher from "./Fetcher";
-import { StoreType } from "../types/index";
+import { StoreType, StoreWithProducts } from "../types/index";
 
 export class StoreService {
     async getNames() {
@@ -41,5 +41,11 @@ export class StoreService {
 
     async delete(storeId: number) {
         await Fetcher.query(baseEndpoints.stores.delete + `/${storeId}`, { method: "DELETE" });
+    }
+
+    async getByManager(managerId: number) {
+        const url = `${baseEndpoints.stores.getByManager}/${managerId}`;
+        const response = await Fetcher.query<StoreWithProducts>(url, { method: "GET" });
+        return response.data;
     }
 }

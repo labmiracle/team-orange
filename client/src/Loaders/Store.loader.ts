@@ -34,4 +34,12 @@ export const StoresLoader = {
         const stores = await storeService.getAll();
         return stores;
     },
+
+    async getByManagerId({ params }: { params: Params<string> }) {
+        const storeService = new StoreService();
+        const { managerId } = params;
+        const data = await storeService.getByManager(Number(managerId));
+        if (!data) throw new Error("store not found");
+        return data;
+    },
 };

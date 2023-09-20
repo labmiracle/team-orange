@@ -99,15 +99,6 @@ export class StoreController extends ApiController {
         await this.storeRepo.delete({ id: storeId });
     }
 
-    @Path("/:storeId")
-    @PUT
-    @Response<void>(200, "Restore a store setting it's status to 1")
-    @Response(500, "Store not found", null)
-    @Action({ route: "/:storeId", method: HttpMethod.PUT, filters: [JWTAuthFilter, isAdminFilter] })
-    async restoreStore(@PathParam("storeId") storeId: number) {
-        await this.storeRepo.update({ id: storeId, status: 1 });
-    }
-
     @Path("/")
     @POST
     @Response<StoreInterface>(200, "Create a store")
@@ -139,8 +130,8 @@ export class StoreController extends ApiController {
      * @param store
      * @returns
      */
-    @PUT
     @Path("/update")
+    @PUT
     @Response<void>(200, "Update a Store")
     @Response(500, "Store not found.")
     @Action({
@@ -150,6 +141,7 @@ export class StoreController extends ApiController {
         method: HttpMethod.PUT,
     })
     async update(store: StoreInterface) {
+        console.log("update hit");
         const { id: idManager } = this.userRepo.getAuth();
         const { id: idStore } = (await this.storeRepo.find({ managerId: idManager }))[0];
         const colors = store.colors;
@@ -164,5 +156,34 @@ export class StoreController extends ApiController {
             const { id: idSecondary } = (await this.storeColorRepo.find({ storeId: idStore, type: "SECONDARY" }))[0];
             await this.storeColorRepo.update({ ...colors.secondary, id: idSecondary });
         }
+    }
+
+    @Path("/restore/:storeId")
+    @PUT
+    @Response<void>(200, "Restore a store setting it's status to 1")
+    @Response(500, "Store not found", null)
+    @Action({ route: "/:storeId", method: HttpMethod.PUT, filters: [JWTAuthFilter, isAdminFilter] })
+    async restoreStore(@PathParam("storeId") storeId: number) {
+        await this.storeRepo.update({ id: storeId, status: 1 });
+    }
+
+    /**
+     * GET all products from a manager id
+     * @returns products array
+     */
+    @GET
+    @Path("/manager/:managerId")
+    @Response<StoreInterface[]>(200, "Retrieve Store")
+    @Response(500, "Store not found")
+    @Response(500, "Products not found")
+    @Action({ route: "/manager/:managerId", method: HttpMethod.GET, filters: [JWTAuthFilter, isManagerFilter] })
+    async getByManager(@PathParam("managerId") managerId: number) {
+        const { id } = (await this.storeRepo.find({ managerId: Number(managerId) }))[0];
+        const store = await this.getById(id);
+        if (!store) throw new Error("Store not found");
+        const products = await this.productRepo.find({ storeId: id, status: 1 });
+        if (!products) throw new Error("Products not found");
+        store.products = products;
+        return store;
     }
 }

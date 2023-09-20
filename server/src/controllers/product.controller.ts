@@ -77,20 +77,6 @@ export class ProductController extends ApiController {
         return product;
     }
 
-    /**
-     * GET all products from a manager id
-     * @returns products array
-     */
-    @GET
-    @Path("/manager/:managerId")
-    @Response<ProductInterface[]>(200, "Retrieve Products")
-    @Response(500, "Products not found")
-    @Action({ route: "/:managerId", method: HttpMethod.GET })
-    async getByManager(@PathParam("managerId") managerId: number) {
-        const products = await this.productRepo.getByManagerId(Number(managerId));
-        if (!products) throw new Error("Products not found");
-        return products;
-    }
     // /**
     //  * GET all products from a store id and a query
     //  * ?page_number=1&product_amount=20
@@ -182,6 +168,7 @@ export class ProductController extends ApiController {
         method: HttpMethod.PUT,
     })
     async update(entity: ProductInterface) {
+        console.log("update hit");
         this.unitOfWork.beginTransaction();
         try {
             await this.productDBRepo.updateProduct(entity);
