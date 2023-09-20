@@ -37,6 +37,9 @@ export function Product({ product, sequencer, setSequencer }: ProductProps) {
                         className={styles.product_img}
                         src={`${assetsUrl}/${product.url_img}`}
                         alt={product.name}
+                        width={400}
+                        height={540}
+                        loading="lazy"
                     />
                     <div className={styles.infoProduct}>
                         <p>{product.brand.toUpperCase()}</p>
