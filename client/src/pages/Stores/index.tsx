@@ -16,7 +16,7 @@ type ProductProps = {
 
 export default function Store() {
     const navigation = useNavigation();
-    const { colors }: { colors: ColorsType } = useLoaderData() as { colors: ColorsType };
+    const { colors } = useLoaderData() as { colors: ColorsType };
     setColors(colors);
 
     const [filter, setFilter, products, loading] = useProducts();

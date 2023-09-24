@@ -5,7 +5,7 @@ import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
 import { StoreName, Token } from "../../types";
-import { useAuthContext } from "../../Context/authContext";
+import { useAuthContext } from "../../Context/AuthContext";
 import Fetcher from "../../services/Fetcher";
 import { useEffect, useState } from "react";
 import { decodeJwt } from "jose";

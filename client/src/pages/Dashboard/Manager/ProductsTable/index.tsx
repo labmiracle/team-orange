@@ -1,13 +1,13 @@
 import { useLoaderData } from "react-router-dom";
-import { Product, StoreWithProducts } from "../../../../types";
-import { ProductService } from "../../../../services/Product.service";
-import { Modal } from "../../../../components/ui/Modal";
+import { Product, StoreWithProducts } from "@/types";
+import { ProductService } from "@/services/Product.service";
+import { Modal } from "@/components/ui/Modal";
 import { useState } from "react";
-import FormProduct from "./FormProduct";
+import FormUpdateProduct from "./Update/FormUpdateProduct";
 import styles from "../index.module.css";
 
 export default function ProductsTable() {
-    const [showModal, setShowModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
     const data = useLoaderData() as StoreWithProducts;
     const [products, setProducts] = useState<Product[]>(data.products);
     const [product, setProduct] = useState<Product>({} as Product);
@@ -25,12 +25,12 @@ export default function ProductsTable() {
 
     async function handleUpdate(product: Product) {
         setProduct(product);
-        setShowModal(true);
+        setShowUpdateModal(true);
     }
 
     function handleModalClose() {
-        setProducts(prev => prev.map(prd => (prd.id === product.id ? product : prd)));
-        setShowModal(false);
+        setShowUpdateModal(false);
+        setProduct({} as Product);
     }
 
     const productsRows = products.map(product => {
@@ -61,8 +61,8 @@ export default function ProductsTable() {
 
     return (
         <>
-            <Modal title="Select store to manage" isOpen={showModal} handleClose={handleModalClose}>
-                <FormProduct product={product} setProduct={setProduct} />
+            <Modal title="Update Product" isOpen={showUpdateModal} handleClose={handleModalClose}>
+                <FormUpdateProduct product={product} setProduct={setProduct} setProducts={setProducts} />
             </Modal>
             <table className={styles.table}>
                 <thead>

@@ -3,6 +3,7 @@ import { StoresLoader } from "./Loaders/Store.loader.ts";
 import { ProductsLoader } from "./Loaders/Product.loader.ts";
 import { UserLoader } from "./Loaders/User.loader.ts";
 import { lazy } from "react";
+import CreateProductContainer from "./pages/Dashboard/Manager/CreateProduct/CreateProductContainer.tsx";
 
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -104,6 +105,10 @@ export const Router = createBrowserRouter([
                     </RequiredPage>
                 ),
                 loader: StoresLoader.getByManagerId,
+            },
+            {
+                path: "/manager/create_product",
+                element: <CreateProductContainer />,
             },
         ],
     },

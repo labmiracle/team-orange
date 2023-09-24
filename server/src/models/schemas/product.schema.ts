@@ -67,12 +67,8 @@ export const productSchema = Joi.object({
     brand: Joi.string().required().messages({
         "any.required": "brand is a required field",
     }),
-    url_img: Joi.string().required().messages({
-        "any.required": "image path is a required field",
-    }),
-    storeId: Joi.number().optional().messages({
-        "any.forbidden": "storeId is a forbidden field",
-    }),
+    url_img: Joi.string().default(""),
+    storeId: Joi.number().optional(),
     status: Joi.number().optional(),
 });
 

@@ -1,5 +1,5 @@
 import { baseEndpoints } from "../endpoints";
-import { Product, ProductResponse } from "../types";
+import { Product, ProductResponse, ProductForCreation } from "../types";
 import Fetcher from "./Fetcher";
 type FilterProps = {
     storeId: number;
@@ -55,7 +55,7 @@ export class ProductService {
         }
     }
 
-    async post(products: Product[]) {
+    async post(products: ProductForCreation[]) {
         try {
             const url = `${baseEndpoints.products.get}`;
             const productsResponse = await Fetcher.query<ProductResponse>(url, {

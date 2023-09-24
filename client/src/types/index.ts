@@ -15,6 +15,20 @@ export type Product = {
     total?: number;
 };
 
+export type ProductForCreation = {
+    name: string;
+    brand: string;
+    reorderPoint: number;
+    minimum: number;
+    price: number;
+    discountPercentage: number;
+    description: string;
+    url_img: string;
+    sizes: string[];
+    categories: string[];
+    currentStock: number;
+};
+
 export interface ProductResponse {
     products: Product[];
     pagination: {
