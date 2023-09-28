@@ -28,44 +28,66 @@ export class ProductDBRepository extends EditRepositoryBase<ProductDB> {
 
     async insertProduct(product: Product, id: number): Promise<InsertionResult<number>> {
         const { categories, sizes, brand, ...rest } = product;
-        const brandName = await this.brandRepo.find({ name: brand });
-        if (!brandName) throw new Error("No brand with that name");
+
+        let brandId;
+        try {
+            const [brandName] = await this.brandRepo.find({ name: brand });
+            brandId = brandName.id;
+        } catch (e) {
+            if (e.message === "Unable to retrieve Brand") {
+                const insertedBrand = await this.brandRepo.insertOne({ name: brand });
+                brandId = insertedBrand.insertId;
+            }
+        }
+
         const result = await this.insertOne({
             ...rest,
             storeId: id,
-            brandId: brandName[0].id,
+            brandId: brandId,
         });
+
         if (!result.insertId) throw new Error("Product creation failed");
+
         for (const category of categories) {
-            const [categoryResponse] = await this.categoryRepo.find({ name: category });
-            if (categoryResponse) {
-                await this.productCategoryRepo.insertOne({
-                    productId: result.insertId,
-                    categoryId: categoryResponse.id,
-                });
-            } else {
-                const categoryCreated = await this.categoryRepo.insertOne({ name: category });
-                await this.productCategoryRepo.insertOne({
-                    productId: result.insertId,
-                    categoryId: categoryCreated.insertId,
-                });
+            try {
+                const [categoryResponse] = await this.categoryRepo.find({ name: category });
+                if (categoryResponse) {
+                    await this.productCategoryRepo.insertOne({
+                        productId: result.insertId,
+                        categoryId: categoryResponse.id,
+                    });
+                }
+            } catch (e) {
+                if (e.message === "Unable to retrieve Category") {
+                    const categoryCreated = await this.categoryRepo.insertOne({ name: category });
+                    await this.productCategoryRepo.insertOne({
+                        productId: result.insertId,
+                        categoryId: categoryCreated.insertId,
+                    });
+                }
             }
         }
+
         for (const size of sizes) {
-            const [sizeResponse] = await this.sizeRepo.find({ name: size });
-            if (sizeResponse) {
-                await this.productSizeRepo.insertOne({
-                    productId: result.insertId,
-                    sizeId: sizeResponse.id,
-                });
-            } else {
-                const sizeCreated = await this.sizeRepo.insertOne({ name: size });
-                await this.productSizeRepo.insertOne({
-                    productId: result.insertId,
-                    sizeId: sizeCreated.insertId,
-                });
+            try {
+                const [sizeResponse] = await this.sizeRepo.find({ name: size });
+                if (sizeResponse) {
+                    await this.productSizeRepo.insertOne({
+                        productId: result.insertId,
+                        sizeId: sizeResponse.id,
+                    });
+                }
+            } catch (e) {
+                if (e.message === "Unable to retrieve Size") {
+                    const sizeCreated = await this.sizeRepo.insertOne({ name: size });
+                    await this.productSizeRepo.insertOne({
+                        productId: result.insertId,
+                        sizeId: sizeCreated.insertId,
+                    });
+                }
             }
         }
+
         return result;
     }
 

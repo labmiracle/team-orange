@@ -1,11 +1,16 @@
-import { ProductForCreation, Product as ProductType } from "@/types";
+import { ProductForCreation } from "@/types";
 import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import FormCreateProduct from "./FormCreateProduct";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "@/Context/AuthContext";
+import { useContext } from "../index";
+import { ProductService } from "@/services/Product.service";
 
 export default function CreateProductContainer() {
     const navigate = useNavigate();
+    const { user } = useAuthContext();
+    const { setCreate } = useContext();
     const [productsToCreate, setProductsToCreate] = useState<ProductForCreation[]>([
         {
             name: "",
@@ -18,20 +23,20 @@ export default function CreateProductContainer() {
             categories: [],
             sizes: [],
             currentStock: 0,
-            url_img: "",
+            // url_img: "",
         },
     ]);
 
     async function handleSubmit(event: React.ChangeEvent<HTMLFormElement>) {
         event.preventDefault();
-        console.log(productsToCreate);
-        // const productService = new ProductService();
-        // try {
-        //     await productService.post(productsToCreate);
-        // } catch (e) {
-        //     throw Error((e as Error).message);
-        // }
-        //setProducts(prev => [...prev, ...productsToCreate]);
+        const productService = new ProductService();
+        try {
+            await productService.post(productsToCreate);
+        } catch (e) {
+            throw Error((e as Error).message);
+        }
+        setCreate(false);
+        navigate(`/manager/${user?.id}`);
     }
 
     function handleAddProductToCreate() {
@@ -72,9 +77,15 @@ export default function CreateProductContainer() {
 
     return (
         <div>
-            <button onClick={() => navigate(-1)}>{"<- back"}</button>
-            <form onSubmit={handleSubmit} className={styles.product_create_form}>
-                <div>{productsInputs}</div>
+            <button
+                onClick={() => {
+                    setCreate(false);
+                    navigate(`/manager/${user?.id}`);
+                }}>
+                {"<- back"}
+            </button>
+            <form onSubmit={handleSubmit} className={styles.product_create_form} encType="multipart/form-data">
+                {productsInputs}
                 <button onClick={handleAddProductToCreate} className={styles.add_btn}>
                     ➕
                 </button>
@@ -84,21 +95,4 @@ export default function CreateProductContainer() {
             </form>
         </div>
     );
-
-    /* return (
-        <main>
-            <button onClick={() => navigate(-1)} aria-roledescription="navigate back">
-                BACK
-            </button>
-            <form onSubmit={handleSubmitCreate} className={styles.form}>
-                {productsInputs}
-                <button onClick={handleAddProductToCreate} className={styles.add_btn}>
-                    ➕
-                </button>
-                <button className={styles.submit_btn} type="submit">
-                    create!
-                </button>
-            </form>
-        </main>
-    ); */
 }

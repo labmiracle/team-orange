@@ -34,40 +34,41 @@ export const productSchema = Joi.object({
     }),
     categories: Joi.array()
         .items(
-            Joi.string().valid(
-                "Chaqueta",
-                "Sudadera",
-                "Zapatillas",
-                "Vestido",
-                "Pantalon",
-                "Shorts",
-                "Blusa",
-                "Zapatos",
-                "Gorra",
-                "Traje",
-                "Polo",
-                "Jersey",
-                "Camisa",
-                "Sandalias",
-                "Jeans",
-                "Blazer",
-                "Falda",
-                "Camiseta",
-                "Botas",
-                "Traje de baño"
-            )
+            Joi.string()
+            // .valid(
+            //     "Chaqueta",
+            //     "Sudadera",
+            //     "Zapatillas",
+            //     "Vestido",
+            //     "Pantalon",
+            //     "Shorts",
+            //     "Blusa",
+            //     "Zapatos",
+            //     "Gorra",
+            //     "Traje",
+            //     "Polo",
+            //     "Jersey",
+            //     "Camisa",
+            //     "Sandalias",
+            //     "Jeans",
+            //     "Blazer",
+            //     "Falda",
+            //     "Camiseta",
+            //     "Botas",
+            //     "Traje de baño"
+            // )
         )
         .required()
         .messages({
             "any.required": "categories is a required field",
         }),
-    sizes: Joi.array().items(Joi.string().valid("Hombre", "Mujer", "Niños")).required().messages({
+    sizes: Joi.array().items(Joi.string() /*.valid("Hombre", "Mujer", "Niños")*/).required().messages({
         "any.required": "sizes is a required field",
     }),
     brand: Joi.string().required().messages({
         "any.required": "brand is a required field",
     }),
-    url_img: Joi.string().default(""),
+    url_img: Joi.string().optional(),
     storeId: Joi.number().optional(),
     status: Joi.number().optional(),
 });

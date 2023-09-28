@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS Product(
     reorderPoint INT NOT NULL,
     minimum INT NOT NULL,
     brandId INT NOT NULL,
-    url_img VARCHAR(255) NOT NULL,
+    url_img VARCHAR(255) DEFAULT "images/placeholder.jpg",
     storeId INT NOT NULL,
     status BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_brandId_p FOREIGN KEY (brandId) REFERENCES Brand(id),

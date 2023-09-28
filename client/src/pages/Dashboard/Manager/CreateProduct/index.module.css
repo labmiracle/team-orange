@@ -13,6 +13,11 @@
     gap: 14px;
 }
 
+.product_container legend {
+    display: flex;
+    gap: 20px;
+}
+
 .add_btn {
     border-radius: 50%;
     width: 30px;
@@ -25,21 +30,55 @@
     cursor: pointer;
 }
 
-.tag {
-    display: inline-block;
-    white-space: nowrap;
-    color: white;
-    background-color: grey;
-    width: fit-content;
-    border-radius: 10px;
-    padding: 4px 9px;
+.input_container input {
+    width: 100%;
 }
 
-.tag button {
-    border: none;
-    background-color: inherit;
-    color: inherit;
+.product_container label {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--primary);
+    color: var(--text-primary);
+    width: 100%;
+    height: 100%;
+}
+
+.product_container label input {
+    flex-grow: 1;
+}
+
+/* TagInput */
+
+.container {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.input_container {
+    position: relative;
+}
+
+.category_suggestions {
+    max-height: 100px;
+    scroll-behavior: auto;
+    background: #fff;
+    overflow-y: scroll;
+    position: absolute;
+    width: 100%;
+}
+
+.category_suggestions ul {
+    padding: 0;
+}
+
+.category_suggestions ul li {
+    width: 100%;
     cursor: pointer;
+    padding: 5px 10px;
+}
+
+.category_suggestions ul li:hover {
+    background: var(--tertiary);
 }
 
 .input_tag_container {
@@ -57,15 +96,19 @@
     border: none;
 }
 
-.product_container label {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--primary);
-    color: var(--text-primary);
-    width: 100%;
-    height: 100%;
+.tag {
+    display: inline-block;
+    white-space: nowrap;
+    color: white;
+    background-color: var(--tertiary);
+    width: fit-content;
+    border-radius: 10px;
+    padding: 4px 9px;
 }
 
-.product_container label input {
-    flex-grow: 1;
+.tag button {
+    border: none;
+    background-color: inherit;
+    color: inherit;
+    cursor: pointer;
 }

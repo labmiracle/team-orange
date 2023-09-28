@@ -23,7 +23,7 @@ export type ProductForCreation = {
     price: number;
     discountPercentage: number;
     description: string;
-    url_img: string;
+    url_img?: string;
     sizes: string[];
     categories: string[];
     currentStock: number;

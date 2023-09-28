@@ -44,7 +44,6 @@ export const Router = createBrowserRouter([
                         loader: ProductsLoader.getAllProducts,
                         element: <Products />,
                     },
-                    {},
                 ],
             },
             {
@@ -99,16 +98,23 @@ export const Router = createBrowserRouter([
             },
             {
                 path: "/manager/:managerId",
+                id: "store",
                 element: (
                     <RequiredPage rol="Manager">
                         <Manager />
                     </RequiredPage>
                 ),
                 loader: StoresLoader.getByManagerId,
-            },
-            {
-                path: "/manager/create_product",
-                element: <CreateProductContainer />,
+                children: [
+                    {
+                        path: "/manager/:managerId/create_product",
+                        element: (
+                            <RequiredPage rol="Manager">
+                                <CreateProductContainer />
+                            </RequiredPage>
+                        ),
+                    },
+                ],
             },
         ],
     },

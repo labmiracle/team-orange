@@ -28,7 +28,7 @@ table
 }
 
 .table thead tr {
-    background-color: var(--tertiary);
+    background-color: var(--primary);
     color: var(--text-primary);
     text-align: left;
 }
@@ -53,5 +53,4 @@ table
 
 .table tbody tr:hover {
     background-color: var(--tertiary);
-    filter: saturate(20%);
 }
