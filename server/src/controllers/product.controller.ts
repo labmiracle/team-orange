@@ -1,5 +1,5 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
-import { ProductInterface } from "../models/product";
+import { ProductInterface, ProductForCreationInterface } from "../models/product";
 import { ProductRepository } from "../repositories/product.repository";
 import { ProductFilter, ProductArrayFilter } from "../filters/product.filter";
 import { ProductDBRepository } from "../repositories/productDB.repository";
@@ -117,19 +117,31 @@ export class ProductController extends ApiController {
     @Path("/")
     @Response<ProductInterface>(201, "Insert a Product on the Database.")
     @Response(500, "Product insert failed.")
-    @Action({ route: "/", filters: [ProductArrayFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
-    async post(products: ProductInterface[]) {
+    @Action({ route: "/", filters: [/* ProductArrayFilter, */ JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
+    async post(product: ProductForCreationInterface) {
+        //image
+        const file = this.httpContext.request.file;
+        console.log("file", file);
+        console.log("dest:", `${file.destination}${file.originalname}`);
+        delete product.img_file;
+        const productToCreate = {
+            ...product,
+            categories: product.categories.split(","),
+            sizes: product.sizes.split(","),
+            url_img: `${file.destination}${file.originalname}`,
+        } as ProductInterface;
+
         const { id: idManager } = this.userRepo.getAuth();
         const { id } = (await this.storeRepo.find({ managerId: idManager }))[0];
         if (!id) throw new Error("Store not found");
         const resultProducts = [] as ProductInterface[];
         this.unitOfWork.beginTransaction();
         try {
-            for (const product of products) {
-                const result = await this.productDBRepo.insertProduct(product, id);
-                const newProduct = await this.productRepo.getById(result.insertId);
-                resultProducts.push(newProduct);
-            }
+            //for (const product of products) {
+            const result = await this.productDBRepo.insertProduct(productToCreate, id);
+            const newProduct = await this.productRepo.getById(result.insertId);
+            resultProducts.push(newProduct);
+            //}
         } catch (e) {
             this.unitOfWork.rollbackTransaction();
             this.unitOfWork.commitTransaction();

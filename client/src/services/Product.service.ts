@@ -55,12 +55,13 @@ export class ProductService {
         }
     }
 
-    async post(products: ProductForCreation[]) {
+    async post(product: FormData) {
         try {
             const url = `${baseEndpoints.products.get}`;
             const productsResponse = await Fetcher.query<ProductResponse>(url, {
                 method: "POST",
-                data: products,
+                data: product,
+                form: true,
             });
             return productsResponse.data;
         } catch (e) {

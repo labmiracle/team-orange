@@ -1,6 +1,7 @@
 import { ProductForCreation } from "@/types";
 import TagInput from "./TagInput";
 import styles from "./index.module.css";
+import { useState } from "react";
 
 type Props = {
     index: number;
@@ -9,17 +10,26 @@ type Props = {
 };
 
 export default function FormCreateProduct({ index, productsToCreate, setProductsToCreate }: Props) {
+    const [imagePreview, setImagePreview] = useState("");
+
     function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const name = event.currentTarget.name;
         const value = event.currentTarget.value;
         setProductsToCreate(prev => prev.map((p, i) => (i === index ? { ...p, [name]: value } : p)));
     }
-    console.log(productsToCreate);
+
+    function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
+        if (!event.currentTarget.files) return;
+        const file = event.currentTarget.files[0];
+        setProductsToCreate(prev => prev.map((p, i) => (i === index ? { ...p, img_file: file } : p)));
+        setImagePreview(URL.createObjectURL(file));
+    }
+
     return (
         <fieldset className={styles.product_container}>
             <legend>Product {index + 1}</legend>
             <label>
-                name
+                name*
                 <input
                     type="text"
                     id="name"
@@ -30,7 +40,7 @@ export default function FormCreateProduct({ index, productsToCreate, setProducts
                 />
             </label>
             <label>
-                description
+                description*
                 <textarea
                     id="description"
                     name="description"
@@ -40,7 +50,7 @@ export default function FormCreateProduct({ index, productsToCreate, setProducts
                 />
             </label>
             <label>
-                price
+                price*
                 <input
                     type="number"
                     min={0}
@@ -67,7 +77,7 @@ export default function FormCreateProduct({ index, productsToCreate, setProducts
                 />
             </label>
             <label>
-                brand
+                brand*
                 <input
                     type="text"
                     id="brand"
@@ -102,11 +112,11 @@ export default function FormCreateProduct({ index, productsToCreate, setProducts
                 />
             </label>
             <label>
-                categories
+                categories*
                 <TagInput index={index} name={"categories"} setProductsToCreate={setProductsToCreate} />
             </label>
             <label>
-                sizes
+                sizes*
                 <TagInput index={index} name={"sizes"} setProductsToCreate={setProductsToCreate} />
             </label>
             <label>
@@ -118,8 +128,12 @@ export default function FormCreateProduct({ index, productsToCreate, setProducts
                     name="currentStock"
                     value={productsToCreate[index].currentStock}
                     onChange={handleChange}
-                    required
                 />
+            </label>
+            <label>
+                image
+                {imagePreview && <img src={imagePreview} width={60} height={60} />}
+                <input type="file" name="img_file" onChange={handleImage} />
             </label>
         </fieldset>
     );

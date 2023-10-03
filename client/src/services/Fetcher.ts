@@ -15,16 +15,17 @@ class Fetcher {
         return Fetcher.instance;
     }
 
-    async query<T>(url: string, options?: { method: string; data?: any; token?: string }) {
+    async query<T>(url: string, options?: { method: string; data?: any; token?: string; form?: boolean }) {
         const config: HttpRequest = new HttpRequest(url);
         config.method = options?.method;
         config.headers = new HttpHeaders();
-        config.headers.set("content-type", "application/json");
+        //config.headers.set("content-type", "application/json");
+
         if (options?.token) {
             config.headers.set("x-auth", options.token);
         }
         if (options?.data) {
-            config.body = JSON.stringify(options.data);
+            config.body = options.form ? options.data : JSON.stringify(options.data);
         }
         const response = await this.fetcher.request(config);
         const body = await response.json();

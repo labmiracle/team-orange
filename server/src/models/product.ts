@@ -23,6 +23,24 @@ export interface ProductInterface {
     status?: number;
 }
 
+export interface ProductForCreationInterface {
+    name: string;
+    brand: string;
+    /** @IsInt */
+    reorderPoint: number;
+    /** @IsInt */
+    minimum: number;
+    price: number;
+    /** @IsInt */
+    discountPercentage: number;
+    description: string;
+    img_file?: File;
+    sizes: string;
+    categories: string;
+    /** @IsInt */
+    currentStock: number;
+}
+
 export interface ProductSaleInterface extends ProductInterface {
     quantity: number;
     total?: number;

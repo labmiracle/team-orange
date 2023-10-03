@@ -13,7 +13,17 @@ import cookieParser from "cookie-parser";
 import { CheckoutController } from "./controllers/checkout.controller";
 import path from "path";
 import { ResponseFilter } from "./filters/response.filter";
+import multer from "multer";
+const storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "public/");
+    },
+    filename: function (req, file, callback) {
+        callback(null, file.originalname);
+    },
+});
 
+const upload = multer({ storage: storage }).single("img_file");
 /**
  * Represents the api server application.
  * It contains the main DI container, the router and express application.
@@ -35,6 +45,7 @@ export class Server extends ApiServer {
             .use(express.urlencoded({ extended: false }))
             .use(express.json())
             .use(cookieParser())
+            .use(upload)
             .use("/images", express.static("./public"))
             .use(express.static(path.join(__dirname, "../../client/dist")))
             .get("/", (req, res) => res.sendFile(path.join(__dirname, "../../client/dist/index.html")))

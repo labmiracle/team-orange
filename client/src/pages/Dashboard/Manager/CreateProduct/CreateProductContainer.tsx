@@ -1,8 +1,8 @@
-import { ProductForCreation } from "@/types";
+import { ProductForCreation, StoreWithProducts } from "@/types";
 import styles from "./index.module.css";
 import { useEffect, useState } from "react";
 import FormCreateProduct from "./FormCreateProduct";
-import { useNavigate } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/Context/AuthContext";
 import { useContext } from "../index";
 import { ProductService } from "@/services/Product.service";
@@ -11,30 +11,48 @@ export default function CreateProductContainer() {
     const navigate = useNavigate();
     const { user } = useAuthContext();
     const { setCreate } = useContext();
+    const data = useLoaderData() as StoreWithProducts;
+
     const [productsToCreate, setProductsToCreate] = useState<ProductForCreation[]>([
         {
             name: "",
             description: "",
             price: 0,
-            discountPercentage: 0,
+            discountPercentage: 1,
             brand: "",
             reorderPoint: 0,
             minimum: 0,
             categories: [],
             sizes: [],
             currentStock: 0,
-            // url_img: "",
+            img_file: {} as File,
         },
     ]);
 
     async function handleSubmit(event: React.ChangeEvent<HTMLFormElement>) {
         event.preventDefault();
         const productService = new ProductService();
-        try {
-            await productService.post(productsToCreate);
-        } catch (e) {
-            throw Error((e as Error).message);
+
+        for (const product of productsToCreate) {
+            const form = new FormData();
+            for (const prop in product) {
+                const value = product[prop as keyof ProductForCreation] as string | Blob;
+                if (!value) return;
+                if (Array.isArray(prop)) {
+                    for (const value of prop) {
+                        form.append(prop, value);
+                    }
+                } else {
+                    form.append(prop, value);
+                }
+            }
+            try {
+                await productService.post(form);
+            } catch (e) {
+                throw Error((e as Error).message);
+            }
         }
+
         setCreate(false);
         navigate(`/manager/${user?.id}`);
     }
@@ -47,14 +65,14 @@ export default function CreateProductContainer() {
                     name: "",
                     description: "",
                     price: 0,
-                    discountPercentage: 0,
+                    discountPercentage: 1,
                     brand: "",
                     reorderPoint: 0,
                     minimum: 0,
                     categories: [],
                     sizes: [],
                     currentStock: 0,
-                    url_img: "",
+                    img_file: {} as File,
                 },
             ];
         });
