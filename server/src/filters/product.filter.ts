@@ -36,26 +36,3 @@ export class ProductSaleArrayFilter implements IFilter {
         if (error) throw new Error(error.details[0].message);
     }
 }
-
-/**
- * Process image from product creation form
- */
-
-/* declare class nextFunction {
-    readonly next: NextFunction;
-    constructor(next: NextFunction);
-} */
-
-@Injectable({ lifeTime: DependencyLifeTime.Scoped })
-export class HandleImages implements IFilter {
-    async beforeExecute(httpContext: HttpContext): Promise<void> {
-        const upload = multer({ dest: ".public/" }).single("img_file");
-        upload(httpContext.request, httpContext.response, () => {
-            const body = httpContext.request.body;
-            const files = httpContext.request.file;
-            console.log(body);
-            console.log(files);
-            return httpContext.request;
-        });
-    }
-}

@@ -119,11 +119,10 @@ export class ProductController extends ApiController {
     @Response(500, "Product insert failed.")
     @Action({ route: "/", filters: [/* ProductArrayFilter, */ JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
     async post(product: ProductForCreationInterface) {
-        //image
+        //image handling
         const file = this.httpContext.request.file;
-        console.log("file", file);
-        console.log("dest:", `${file.destination}${file.originalname}`);
         delete product.img_file;
+
         const productToCreate = {
             ...product,
             categories: product.categories.split(","),
@@ -137,11 +136,9 @@ export class ProductController extends ApiController {
         const resultProducts = [] as ProductInterface[];
         this.unitOfWork.beginTransaction();
         try {
-            //for (const product of products) {
             const result = await this.productDBRepo.insertProduct(productToCreate, id);
             const newProduct = await this.productRepo.getById(result.insertId);
             resultProducts.push(newProduct);
-            //}
         } catch (e) {
             this.unitOfWork.rollbackTransaction();
             this.unitOfWork.commitTransaction();
