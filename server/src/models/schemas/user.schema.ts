@@ -74,6 +74,8 @@ export const userDBSchema = Joi.object({
     idDocumentNumber: Joi.number().integer(),
     rol: Joi.string().optional(),
     status: Joi.number().optional(),
+    createdAt: Joi.date(),
+    updatedAt: Joi.date(),
 });
 
 export const userDBArray = Joi.array().items(userDBSchema);

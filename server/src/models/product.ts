@@ -24,6 +24,8 @@ export interface ProductInterface {
 }
 
 export interface ProductForCreationInterface {
+    /** @IsInt */
+    id?: number;
     name: string;
     brand: string;
     /** @IsInt */
@@ -34,7 +36,7 @@ export interface ProductForCreationInterface {
     /** @IsInt */
     discountPercentage: number;
     description: string;
-    img_file?: File;
+    img_file?: File | null;
     sizes: string;
     categories: string;
     /** @IsInt */

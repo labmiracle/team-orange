@@ -276,7 +276,7 @@ export class UserController extends ApiController {
         await this.storeRepo.update({ managerId: userToChange.id, id: user.idStore });
 
         delete userToChange.password;
-        return userToChange;
+        return { ...userToChange, rol: "Manager" };
     }
 
     /**
@@ -306,6 +306,6 @@ export class UserController extends ApiController {
 
         userToChange.rol = "CLient";
         delete userToChange.password;
-        return userToChange;
+        return { ...userToChange, rol: "Client" };
     }
 }

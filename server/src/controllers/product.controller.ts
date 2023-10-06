@@ -120,6 +120,7 @@ export class ProductController extends ApiController {
     @Action({ route: "/", filters: [/* ProductArrayFilter, */ JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
     async post(product: ProductForCreationInterface) {
         //image handling
+        console.log("product", product);
         const file = this.httpContext.request.file;
         delete product.img_file;
 
@@ -127,7 +128,7 @@ export class ProductController extends ApiController {
             ...product,
             categories: product.categories.split(","),
             sizes: product.sizes.split(","),
-            url_img: `${file.destination}${file.originalname}`,
+            url_img: file ? `${file.destination}${file.originalname}` : "images/placeholder.jpg",
         } as ProductInterface;
 
         const { id: idManager } = this.userRepo.getAuth();

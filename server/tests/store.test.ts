@@ -58,6 +58,7 @@ beforeAll(async () => {
         manager.password = await bcrypt.hash("test1234", 10);
         const [managerInsert] = await pool.query<ResultSetHeader>("INSERT INTO user SET ?", [manager]);
         manager.id = managerInsert.insertId;
+        store.managerId = managerInsert.insertId;
         tokenManager = jwt.sign({ ...manager }, process.env.SHOPPY__ACCESS_TOKEN, { expiresIn: "1d" });
     } catch (err) {
         console.error(err);
