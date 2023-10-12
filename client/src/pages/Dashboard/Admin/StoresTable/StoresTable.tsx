@@ -1,10 +1,10 @@
-import { StoreName, User } from "../../../../types";
+import { StoreName, User } from "@/types";
 import styles from "../index.module.css";
-import { StoreService } from "../../../../services/Store.service";
+import { StoreService } from "@/services/Store.service";
 import { useState } from "react";
-import { Button } from "../../../../components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import CreateStore from "./CreateStore";
-import { Modal } from "../../../../components/ui/Modal";
+import { Modal } from "@/components/ui/Modal";
 
 type Props = {
     data: { users: User[]; stores: StoreName[] };
@@ -55,7 +55,7 @@ export default function StoresTable({ data, setData }: Props) {
             setMessageError((e as any).message);
             return;
         }
-        const storesUpdated = data.stores.filter(store => store.id !== storeId)
+        const storesUpdated = data.stores.filter(store => store.id !== storeId);
         setData({ ...data, stores: storesUpdated });
     };
 

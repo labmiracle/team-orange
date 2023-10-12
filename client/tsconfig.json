@@ -19,9 +19,10 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
+        //"esModuleInterop": true,
 
         /* Paths */
-        "rootDir": "./src",
+        "rootDir": "./",
         "outDir": "./dist",
         "paths": {
             "@/*": ["./src/*"],

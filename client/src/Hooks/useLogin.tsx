@@ -1,5 +1,5 @@
 import type { RegisterData } from "../types";
-import { useAuthContext } from "../Context/authContext";
+import { useAuthContext } from "../Context/AuthContext";
 import { UsersService } from "../services/User.service";
 
 export function useLogin() {

@@ -1,11 +1,11 @@
 import styles from "./index.module.css";
-import type { Product } from "../../../types";
+import type { Product } from "@/types";
 import { useLoaderData } from "react-router-dom";
-import { useCart } from "../../../Hooks/useCart";
-import { formatPrice } from "../../utilities/formatPrice";
-import { Button } from "../../../components/ui/Button";
+import { useCart } from "@/Hooks/useCart";
+import { formatPrice } from "@/pages/utilities/formatPrice";
+import { Button } from "@/components/ui/Button";
 import { useEffect, useRef, useState } from "react";
-import { assetsUrl } from "../../../endpoints";
+import { assetsUrl } from "@/endpoints";
 
 export default function Product() {
     const product = useLoaderData() as Product;

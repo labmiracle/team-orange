@@ -19,13 +19,17 @@ class Fetcher {
         const config: HttpRequest = new HttpRequest(url);
         config.method = options?.method;
         config.headers = new HttpHeaders();
-        //config.headers.set("content-type", "application/json");
 
         if (options?.token) {
             config.headers.set("x-auth", options.token);
         }
         if (options?.data) {
-            config.body = options.form ? options.data : JSON.stringify(options.data);
+            if (options.form) {
+                config.body = options.data;
+            } else {
+                config.headers.set("content-type", "application/json");
+                config.body = JSON.stringify(options.data);
+            }
         }
         const response = await this.fetcher.request(config);
         const body = await response.json();

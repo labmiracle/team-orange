@@ -1,4 +1,4 @@
-import { setFilterType } from "../../../../types";
+import { setFilterType } from "@/types";
 import styles from "./index.module.css";
 import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 
