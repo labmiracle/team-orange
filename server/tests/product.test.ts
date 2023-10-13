@@ -5,7 +5,7 @@ import { ResponseInterface } from "../src/models/response";
 import { ProductForCreationInterface, ProductInterface } from "../src/models/product";
 import { ApiClient } from "../src/core/http/api.client";
 import { UserInterface } from "../src/models/user";
-import mysql, { ResultSetHeader, RowDataPacket, format } from "mysql2/promise";
+import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { createPool } from "./db.setup";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -43,35 +43,6 @@ const productForCreation: ProductForCreationInterface = {
     img_file: null,
 };
 
-const product: ProductInterface = {
-    name: "test2",
-    description: "test test test test test test test",
-    price: 35,
-    discountPercentage: 1,
-    currentStock: 30,
-    reorderPoint: 10,
-    minimum: 5,
-    categories: ["Chaqueta", "Sudadera"],
-    sizes: ["Hombre", "Niños"],
-    brand: "Nike",
-    url_img: "images/placeholder.jpg",
-};
-
-const formProduct = (product: ProductForCreationInterface) => {
-    const form = new FormData();
-    for (const prop in product) {
-        const value = product[prop as keyof ProductForCreationInterface] as string | Blob;
-        if (Array.isArray(prop)) {
-            for (const value of prop) {
-                form.append(prop, value);
-            }
-        } else {
-            form.append(prop, value);
-        }
-    }
-    return form;
-};
-
 let storeId: number;
 
 beforeAll(async () => {
@@ -93,10 +64,9 @@ beforeAll(async () => {
 
 afterAll(async () => {
     try {
-        await pool.query("DELETE FROM store WHERE managerId = ?", [manager.id]);
         await pool.query<RowDataPacket[]>("DELETE FROM user WHERE email = ?", [manager.email]);
-        await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [product.id]);
-        await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [product.id]);
+        await pool.query("DELETE FROM store WHERE managerId = ?", [manager.id]);
+        await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [productForCreation.id]);
     } catch (err) {
         console.error(err);
     } finally {
@@ -122,27 +92,25 @@ describe("POST /api/product", () => {
         const newProduct = {
             ...productForCreation,
             name: "test3",
-            sizes: {size1:"Elefante", size2:"Niños"}, //object is not valid size
+            sizes: { size1: "Elefante", size2: "Niños" }, //object is not valid size
         } as any;
-        const productForm = formProduct(newProduct);
-        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(newProduct)); 
-        expect(response.data.message).not.toBe(undefined);
+        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(newProduct));
+        expect(response.data.message).toBe('"sizes" must be one of [string, array]');
         const failResponse = await pool.query<RowDataPacket[any]>("SELECT * FROM product WHERE name = ?", [productForCreation.name]);
         expect(failResponse[0].length).toBe(0);
     });
     it("should create products", async () => {
-        const productForm = formProduct(productForCreation);
-        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(productForm));
+        const response = await api.post<ResponseInterface<ProductInterface[]>>("", null, JSON.stringify(productForCreation));
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
-        product.id = response.data.data.id;
+        productForCreation.id = response.data.data[0].id;
     });
 });
 
 describe("GET /api/product/:id", () => {
     it("should return a product 1", async () => {
-        const response = await api.get<ResponseInterface<ProductInterface>>(`${product.id}`);
-        expect(response.data.data.name).toBe("test");
+        const response = await api.get<ResponseInterface<ProductInterface>>(`${productForCreation.id}`);
+        expect(response.data.data.name).toBe("test1");
         expect(response.status).toBe(200);
     });
     it("should not found product", async () => {
@@ -155,10 +123,11 @@ describe("GET /api/product/:id", () => {
 
 describe("PUT api/product", () => {
     it("should update a product", async () => {
+        const { img_file, ...productForUpdate } = productForCreation;
         const response = await api.put<ResponseInterface<ProductInterface>>(
             "",
             null,
-            JSON.stringify({ ...product, categories: ["Zapatos", "Blusa"], sizes: ["Mujer"] })
+            JSON.stringify({ ...productForUpdate, categories: ["Zapatos", "Blusa"], sizes: ["Mujer"] })
         );
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
@@ -167,7 +136,8 @@ describe("PUT api/product", () => {
         expect(response.data.data.sizes[0]).toMatch(/Mujer/);
     });
     it("should not be authorized to change products from other stores", async () => {
-        const response = await api.put<ResponseInterface<ProductInterface>>("", null, JSON.stringify({ ...product, name: "test2", id: 33 }));
+        const { img_file, ...productForUpdate } = productForCreation;
+        const response = await api.put<ResponseInterface<ProductInterface>>("", null, JSON.stringify({ ...productForUpdate, name: "test2", id: 33 }));
         expect(response.data.message).toMatch(/Unauthorized/);
         expect(response.status).toBe(500);
     });
@@ -175,15 +145,15 @@ describe("PUT api/product", () => {
 
 describe("DELETE api/product", () => {
     it("should disable a product", async () => {
-        await api.delete<ResponseInterface<ProductInterface>>("", JSON.stringify({ id: product.id }));
-        const response = await api.get<ResponseInterface<ProductInterface>>(`${product.id}`);
+        await api.delete<ResponseInterface<ProductInterface>>(`${productForCreation.id}`);
+        const response = await api.get<ResponseInterface<ProductInterface>>(`${productForCreation.id}`);
         expect(response.data.message).toBe(undefined);
         expect(response.data.data.status).toBe(0);
         expect(response.status).toBe(200);
         expect(response.data.error).toBeFalsy();
     });
     it("should not be authorized to disable products from other stores", async () => {
-        const response = await api.delete<ResponseInterface<ProductInterface>>("", JSON.stringify({ id: 33 }));
+        const response = await api.delete<ResponseInterface<ProductInterface>>("33");
         expect(response.data.message).toMatch(/Unauthorized Store/);
         expect(response.status).toBe(500);
         expect(response.data.error).toBeTruthy();

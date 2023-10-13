@@ -141,7 +141,6 @@ export class StoreController extends ApiController {
         method: HttpMethod.PUT,
     })
     async update(store: StoreInterface) {
-        console.log("update hit");
         const { id: idManager } = this.userRepo.getAuth();
         const { id: idStore } = (await this.storeRepo.find({ managerId: idManager }))[0];
         const colors = store.colors;

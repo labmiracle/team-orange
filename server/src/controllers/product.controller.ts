@@ -1,7 +1,7 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { ProductInterface, ProductForCreationInterface } from "../models/product";
 import { ProductRepository } from "../repositories/product.repository";
-import { ProductFilter, ProductArrayFilter, ProductForCreationFilter } from "../filters/product.filter";
+import { ProductFilter, ProductForCreationFilter } from "../filters/product.filter";
 import { ProductDBRepository } from "../repositories/productDB.repository";
 import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
@@ -77,37 +77,6 @@ export class ProductController extends ApiController {
         return product;
     }
 
-    // /**
-    //  * GET all products from a store id and a query
-    //  * ?page_number=1&product_amount=20
-    //  * @returns
-    //  */
-    // @GET
-    // @Path("/store/:storeId/q")
-    // @Response<ProductInterface[]>(201, "Retrieve a list of Products.")
-    // @Response(404, "Products not found.")
-    // @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
-    // async getAll(@PathParam("storeId") storeId: number) {
-    //     const { page_number, product_amount } = this.httpContext.request.query;
-    //     if (Number(page_number) < 1) throw new Error("Only integer greater than 0 are allowed for page number");
-    //     const products = await this.productRepo.getAllProducts(storeId, Number(page_number), Number(product_amount));
-    //     return products;
-    // }
-
-    // /**
-    //  * GET all products from a store id
-    //  * @returns
-    //  */
-    // @GET
-    // @Path("/store/:storeId/")
-    // @Response<ProductInterface[]>(201, "Retrieve a list of Products.")
-    // @Response(404, "Products not found.")
-    // @Action({ route: "store/:storeId/q", method: HttpMethod.GET })
-    // async getAll(@PathParam("storeId") storeId: number) {
-    //     const products = await this.productRepo.getAllProducts(storeId);
-    //     return products;
-    // }
-
     /**
      * CREATE a product on the database
      * @param product
@@ -120,7 +89,6 @@ export class ProductController extends ApiController {
     @Action({ route: "/", filters: [ProductForCreationFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
     async post(product: ProductForCreationInterface) {
         //image handling
-        console.log("product", product);
         const file = this.httpContext.request.file;
         delete product.img_file;
 
@@ -128,7 +96,7 @@ export class ProductController extends ApiController {
             ...product,
             categories: typeof product.categories === "string" ? product.categories.split(",") : product.categories,
             sizes: typeof product.sizes === "string" ? product.sizes.split(",") : product.sizes,
-            url_img: file ? `images/${file.destination}${file.originalname}` : "images/placeholder.jpg",
+            url_img: file ? `images/${file.originalname}` : "images/placeholder.jpg",
         } as ProductInterface;
 
         const { id: idManager } = this.userRepo.getAuth();
@@ -178,7 +146,6 @@ export class ProductController extends ApiController {
         method: HttpMethod.PUT,
     })
     async update(entity: ProductInterface) {
-        console.log("update hit");
         this.unitOfWork.beginTransaction();
         try {
             await this.productDBRepo.updateProduct(entity);
