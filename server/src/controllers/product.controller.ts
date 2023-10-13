@@ -128,7 +128,7 @@ export class ProductController extends ApiController {
             ...product,
             categories: typeof product.categories === "string" ? product.categories.split(",") : product.categories,
             sizes: typeof product.sizes === "string" ? product.sizes.split(",") : product.sizes,
-            url_img: file ? `${file.destination}${file.originalname}` : "images/placeholder.jpg",
+            url_img: file ? `images/${file.destination}${file.originalname}` : "images/placeholder.jpg",
         } as ProductInterface;
 
         const { id: idManager } = this.userRepo.getAuth();

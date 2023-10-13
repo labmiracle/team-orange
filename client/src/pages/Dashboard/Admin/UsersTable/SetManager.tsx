@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { UsersService } from "../../../../services/User.service";
-import { StoreName, User } from "../../../../types";
+import { UsersService } from "@/services/User.service";
+import { StoreName, User } from "@/types";
 import styles from "./setManager.module.css";
-import { Button } from "../../../../components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 type Props = {
     data: { users: User[]; stores: StoreName[] };
@@ -17,7 +17,7 @@ type Props = {
     setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
     setShowModalError: React.Dispatch<React.SetStateAction<boolean>>;
     setMessageError: React.Dispatch<React.SetStateAction<string>>;
-}
+};
 
 export default function SetManager({
     data,
@@ -71,7 +71,9 @@ export default function SetManager({
                                 onChange={event => setStoreSelect(Number(event.currentTarget.value))}
                                 className={styles.radioInput}
                             />
-                            <label htmlFor={store.name} className={styles.storeLabel}>{store.name}</label>
+                            <label htmlFor={store.name} className={styles.storeLabel}>
+                                {store.name}
+                            </label>
                         </div>
                     );
                 })}

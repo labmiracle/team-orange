@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-import Invoice from "../../../utilities/Invoice";
-import { InvoiceInterface } from "../../../../types";
+import Invoice from "@/pages/utilities/Invoice";
+import { InvoiceInterface } from "@/types";
 import styles from "./userInvoices.module.css";
 
 export default function UserInvoices() {

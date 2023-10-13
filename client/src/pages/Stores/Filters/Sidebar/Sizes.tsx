@@ -1,5 +1,5 @@
 import { useLoaderData, Link, useParams } from "react-router-dom";
-import { setFilterType } from "../../../../types";
+import { setFilterType } from "@/types";
 import styles from "./index.module.css";
 
 type Props = {

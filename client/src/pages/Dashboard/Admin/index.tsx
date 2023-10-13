@@ -3,7 +3,7 @@ import StoresTable from "./StoresTable/StoresTable";
 import styles from "./index.module.css";
 import { useLoaderData } from "react-router-dom";
 import { useState } from "react";
-import { StoreName, User } from "../../../types";
+import { StoreName, User } from "@/types";
 
 export default function Admin() {
     const dataLoader = useLoaderData() as { users: User[]; stores: StoreName[] };

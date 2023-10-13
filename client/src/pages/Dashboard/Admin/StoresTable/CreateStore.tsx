@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { StoreService } from "../../../../services/Store.service";
-import { StoreName, User } from "../../../../types";
-import { Button } from "../../../../components/ui/Button";
+import { StoreService } from "@/services/Store.service";
+import { StoreName, User } from "@/types";
+import { Button } from "@/components/ui/Button";
 import styles from "./createStore.module.css";
 
 type Props = {

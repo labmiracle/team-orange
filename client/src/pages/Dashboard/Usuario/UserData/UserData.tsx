@@ -1,8 +1,8 @@
-import { useAuthContext } from "../../../../Context/AuthContext";
-import { Button } from "../../../../components/ui/Button";
-import { Input } from "../../../../components/ui/Input";
+import { useAuthContext } from "@/Context/AuthContext";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import styles from "./userData.module.css";
-import { UsersService } from "../../../../services/User.service";
+import { UsersService } from "@/services/User.service";
 import { useState } from "react";
 
 export default function UserData() {

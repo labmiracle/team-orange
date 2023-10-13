@@ -1,5 +1,4 @@
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../Context/AuthContext";
 import { useLogin } from "../../Hooks/useLogin";
 import { Input } from "../../components/ui/Input";
 import styles from "./index.module.css";
@@ -8,7 +7,6 @@ import useAuthErrorHandler from "../../Hooks/useAuthErrorHandler";
 import { InputError } from "../../types";
 
 export default function Register() {
-    const { setUser } = useAuthContext();
     const { register, user } = useLogin();
     const [error, ErrorMessages, handleError] = useAuthErrorHandler();
     const navigate = useNavigate();
@@ -32,9 +30,6 @@ export default function Register() {
             } catch (e) {
                 handleError(e);
             }
-        }
-        if (user) {
-            setUser(user);
         }
     }
 
