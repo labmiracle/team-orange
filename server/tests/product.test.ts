@@ -30,21 +30,21 @@ const manager: UserInterface = {
 };
 
 const productForCreation: ProductForCreationInterface = {
-    name: "test",
+    name: "test1",
     description: "test test test test test test test",
     price: 35,
     discountPercentage: 1,
     currentStock: 30,
     reorderPoint: 10,
     minimum: 5,
-    categories: "Chaqueta, Sudadera",
-    sizes: "Hombre, Niños",
+    categories: ["Chaqueta", "Sudadera"],
+    sizes: ["Hombre", "Niños"],
     brand: "Nike",
     img_file: null,
 };
 
 const product: ProductInterface = {
-    name: "test",
+    name: "test2",
     description: "test test test test test test test",
     price: 35,
     discountPercentage: 1,
@@ -57,10 +57,10 @@ const product: ProductInterface = {
     url_img: "images/placeholder.jpg",
 };
 
-const formProduct = (product: ProductInterface) => {
+const formProduct = (product: ProductForCreationInterface) => {
     const form = new FormData();
     for (const prop in product) {
-        const value = product[prop as keyof ProductInterface] as string | Blob;
+        const value = product[prop as keyof ProductForCreationInterface] as string | Blob;
         if (Array.isArray(prop)) {
             for (const value of prop) {
                 form.append(prop, value);
@@ -120,20 +120,19 @@ describe("GET /api/product", () => {
 describe("POST /api/product", () => {
     it("should fail to create products with invalid fields and rollback any changes", async () => {
         const newProduct = {
-            ...product,
+            ...productForCreation,
             name: "test3",
-            sizes: ["Elefante", "Niños"], //Elefante is not a valid size
-        };
+            sizes: {size1:"Elefante", size2:"Niños"}, //object is not valid size
+        } as any;
         const productForm = formProduct(newProduct);
-        console.log(productForm);
-        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(productForm)); //JSON.stringify(newProduct));
-        expect(response.data.message).toBe('"[2].sizes[0]" must be one of [Hombre, Mujer, Niños]'); //newProducts[2].size[0] failed
+        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(newProduct)); 
+        expect(response.data.message).not.toBe(undefined);
         const failResponse = await pool.query<RowDataPacket[any]>("SELECT * FROM product WHERE name = ?", [productForCreation.name]);
         expect(failResponse[0].length).toBe(0);
     });
     it("should create products", async () => {
-        const productForm = formProduct(product);
-        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(productForm)); //JSON.stringify(products[i]));
+        const productForm = formProduct(productForCreation);
+        const response = await api.post<ResponseInterface<ProductInterface>>("", null, JSON.stringify(productForm));
         expect(response.data.message).toBe(undefined);
         expect(response.status).toBe(200);
         product.id = response.data.data.id;

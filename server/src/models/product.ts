@@ -37,8 +37,8 @@ export interface ProductForCreationInterface {
     discountPercentage: number;
     description: string;
     img_file?: File | null;
-    sizes: string;
-    categories: string;
+    sizes: string[] | string;
+    categories: string[] | string;
     /** @IsInt */
     currentStock: number;
 }

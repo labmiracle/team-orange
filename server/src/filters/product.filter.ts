@@ -1,6 +1,6 @@
 import { Injectable, DependencyLifeTime } from "@miracledevs/paradigm-web-di";
 import { IFilter, HttpContext } from "@miracledevs/paradigm-express-webapi";
-import { productSchema, productArray, productSaleArray } from "../models/schemas/product.schema";
+import { productSchema, productArray, productSaleArray, productForCreation } from "../models/schemas/product.schema";
 import { NextFunction } from "express";
 import multer from "multer";
 
@@ -33,6 +33,18 @@ export class ProductArrayFilter implements IFilter {
 export class ProductSaleArrayFilter implements IFilter {
     async beforeExecute(httpContext: HttpContext): Promise<void> {
         const { error } = productSaleArray.validate(httpContext.request.body);
+        if (error) throw new Error(error.details[0].message);
+    }
+}
+
+/**
+ * Validate product of type {@link ProductForCreationInterface}
+ */
+@Injectable({ lifeTime: DependencyLifeTime.Scoped })
+export class ProductForCreationFilter implements IFilter {
+    async beforeExecute(httpContext: HttpContext): Promise<void> {
+        console.log(httpContext.request.body);
+        const { error } = productForCreation.validate(httpContext.request.body);
         if (error) throw new Error(error.details[0].message);
     }
 }

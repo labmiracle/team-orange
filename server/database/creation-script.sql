@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS Invoice (
     date DATE NOT NULL,
     total DECIMAL(15,2) NOT NULL,
     userId INT NOT NULL,
-    CONSTRAINT fk_userId_purchase FOREIGN KEY (userId) REFERENCES User(id)
+    CONSTRAINT fk_userId_purchase FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Product(

@@ -87,16 +87,16 @@ export const productForCreation = Joi.object({
         "number.min": "Invalid minimum, it must be greater than or equal to 0",
         "any.required": "minimum is a required field",
     }),
-    categories: Joi.string().required().messages({
+    categories: Joi.alternatives().try(Joi.string(), Joi.array()).required().messages({
         "any.required": "category is a required field",
     }),
-    sizes: Joi.string().required().messages({
+    sizes: Joi.alternatives().try(Joi.string(), Joi.array()).required().messages({
         "any.required": "size is a required field",
     }),
     brand: Joi.string().required().messages({
         "any.required": "brand is a required field",
     }),
-    img_file: Joi.number().optional(),
+    img_file: Joi.any().optional(),
     url_img: Joi.string().optional(),
     storeId: Joi.number().optional(),
     status: Joi.number().optional(),

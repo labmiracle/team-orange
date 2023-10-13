@@ -1,7 +1,7 @@
 import { Action, ApiController, Controller, HttpMethod } from "@miracledevs/paradigm-express-webapi";
 import { ProductInterface, ProductForCreationInterface } from "../models/product";
 import { ProductRepository } from "../repositories/product.repository";
-import { ProductFilter, ProductArrayFilter } from "../filters/product.filter";
+import { ProductFilter, ProductArrayFilter, ProductForCreationFilter } from "../filters/product.filter";
 import { ProductDBRepository } from "../repositories/productDB.repository";
 import { Path, PathParam, GET, POST, DELETE, PUT } from "typescript-rest";
 import { Response, Tags } from "typescript-rest-swagger";
@@ -117,7 +117,7 @@ export class ProductController extends ApiController {
     @Path("/")
     @Response<ProductInterface>(201, "Insert a Product on the Database.")
     @Response(500, "Product insert failed.")
-    @Action({ route: "/", filters: [/* ProductArrayFilter, */ JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
+    @Action({ route: "/", filters: [ProductForCreationFilter, JWTAuthFilter, isManagerFilter], fromBody: true, method: HttpMethod.POST })
     async post(product: ProductForCreationInterface) {
         //image handling
         console.log("product", product);
@@ -126,8 +126,8 @@ export class ProductController extends ApiController {
 
         const productToCreate = {
             ...product,
-            categories: product.categories.split(","),
-            sizes: product.sizes.split(","),
+            categories: typeof product.categories === "string" ? product.categories.split(",") : product.categories,
+            sizes: typeof product.sizes === "string" ? product.sizes.split(",") : product.sizes,
             url_img: file ? `${file.destination}${file.originalname}` : "images/placeholder.jpg",
         } as ProductInterface;
 

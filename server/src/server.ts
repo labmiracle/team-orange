@@ -42,7 +42,7 @@ export class Server extends ApiServer {
             .set("port", port)
             .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
             .use(cors({ exposedHeaders: "x-auth" }))
-            .use(express.urlencoded({ extended: false }))
+            .use(express.urlencoded({ extended: true }))
             .use(express.json())
             .use(cookieParser())
             .use(upload)
