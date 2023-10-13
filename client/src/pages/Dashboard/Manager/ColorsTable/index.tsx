@@ -26,7 +26,6 @@ export default function ColorsTable() {
             primary: hexToHSL(hexColors.primary),
             secondary: hexToHSL(hexColors.secondary),
         };
-        console.log(newColors);
         if (!newColors.primary || !newColors.secondary) throw new Error("invalid colors");
         const { categories, sizes, products, ...store } = data;
         const storeToUpdate = { ...store, colors: newColors } as StoreType;

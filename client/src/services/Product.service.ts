@@ -1,5 +1,5 @@
 import { baseEndpoints } from "../endpoints";
-import { Product, ProductResponse, ProductForCreation } from "../types";
+import { Product, ProductResponse } from "../types";
 import Fetcher from "./Fetcher";
 type FilterProps = {
     storeId: number;
