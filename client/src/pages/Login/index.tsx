@@ -10,6 +10,7 @@ export default function Login() {
     const { getAuth, user } = useLogin();
     const [error, ErrorMessages, handleError] = useAuthErrorHandler();
     const navigate = useNavigate();
+
     async function login(event: React.FormEvent) {
         event.preventDefault();
         const { email, password } = event.target as HTMLFormElement;
@@ -19,7 +20,8 @@ export default function Login() {
             handleError(e);
         }
     }
-    return user ? (
+
+    return user && Object.keys(user).length ? (
         <Navigate to={"/"} />
     ) : (
         <>
