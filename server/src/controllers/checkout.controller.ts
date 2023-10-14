@@ -59,7 +59,7 @@ export class CheckoutController extends ApiController {
         }));
         await this.itemRepo.insertItem(items);
         const invoiceView = await this.invoiceViewRepo.getById(invoice.insertId);
-        const urlInfo = await this.emailer.send(invoiceView);
+        const urlInfo = await this.emailer.sendInvoice(invoiceView);
         return { ...invoiceView, messageUrl: urlInfo };
     }
 }

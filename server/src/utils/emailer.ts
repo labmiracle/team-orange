@@ -4,27 +4,44 @@ import { InvoiceViewInterface } from "../models/invoiceView";
 import { DependencyLifeTime, Injectable } from "@miracledevs/paradigm-web-di";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
+type TMessage = {
+    from: string;
+    to: string;
+    subject: string;
+    html: string;
+};
+
+interface IEmailerService {
+    send: (message: TMessage) => Promise<string | false>;
+}
+
+class NodeService implements IEmailerService {
+    private transport: nodemailer.Transporter<SMTPTransport.SentMessageInfo> = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        auth: {
+            user: process.env.NODEMAILER_USER,
+            pass: process.env.NODEMAILER_PASSWORD,
+        },
+        tls: {
+            rejectUnauthorized: false, // Configuración para permitir certificados auto-firmados
+        },
+    });
+    public async send(message: TMessage) {
+        const info = await this.transport.sendMail(message);
+        const url = nodemailer.getTestMessageUrl(info);
+        return url;
+    }
+}
+
 @Injectable({ lifeTime: DependencyLifeTime.Transient })
 export class Emailer {
-    private transport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
-    constructor() {
-        this.transport = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            auth: {
-                user: process.env.NODEMAILER_USER,
-                pass: process.env.NODEMAILER_PASSWORD,
-            },
-            tls: {
-                rejectUnauthorized: false, // Configuración para permitir certificados auto-firmados
-            },
-        });
-    }
+    constructor(private readonly EmailerService: NodeService) {}
 
     private odd(number: number) {
         return number % 2 === 0 ? "background-color:silver;padding-right:5px;" : "background-color:white;padding-right:5px;";
     }
-    async send(invoice: InvoiceViewInterface) {
+    async sendInvoice(invoice: InvoiceViewInterface) {
         const html = `
             <div style="display: block; background-color: white; max-width: 600px;">
                 <header class="header">
@@ -83,8 +100,6 @@ export class Emailer {
             html: html,
         };
 
-        const info = await this.transport.sendMail(message);
-        const url = nodemailer.getTestMessageUrl(info);
-        return url;
+        return await this.EmailerService.send(message);
     }
 }
