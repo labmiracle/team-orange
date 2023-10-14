@@ -26,7 +26,9 @@ CREATE TABLE IF NOT EXISTS User (
     idDocumentType VARCHAR (20) NOT NULL,
     idDocumentNumber VARCHAR(20) NOT NULL UNIQUE,
     rol ENUM('Admin', 'Client', 'Manager') NOT NULL DEFAULT 'Client',
-    status BOOLEAN NOT NULL DEFAULT TRUE
+    status BOOLEAN NOT NULL DEFAULT TRUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS Category(
@@ -68,7 +70,7 @@ CREATE TABLE IF NOT EXISTS Invoice (
     date DATE NOT NULL,
     total DECIMAL(15,2) NOT NULL,
     userId INT NOT NULL,
-    CONSTRAINT fk_userId_purchase FOREIGN KEY (userId) REFERENCES User(id)
+    CONSTRAINT fk_userId_purchase FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Product(
@@ -76,13 +78,13 @@ CREATE TABLE IF NOT EXISTS Product(
 	name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
-    discountPercentage DECIMAL(3,2),
+    discountPercentage DECIMAL(3,2) DEFAULT 1,
     currentStock INT NOT NULL,
     reorderPoint INT NOT NULL,
     minimum INT NOT NULL,
     brandId INT NOT NULL,
-    url_img VARCHAR(255) NOT NULL,
-    storeId INT,
+    url_img VARCHAR(255) DEFAULT "images/placeholder.jpg",
+    storeId INT NOT NULL,
     status BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_brandId_p FOREIGN KEY (brandId) REFERENCES Brand(id),
     CONSTRAINT fk_storeId_p FOREIGN KEY (storeId) REFERENCES Store(id) ON DELETE SET NULL
@@ -92,7 +94,7 @@ CREATE TABLE IF NOT EXISTS ProductSize (
     id INT PRIMARY KEY AUTO_INCREMENT,
     productId INT NOT NULL,
     sizeId INT NOT NULL,
-    CONSTRAINT fk_productId_ps FOREIGN KEY (productId) REFERENCES Product(id),
+    CONSTRAINT fk_productId_ps FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE,
     CONSTRAINT fk_sizeId_ps FOREIGN KEY (sizeId) REFERENCES Size(id) ON DELETE CASCADE
 );
 
@@ -106,13 +108,13 @@ CREATE TABLE IF NOT EXISTS ProductCategory (
 
 CREATE TABLE IF NOT EXISTS Item (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    quantity INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
     total DECIMAL(15,2) NOT NULL,
     unitPrice DECIMAL(10,2) NOT NULL,
     productId INT NOT NULL UNIQUE,
     invoiceId  INT NOT NULL,
     CONSTRAINT fk_productId_i FOREIGN KEY (productId) REFERENCES Product(id),
-    CONSTRAINT fk_purchaseId_i FOREIGN KEY (invoiceId) REFERENCES Invoice(id)
+    CONSTRAINT fk_invoiceId_i FOREIGN KEY (invoiceId) REFERENCES Invoice(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Cart (
@@ -184,6 +186,7 @@ CREATE OR REPLACE VIEW invoice_view AS
     inv.id,
     inv.date As date,
     inv.total AS total,
+    inv.userId,
     u.name,
     u.lastName,
     u.email,
@@ -219,7 +222,7 @@ CREATE OR REPLACE VIEW cart_view AS
     pv.sizes
 	FROM Item i
 	JOIN
-	  product_view pv ON pv.id = c.productId
+	  product_view pv ON pv.id = i.productId
   JOIN
     invoice inv ON i.invoiceId = inv.id;
 
@@ -574,3 +577,6 @@ VALUES
 --   ('Sandalias de plataforma', 'Sandalias de plataforma para mujeres', 39.99, 0.05, 80, 20, 10, 3, 'https://ejemplo.com/imagen131.jpg', 2),
 --   ('Vestido corto de fiesta', 'Vestido corto de fiesta para ocasiones especiales', 99.99, 1, 30, 5, 3, 4, 'https://ejemplo.com/imagen132.jpg', 2),
 --   ('Jersey de punto con cuello redondo', 'Jersey de punto con cuello redondo para hombres', 49.99, 0.1, 50, 10, 5, 5, 'https://ejemplo.com/imagen133.jpg', 1);
+
+
+

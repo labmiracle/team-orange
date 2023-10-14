@@ -1,0 +1,15 @@
+.small {
+    display: flex;
+}
+
+.category_item {
+    background-color: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+}
+
+.active {
+    text-decoration: underline;
+}

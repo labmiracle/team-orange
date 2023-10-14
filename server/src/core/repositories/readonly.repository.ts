@@ -32,23 +32,16 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
         const query = format(`SELECT * FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [rows] = await this.connection.connection.execute(query);
-        return this.map(rows, this.entityType);
-    }
-    /**
-     * SELECT id, args[0], args[1], ... FROM {this.tableName} WHERE status = 1
-     */
-    async getBy(args: (keyof TEntity)[]) {
-        const columns = args.map(column => `\`${String(column)}\``).join(", ");
-        const query = "SELECT id, " + columns + ` FROM \`${this.tableName}\` WHERE status = 1 `;
-        const [rows] = await this.connection.connection.execute(query);
-        return rows;
+        const entities = this.map(rows, this.entityType);
+        if (!entities || entities.length === 0) throw new Error(`Unable to retrieve ${this.entityType.name}`);
+        return entities;
     }
 
     async getById(id: TId): Promise<TEntity> {
         const [rows] = await this.connection.connection.execute(`SELECT * FROM \`${this.tableName}\` WHERE \`${this.idColumn}\`=?`, [id]);
         const entities = this.map(rows, this.entityType);
 
-        if (!entities || entities.length === 0) throw new Error("Unable to retrieve the entity.");
+        if (!entities || entities.length === 0) throw new Error(`Unable to retrieve ${this.entityType.name}`);
 
         return entities[0];
     }

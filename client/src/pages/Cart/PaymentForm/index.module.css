@@ -1,0 +1,44 @@
+.paymentForm {
+    background-color: white;
+    padding: 16px;
+    border: 1px solid #828282;
+    border-radius: 4px;
+}
+
+.personalInfo {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.name {
+    width: 60%;
+}
+
+.documentNumber {
+    width: 25%;
+}
+
+.cardInfo {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thirdRow {
+    display: flex;
+    gap: 16px;
+}
+
+.expireDate {
+    width: 40%;
+}
+
+.securityCode {
+    width: 15%;
+}
+
+.backButton {
+    color: black;
+}

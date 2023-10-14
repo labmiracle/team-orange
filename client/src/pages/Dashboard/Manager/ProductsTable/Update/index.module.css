@@ -1,0 +1,10 @@
+.form {
+    display: flex;
+    flex-flow: column;
+    margin: 20px;
+}
+
+.submit_btn {
+    padding: 5px 8px;
+    margin: 10px;
+}

@@ -38,22 +38,23 @@ export abstract class EditRepositoryBase<TEntity, TId = number> extends Readonly
         }
     }
 
-    async update(entity: TEntity): Promise<TEntity> {
+    async update(entity: Partial<TEntity>): Promise<Partial<TEntity>> {
         const [result] = await this.connection.connection.query<ResultSetHeader>(`UPDATE \`${this.tableName}\` SET ? WHERE \`${this.idColumn}\`=?`, [
             entity,
             (entity as any)[this.idColumn],
         ]);
-        if (!result.affectedRows) throw new Error("not found");
+        if (!result.affectedRows) throw new Error(`${this.entityType.name} not found`);
         return entity;
     }
 
-    async delete(entity: Partial<TEntity>): Promise<void> {
+    async delete(entity: Partial<TEntity>): Promise<RowType> {
         const columns = Object.keys(entity);
         const values = Object.values(entity);
         const conditions = columns.map(column => `\`${column}\`=?`).join(" AND ");
         const query = format(`DELETE FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [result] = await this.connection.connection.query<ResultSetHeader>(query);
-        if (!result.affectedRows) throw new Error("not found");
+        if (!result.affectedRows) throw new Error(`${this.entityType.name} not found`);
+        return result;
     }
 
     async truncate(): Promise<void> {

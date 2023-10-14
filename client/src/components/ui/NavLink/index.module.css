@@ -1,78 +1,16 @@
 .link {
-	width: fit-content;
-	padding-inline: 8px;
-	padding-block: 8px;
-	border-radius: 4px;
+    display: block;
+    width: fit-content;
+    padding: 8px;
+    border-radius: 4px;
 }
 
 .inactive {
-	background-color: transparent;
-	color: var(--black);
+    background-color: transparent;
+    color: var(--black);
 }
 
 .active {
-	color: var(--text-secondary);
-	background-color: var(--tertiary);
-}
-
-/*user buttons*/
-.buttons_container {
-	display: flex;
-	gap: 1em;
-	grid-column: 2;
-	grid-row: 1;
-	align-self: center;
-	justify-self: end;
-	padding-right: 35px;
-}
-
-.button_cart,
-.button_signup {
-	width: 40px;
-	height: 40px;
-	padding: 0;
-	border: none;
-	background-color: transparent;
-	cursor: pointer;
-}
-
-.button_cart:hover,
-.button_signup:hover {
-	box-shadow: 0 0 5px 5px var(--black);
-}
-
-.button_cart svg {
-	color: var(--text-primary);
-	fill: none;
-}
-
-.button_signup svg {
-	color: var(--text-primary);
-	padding: 4px;
-}
-
-@media (min-width: 500px) {
-	.nav {
-		height: 68px;
-		grid-template-columns: min-content auto min-content;
-		place-items: center;
-	}
-
-	.stores {
-		height: 100%;
-		justify-content: space-between;
-		grid-column: 1;
-		grid-row: 1;
-	}
-
-	.logo {
-		padding-left: 0;
-		grid-column: 2;
-	}
-
-	.buttons_container {
-		justify-self: end;
-		grid-column: 3;
-		grid-row: 1;
-	}
+    color: var(--text-primary);
+    background-color: var(--primary);
 }

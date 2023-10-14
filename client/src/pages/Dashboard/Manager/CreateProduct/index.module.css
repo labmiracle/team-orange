@@ -1,0 +1,114 @@
+.product_create_form {
+    margin: 25px;
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+}
+
+.product_container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    place-items: center;
+    gap: 14px;
+}
+
+.product_container legend {
+    display: flex;
+    gap: 20px;
+}
+
+.add_btn {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.submit_btn {
+    cursor: pointer;
+}
+
+.input_container input {
+    width: 100%;
+}
+
+.product_container label {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--primary);
+    color: var(--text-primary);
+    width: 100%;
+    height: 100%;
+}
+
+.product_container label input {
+    flex-grow: 1;
+}
+
+/* TagInput */
+
+.container {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.input_container {
+    position: relative;
+}
+
+.category_suggestions {
+    max-height: 100px;
+    scroll-behavior: auto;
+    background: #fff;
+    overflow-y: scroll;
+    position: absolute;
+    width: 100%;
+}
+
+.category_suggestions ul {
+    padding: 0;
+}
+
+.category_suggestions ul li {
+    width: 100%;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.category_suggestions ul li:hover {
+    background: var(--tertiary);
+}
+
+.input_tag_container {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 5px;
+    background-color: white;
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.input_tag_container input:focus,
+.input_tag_container input {
+    border: none;
+}
+
+.tag {
+    display: inline-block;
+    white-space: nowrap;
+    color: white;
+    background-color: var(--tertiary);
+    width: fit-content;
+    border-radius: 10px;
+    padding: 4px 9px;
+}
+
+.tag button {
+    border: none;
+    background-color: inherit;
+    color: inherit;
+    cursor: pointer;
+}

@@ -1,0 +1,123 @@
+.store_container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: min-content;
+    width: 100%;
+    min-height: calc(100vh - 110px - 120px);
+}
+
+@media (min-width: 560px) {
+    .store_container {
+        grid-template-columns: 120px 1fr;
+        grid-auto-rows: 1fr;
+    }
+}
+
+/***************
+PRODUCTS
+***************/
+
+.sidebar {
+    display: none;
+}
+
+.sidebar p {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+.sizes_menu ul,
+.types_menu ul {
+    padding: 0;
+}
+
+.sizes_menu {
+    padding-bottom: 20px;
+}
+
+.products_container {
+    grid-column: 1/2;
+}
+
+.page_nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+    font-size: 1.3em;
+    list-style: none;
+    padding-left: 0;
+}
+
+.page_number_list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    background-color: var(--tertiary);
+    border-radius: 4px;
+}
+
+.active_list {
+    background: transparent;
+    border: 2px var(--tertiary) solid;
+}
+
+.page_link {
+    padding: 0;
+    background-color: transparent;
+}
+
+.active_page_link {
+    color: inherit;
+    background: transparent;
+    pointer-events: none;
+}
+
+.errorContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.errorProducts {
+    font-size: 20px;
+}
+
+@media (min-width: 560px) {
+    .sidebar {
+        display: block;
+        position: absolute;
+        top: 0;
+    }
+
+    .container_sidebar {
+        position: fixed;
+        width: 120px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--primary);
+        padding: 129px 20px 20px 20px;
+    }
+
+    .products_container {
+        margin: auto;
+        grid-column: 2 / 3;
+        grid-row: 1;
+    }
+}
+
+@media (min-width: 785px) {
+    .types_menu {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+}
+
+@media (min-width: 500px) {
+    .sizes_menu {
+        flex-direction: row;
+    }
+}

@@ -1,0 +1,34 @@
+.scroll_to_top {
+    display: flex;
+    display: block;
+    justify-content: center;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    padding: 8px !important;
+    font-size: 10px;
+    rotate: 180deg;
+    animation-name: rotating;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+    animation-iteration-count: 1;
+}
+
+.hide_button {
+    display: none;
+}
+
+@keyframes rotating {
+    from {
+        opacity: 0;
+        right: 20px;
+        bottom: -20px;
+        rotate: 0deg;
+    }
+    to {
+        opacity: 1;
+        right: 20px;
+        bottom: 20px;
+        rotate: 180deg;
+    }
+}

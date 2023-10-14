@@ -1,68 +1,64 @@
 .container {
-    width: 100%;
+    max-width: 100%;
     min-height: 100vh;
     display: grid;
-    grid-template-rows: 70px 1fr auto;
+    grid-template-rows: minmax(8vh, auto) minmax(92vh, auto) auto;
 }
 
 .nav {
-    background-color: var(--tertiary);
+    position: sticky;
+    top: 0;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-flow: column;
+    padding: 10px 15px 10px 15px;
+    align-items: center;
     width: 100%;
-    background: white;
-    min-width: 768px;
+    z-index: 3;
+    gap: 10px;
+    background-color: white;
+    border-bottom: 3px solid var(--primary);
 }
 
-.row {
+.logo_user_nav {
+    display: flex;
+    flex-flow: column;
     width: 100%;
-    height: 100%;
-}
-
-.firstRow {
-    background: white;
-    display: flex;
-    max-width: 1280px;
-    justify-content: space-around;
-    color: black;
-    padding-block: 8px;
-    margin-inline: auto;
-}
-
-.firstRow h1 {
-    flex-basis: 4;
-}
-
-.firstRow ul {
-    justify-content: center;
-}
-
-.secondRow {
-    display: flex;
-    justify-content: space-between;
-    padding-inline: 32px;
     align-items: center;
 }
 
-ul {
+.stores_nav {
     display: flex;
     list-style: none;
     align-items: center;
+    justify-content: center;
+    flex-flow: row wrap;
+    margin: 0;
     padding: 0;
-    gap: 1em;
+    width: 100%;
+    row-gap: 10px;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: all 0.3s ease;
 }
 
 /*user buttons*/
 .buttons_container {
     display: flex;
     gap: 1em;
-    justify-self: end;
     align-items: center;
+    justify-content: center;
 }
 
-.button_cart,
-.button_signup {
+.button_cart {
     width: 40px;
     height: 40px;
     padding: 0;
@@ -70,50 +66,87 @@ ul {
     background-color: transparent;
     cursor: pointer;
     transition: all 100ms ease-in-out;
+    justify-self: end;
 }
 
-.logout {
+.link {
     all: unset;
-    text-decoration: underline;
-    color: blue;
     cursor: pointer;
 }
 
-.button_cart:hover,
-.button_signup:hover {
+.button_cart:hover svg {
     border-radius: 4px;
+    color: var(--text-primary);
+    background-color: var(--primary);
 }
 
 .button_cart svg {
-    color: var(--text-primary);
-    fill: none;
+    color: var(--primary);
+    padding: 5px;
 }
 
-.button_signup svg {
-    color: var(--text-primary);
-    padding: 4px;
-}
-
-@media (min-width: 500px) {
-    .stores {
-        height: 100%;
-        justify-content: space-between;
-        grid-column: 1;
-        grid-row: 1;
-    }
-
-    .logo {
-        padding-left: 0;
-        grid-column: 2;
-    }
-
-    .buttons_container {
-        justify-self: end;
-        grid-column: 3;
-        grid-row: 1;
-    }
-}
-
-.home {
+.logo {
     background-color: transparent;
+    grid-area: logo;
+    display: block;
+}
+
+/* Works on Firefox */
+* {
+    scrollbar-color: var(--primary) lightgrey;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+}
+
+*::-webkit-scrollbar-track {
+    background: lightgrey;
+}
+
+/* Works on Chrome, Edge, and Safari */
+
+::-webkit-scrollbar {
+    /* width */
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    /* Track */
+    box-shadow: inset 0 0 5px lightgrey;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    /* Handle */
+    background-color: var(--primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    /* Handle on hover */
+    background-color: var(--primary);
+}
+
+::-webkit-scrollbar-track-piece {
+    /* not handle on */
+    background: lightgrey;
+}
+
+@media (min-width: 360px) {
+    .buttons_container {
+        justify-content: flex-end;
+    }
+    .logo_user_nav {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 850px) {
+    .login {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 }

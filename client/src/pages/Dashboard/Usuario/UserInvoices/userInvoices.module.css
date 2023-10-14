@@ -1,0 +1,14 @@
+.main {
+    display: grid;
+    grid-template-columns: max-content;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.invoice {
+    background-color: white;
+    padding: 15px;
+    border-radius: 25px;
+}

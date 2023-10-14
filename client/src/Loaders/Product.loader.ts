@@ -1,24 +1,42 @@
 import { Params } from "react-router-dom";
-// import { HttpClient } from "@miracledevs/paradigm-web-fetch";
-/**
- * Fetch the store products, colors, managers
- * @param params url params
- * @returns store object {@link Types.ProductType}
- */
-
-// const paradigm = new HttpClient();
+import { ProductService } from "../services/Product.service";
 
 export const ProductsLoader = {
-    async getProduct({ params }: { params: Params }) {
-        const productUrl = "http://localhost:4000/api/product";
-        const { productId } = params;
+    /**
+     * Fetch the product by id
+     * @param params url params
+     * @returns product object {@link Product}
+     */
 
-        try {
-            const response = await fetch(`${productUrl}/${productId}`);
-            const product = await response.json();
+    async getProduct({ params }: { params: Params<string> }) {
+        const productService = new ProductService();
+        const { productId } = params;
+        if (Number(productId)) {
+            const product = await productService.getProduct(Number(productId));
             return product;
-        } catch (e) {
-            console.error(e);
+        }
+    },
+    /**
+     * Fetch all products by store id with and limit amount and a page number
+     * @param storeId
+     * @query page_number=number&product_amount=number
+     * @returns product object {@link Product}
+     */
+    async getAllProducts({ request, params }: { request: Request; params: Params<string> }) {
+        const productService = new ProductService();
+        const { storeId } = params;
+        const url = new URL(request.url);
+        const category = url.searchParams.get("category");
+        const size = url.searchParams.get("size");
+        const page = url.searchParams.get("page");
+        if (Number(storeId)) {
+            const data = await productService.getByFilter({
+                storeId: Number(storeId),
+                size: size,
+                category: category,
+                page: Number(page),
+            });
+            return data;
         }
     },
 };
