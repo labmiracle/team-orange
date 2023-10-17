@@ -64,9 +64,9 @@ beforeAll(async () => {
 
 afterAll(async () => {
     try {
-        await pool.query<RowDataPacket[]>("DELETE FROM user WHERE email = ?", [manager.email]);
-        await pool.query("DELETE FROM store WHERE managerId = ?", [manager.id]);
         await pool.query<RowDataPacket[]>("DELETE FROM product WHERE id = ?", [productForCreation.id]);
+        await pool.query("DELETE FROM store WHERE id = ?", [storeId]);
+        await pool.query<RowDataPacket[]>("DELETE FROM user WHERE email = ?", [manager.email]);
     } catch (err) {
         console.error(err);
     } finally {
