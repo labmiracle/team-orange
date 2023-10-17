@@ -28,4 +28,9 @@ export class UserRepository extends EditRepositoryBase<User, string> {
         const [rows] = await this.connection.connection.execute(query);
         return rows;
     }
+    async checkStatus(email:string) {
+        const query = `SELECT status from \`${this.tableName}\` WHERE email = ?`;
+        const [rows] = await this.connection.connection.query(query, [email]);
+        return this.map(rows, this.entityType);
+    }
 }

@@ -15,6 +15,7 @@ interface IEmailerService {
     send: (message: TMessage) => Promise<string | false>;
 }
 
+@Injectable({ lifeTime: DependencyLifeTime.Transient })
 class NodeService implements IEmailerService {
     private transport: nodemailer.Transporter<SMTPTransport.SentMessageInfo> = nodemailer.createTransport({
         host: "smtp.ethereal.email",

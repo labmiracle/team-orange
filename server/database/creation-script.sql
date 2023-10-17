@@ -253,15 +253,15 @@ VALUES
 
 INSERT INTO User (name, lastName, email, password, idDocumentType, idDocumentNumber, rol)
 VALUES
-  ('John', 'Doe', 'admin@example.com', 'test1234', 'DNI', '1234567891', 'admin'),
-  ('Joe', 'Schmo', 'manager@example.com', 'test1234', 'DNI', '1234567892', 'manager'),
-  ('Pedro', 'Perez', 'client@example.com', 'test1234', 'DNI', '1234567893', 'client');
+  ('John', 'Doe', 'admin@example.com', '$2b$10$bTXdOkJLxR5FpoIQ2gyr9.PZoJAflX7UpchBX5n2ehyydbVr62uRO', 'DNI', '1234567891', 'admin'),--pw=test1234
+  ('Joe', 'Schmo', 'manager@example.com', '$2b$10$bTXdOkJLxR5FpoIQ2gyr9.PZoJAflX7UpchBX5n2ehyydbVr62uRO', 'DNI', '1234567892', 'manager'),--pw=test1234
+  ('Pedro', 'Perez', 'client@example.com', '$2b$10$bTXdOkJLxR5FpoIQ2gyr9.PZoJAflX7UpchBX5n2ehyydbVr62uRO', 'DNI', '1234567893', 'client');--pw=test1234
 
 INSERT INTO Store (name, managerId, apiUrl)
 VALUES
-  ('Armario', 1, 'https://api.example.com'),
-  ('Atico Vintage', 2, 'https://api.example.com'),
-  ('Pasamela', 3, 'https://api.example.com');
+  ('Armario', 2, 'https://api.example.com'),
+  ('Atico Vintage', null, 'https://api.example.com'),
+  ('Pasamela', null, 'https://api.example.com');
 
 INSERT INTO StoreColor (type, hue, sat, light, storeId)
 VALUES
