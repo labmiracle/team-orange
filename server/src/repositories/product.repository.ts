@@ -32,6 +32,7 @@ export class ProductRepository extends EditRepositoryBase<Product> {
         let query = "";
         if (queryConditions.length > 0) {
             query = " WHERE " + queryConditions.join(" AND ");
+            query += " AND status=1";
         }
 
         if (page && per_page) {
