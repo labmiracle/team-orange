@@ -38,6 +38,10 @@ Shoppy es una plataforma web diseñada para brindar a los usuarios una forma fá
 	NODEMAILER_USER=<usuario_de_nodemailer>
 
 	NODEMAILER_PASSWORD=<contraseña_de_nodemailer>
+
+	PORT = 4000
+
+	BASE_URL = http://localhost:4000
 	```
 	- Para obtener las variables de entorno de nodemailer acceder a [Ethereal](https://ethereal.email/create)  y clickear en `Create Ethereal Account`
 
