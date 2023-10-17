@@ -33,7 +33,7 @@ export abstract class ReadonlyRepositoryBase<TEntity, TId = number> {
         const query = format(`SELECT * FROM \`${this.tableName}\` WHERE ` + conditions, values);
         const [rows] = await this.connection.connection.execute(query);
         const entities = this.map(rows, this.entityType);
-        if (!entities || entities.length === 0) throw new Error(`Unable to retrieve ${this.entityType.name}`);
+        //if (!entities || entities.length === 0) throw new Error(`Unable to retrieve ${this.entityType.name}`);
         return entities;
     }
 

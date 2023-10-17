@@ -80,10 +80,19 @@ export class UserController extends ApiController {
     @Action({ route: "/signup", filters: [UserFilter], fromBody: true, method: HttpMethod.POST })
     async post(user: UserInterface) {
         user.password = await bcrypt.hash(user.password, 10);
-        const { insertId } = await this.userRepo.insertOne(user);
-        delete user.password;
-        const userCreated = { id: insertId, ...user };
-        return userCreated;
+        const [userR] = await this.userRepo.checkStatus(user.email);
+        if(userR && userR.status === 1) {
+            throw new Error("User already exist");
+        } else if (userR && userR.status === 0) {
+            //const response = await this.userRepo.getById(user.email);
+            const userUpdated = await this.userRepo.update({ status: 1, email: user.email });
+            return userUpdated;
+        } else if (!userR) {
+            const { insertId } = await this.userRepo.insertOne(user);
+            delete user.password;
+            const userCreated = { id: insertId, ...user };
+            return userCreated;
+        }
     }
 
     /**
