@@ -81,7 +81,7 @@ export class UserController extends ApiController {
     async post(user: UserInterface) {
         user.password = await bcrypt.hash(user.password, 10);
         const [userR] = await this.userRepo.checkStatus(user.email);
-        if(userR && userR.status === 1) {
+        if (userR && userR.status === 1) {
             throw new Error("User already exist");
         } else if (userR && userR.status === 0) {
             //const response = await this.userRepo.getById(user.email);
@@ -276,13 +276,15 @@ export class UserController extends ApiController {
     @Response(401, "Unauthorized")
     @Response(404, "User not found.")
     @Action({ route: "/admin/change_role_manager", method: HttpMethod.PUT, fromBody: true, filters: [JWTAuthFilter, isAdminFilter] })
-    async changeRoleManager(user: { email: string; idStore: number }) {
+    async changeRoleManager(user: { email: string; idStore?: number }) {
         const userToChange = await this.userRepo.getById(user.email);
         if (userToChange.rol === "Admin") throw new Error("Unauthorized");
         if (!userToChange) throw new Error("User not found");
 
         await this.userRepo.update({ ...userToChange, rol: "Manager" });
-        await this.storeRepo.update({ managerId: userToChange.id, id: user.idStore });
+        if (user.idStore) {
+            await this.storeRepo.update({ managerId: userToChange.id, id: user.idStore });
+        }
 
         delete userToChange.password;
         return { ...userToChange, rol: "Manager" };
