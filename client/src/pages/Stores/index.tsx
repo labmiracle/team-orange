@@ -8,6 +8,7 @@ import Sizes from "./Filters/Sidebar/Sizes";
 import { ColorsType, Product } from "../../types";
 import CategoriesSmallMenu from "./Filters/Dropdown/CategoriesSmallMenu";
 import { setColors } from "../utilities/setColors";
+import { useEffect } from "react";
 
 type ProductProps = {
     products: Product[];
@@ -20,6 +21,10 @@ export default function Store() {
     setColors(colors);
 
     const [filter, setFilter, products, loading] = useProducts();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     if (navigation.state === "loading") {
         return (

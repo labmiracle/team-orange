@@ -17,7 +17,7 @@
 
 .ghost {
     background-color: transparent;
-    color: var(--text-primary);
+    color: var(--primary);
     transition: all 200ms ease-in-out;
     cursor: pointer;
     border: 0px;

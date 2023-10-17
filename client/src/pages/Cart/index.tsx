@@ -10,13 +10,21 @@ import { InvoiceInterface } from "../../types";
 import EmptyCart from "./EmptyCart";
 import TrashIconSVG from "../../assets/TrashSVG";
 import { Link } from "../../components/ui/Link";
+import { useAuthContext } from "@/Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
+    const { user } = useAuthContext();
     const { cart, clearCart, checkout, removeProduct, incrementProduct, decrementProduct } = useCart();
     const [showForm, setShowForm] = useState(false);
     const [invoice, setInvoice] = useState<InvoiceInterface | null>(null);
     const [isLoading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
     function confirmCartContent() {
+        if (!user) {
+            navigate("/login");
+        }
         setShowForm(true);
     }
 

@@ -1,6 +1,6 @@
 import CartIconSVG from "../../assets/CartIconSVG";
 import Footer from "./Footer";
-import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
 import { Link } from "../../components/ui/Link";
 import { NavLink } from "../../components/ui/NavLink";
@@ -17,6 +17,11 @@ export default function Layout() {
     const navigate = useNavigate();
     const [visible, setVisible] = useState(true);
     const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
+    const location = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
 
     const handleScroll = () => {
         const currentScrollPos = window.scrollY;
