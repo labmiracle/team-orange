@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import Home from "@/pages/Home/index";
 import userEvent from "@testing-library/user-event";
 import Login from "@/pages/Login/index";
-import { useLogin } from "../Hooks/useLogin";
+import { useLogin } from "../src/Hooks/useLogin";
 
 jest.mock("react-router-dom", () => ({
     Navigate: jest.fn(),
@@ -15,10 +15,10 @@ jest.mock("jose", () => ({
     decodeJwt: jest.fn(),
 }));
 
-jest.mock("../Hooks/useLogin", () => ({
+jest.mock("../src/Hooks/useLogin", () => ({
     useLogin: jest.fn(() => {
         return {
-            ...jest.requireActual("../Hooks/useLogin"),
+            ...jest.requireActual("../src/Hooks/useLogin"),
             getAuth: jest.fn((email: string, password: string) => {
                 return {
                     email,

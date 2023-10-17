@@ -125,3 +125,8 @@ dist
 
 #swagger
 docs/
+
+#test
+test-results/
+playwright-report/
+playwright/.cache/

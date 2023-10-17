@@ -81,6 +81,14 @@ export class UsersService {
      * DISABLE an user
      * Admin only
      */
+    async adminDisable(user: User) {
+        const response = await Fetcher.query<User>(baseEndpoints.users.adminDisable, {
+            method: "DELETE",
+            data: user,
+        });
+        return response.data;
+    }
+
     async disable(user: User) {
         const response = await Fetcher.query<User>(baseEndpoints.users.disable, {
             method: "DELETE",

@@ -12,11 +12,14 @@ export class CheckoutService {
     }
 
     async produceInvoice(products: Product[]): Promise<InvoiceInterface> {
-        const response = await Fetcher.query<InvoiceInterface>(baseEndpoints.checkout.produce, {
-            method: "POST",
-            data: products,
-        });
-
-        return response.data;
+        try {
+            const response = await Fetcher.query<InvoiceInterface>(baseEndpoints.checkout.produce, {
+                method: "POST",
+                data: products,
+            });
+            return response.data;
+        } catch (e) {
+            throw Error((e as Error).message)
+        }
     }
 }

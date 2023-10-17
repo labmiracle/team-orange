@@ -25,7 +25,7 @@ export default function UsersTable({ data, setData }: Props) {
 
     const handleDisable = async (user: User) => {
         try {
-            userService.disable(user);
+            userService.adminDisable(user);
         } catch (e) {
             setShowModalError(true);
             setMessageError((e as any).message);

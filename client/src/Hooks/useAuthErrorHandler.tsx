@@ -23,6 +23,7 @@ export default function useAuthErrorHandler(): [InputError, typeof ErrorMessages
         if (/apellido/i.test(message)) return "LAST_NAME";
         if (/nombre/i.test(message)) return "NAME";
         if (/for key 'user.email'/i.test(message)) return "DUP_EMAIL";
+        if (/User already exist/i.test(message)) return "DUP_EMAIL";
         if (/email/i.test(message)) return "EMAIL";
         if (/password mismatch/i.test(message)) return "PASSWORD_MISMATCH";
         if (/password|contraseña/i.test(message)) return "PASSWORD";

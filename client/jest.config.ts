@@ -10,7 +10,7 @@ export default {
         // "jose/jwk/parse": "<rootDir>/node_modules/jose/dist/node/cjs/jwk/parse.js",
         "\\.(css|less|scss|sss|styl)$": "identity-obj-proxy",
         "^@/(.*)$": "<rootDir>/src/$1",
-        "\\.(gif|ttf|eot|svg|png|webp)$": "<rootDir>/src/test/__mocks__/fileMock.js",
+        "\\.(gif|ttf|eot|svg|png|webp)$": "<rootDir>/test.Jest/__mocks__/fileMock.js",
     },
     extensionsToTreatAsEsm: [".ts", ".tsx"],
 };
