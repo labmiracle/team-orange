@@ -45,6 +45,8 @@ export class UserController extends ApiController {
         const { email } = this.userRepo.getAuth();
         if (user.email !== email) throw new Error("Unauthorized");
         user.password = await bcrypt.hash(user.password, 10);
+        delete user.createdAt;
+        delete user.updatedAt;
         await this.userRepo.update(user);
         const userUpdated = await this.userRepo.getById(user.email);
         delete userUpdated.password;

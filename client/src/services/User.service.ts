@@ -47,6 +47,7 @@ export class UsersService {
         });
         const token = response.headers["x-auth"];
         if (token) {
+            window.localStorage.setItem("user", token);
             if (response.data) {
                 return response.data;
             }

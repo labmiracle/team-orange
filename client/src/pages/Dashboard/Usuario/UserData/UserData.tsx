@@ -11,19 +11,25 @@ export default function UserData() {
     const [showSaveBtn, setShowSaveBtn] = useState(false);
     const [showDisableBox, setShowDisableBox] = useState(false);
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     if (!user) throw new Error("");
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (user) {
+            setError("");
             setUser({ ...user, [e.target.name]: e.target.value });
         }
     };
 
     const handleSubmit = async () => {
         const userService = new UsersService();
-        const data = await userService.update({ ...user, password: password });
-        if (data) setUser(data);
+        try {
+            const data = await userService.update({ ...user, password: password });
+            if (data) setUser(data);
+        } catch (e) {
+            setError((e as Error).message);
+        }
     };
 
     const handleDisable = async () => {
@@ -35,6 +41,7 @@ export default function UserData() {
 
     return (
         <div className={styles.container}>
+            {error && <p className={styles.error}>{error}</p>}
             <h1>Datos personales</h1>
             <p>Email: {user.email}</p>
             <p>Nombre: </p>

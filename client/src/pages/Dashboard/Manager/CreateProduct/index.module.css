@@ -61,7 +61,8 @@
 .category_suggestions {
     max-height: 100px;
     scroll-behavior: auto;
-    background: #fff;
+    background: var(--secondary);
+    color: var(--text-secondary);
     overflow-y: scroll;
     position: absolute;
     width: 100%;
@@ -75,10 +76,12 @@
     width: 100%;
     cursor: pointer;
     padding: 5px 10px;
+    margin: 0;
 }
 
 .category_suggestions ul li:hover {
-    background: var(--tertiary);
+    background: var(--primary);
+    color: var(--text-primary);
 }
 
 .input_tag_container {

@@ -17,7 +17,7 @@ export class StoreRepository extends EditRepositoryBase<Store> {
     }
 
     async getStores() {
-        const query = `SELECT id, name, managerId, status, apiUrl FROM \`${this.tableName}\` `;
+        const query = `SELECT id, name, managerId, status, apiUrl FROM \`${this.tableName}\``;
         const [rows] = await this.connection.connection.execute(query);
         return rows;
     }

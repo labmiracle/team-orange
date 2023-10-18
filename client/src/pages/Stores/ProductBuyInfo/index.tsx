@@ -49,7 +49,7 @@ export default function Product() {
                 <form className={styles.footer} onSubmit={handleSubmit}>
                     <div className={styles.field}>
                         <label htmlFor="amount">Cantidad</label>
-                        <input id="amount" type="number" defaultValue={1} />
+                        <input id="amount" type="number" defaultValue={1} min={1} />
                     </div>
                     <Button
                         type="submit"
